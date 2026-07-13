@@ -1,0 +1,60 @@
+# Tareas — Mercado Inteligente v2
+
+## v2 — Diferenciadores
+
+### Fase 1 — PWA Instalable
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 1.1 | Configurar vite-plugin-pwa con service worker | Atlas | pendiente |
+| 1.2 | Crear manifest.json con iconos y metadata | Hefesto | pendiente |
+| 1.3 | Agregar botón de instalación en la app | Hefesto | pendiente |
+| 1.4 | Configurar estrategias de cache para offline | Atlas | pendiente |
+| 1.5 | Tests de PWA (instalación, offline) | Temis | pendiente |
+
+### Fase 2 — OCR por Foto
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 2.1 | Instalar y configurar Tesseract.js | Atlas | pendiente |
+| 2.2 | Crear servicio de OCR (`src/services/ocr.ts`) | Prometeo | pendiente |
+| 2.3 | Crear componente de captura de foto (cámara o galería) | Hefesto | pendiente |
+| 2.4 | Procesar imagen y extraer productos/precios | Prometeo | pendiente |
+| 2.5 | Mostrar resultados y permitir edición antes de guardar | Hefesto | pendiente |
+| 2.6 | Tests de OCR | Temis | pendiente |
+
+### Fase 3 — Dashboard con Gráficos
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 3.1 | Instalar Recharts | Atlas | pendiente |
+| 3.2 | Crear gráfico de gastos por mes (barras) | Hefesto | pendiente |
+| 3.3 | Crear gráfico de gastos por categoría (pie chart) | Hefesto | pendiente |
+| 3.4 | Crear gráfico de tendencia de gastos (línea) | Hefesto | pendiente |
+| 3.5 | Integrar gráficos en Dashboard | Hefesto | pendiente |
+| 3.6 | Tests de gráficos | Temis | pendiente |
+
+### Fase 4 — Historial Multi-Mes
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 4.1 | Crear selector de mes/año | Hefesto | pendiente |
+| 4.2 | Modificar queries para soportar cualquier mes | Prometeo | pendiente |
+| 4.3 | Crear página de historial con navegación | Hefesto | pendiente |
+| 4.4 | Mostrar resumen por mes (total, presupuesto, diferencia) | Hefesto | pendiente |
+| 4.5 | Tests de historial multi-mes | Temis | pendiente |
+
+### Fase 5 — Registro por Voz
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 5.1 | Configurar Web Speech API | Atlas | pendiente |
+| 5.2 | Crear servicio de reconocimiento de voz (`src/services/voice.ts`) | Prometeo | pendiente |
+| 5.3 | Crear componente de entrada por voz | Hefesto | pendiente |
+| 5.4 | Parsear texto reconocido a productos/precios | Prometeo | pendiente |
+| 5.5 | Mostrar resultados y permitir edición | Hefesto | pendiente |
+| 5.6 | Tests de reconocimiento de voz | Temis | pendiente |
+
+### Fase 6 — Cierre v2
+| # | Tarea | Titán | Estado |
+|---|---|---|---|
+| 6.1 | Auditoría de seguridad de nuevas features | Crío | pendiente |
+| 6.2 | Tests de integración v2 | Temis | pendiente |
+| 6.3 | Optimización de performance (code splitting, lazy loading) | Hiperión | pendiente |
+| 6.4 | Revisión final de arquitectura v2 | Atlas | pendiente |
+| 6.5 | Deploy v2 a producción | Jápeto | pendiente |

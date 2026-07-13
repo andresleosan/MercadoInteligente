@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import BudgetPage from '@/pages/Budget'
 import AddPurchase from '@/pages/AddPurchase'
 import PurchaseHistory from '@/pages/PurchaseHistory'
+import usePWAInstall from '@/hooks/usePWAInstall'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -15,6 +16,7 @@ export default function Dashboard() {
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const { isInstallable, promptInstall } = usePWAInstall()
 
   useEffect(() => {
     async function loadData() {
@@ -30,8 +32,8 @@ export default function Dashboard() {
           setBudgetAmount(budget.amount)
         }
         setTotalSpent(spent)
-      } catch (err) {
-        console.error('Error cargando datos:', err)
+      } catch (err: any) {
+        console.error('Error cargando datos:', err, 'code:', err?.code)
         setError('Error al cargar los datos. Recargá la página.')
       } finally {
         setLoading(false)
@@ -61,6 +63,16 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Mercado Inteligente</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">{user?.email}</span>
+            <span className="text-xs text-gray-400">{user?.uid}</span>
+            {/* PWA install button */}
+            {isInstallable ? (
+              <button
+                onClick={() => void promptInstall()}
+                className="text-sm text-green-600 hover:text-green-800"
+              >
+                Instalar app
+              </button>
+            ) : null}
             <button
               onClick={handleLogout}
               className="text-sm text-red-600 hover:text-red-800"
