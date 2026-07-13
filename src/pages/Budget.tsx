@@ -3,7 +3,12 @@ import { useAuth } from '@/hooks/useAuth'
 import { getBudget, setBudget } from '@/services/budget'
 import type { Budget } from '@/types'
 
-export default function BudgetPage() {
+interface Props {
+  month?: string
+  onSaved?: () => void
+}
+
+export default function BudgetPage({ month, onSaved }: Props) {
   const { user } = useAuth()
   const [budget, setBudgetState] = useState<Budget | null>(null)
   const [amount, setAmount] = useState('')
@@ -15,10 +20,13 @@ export default function BudgetPage() {
     async function loadBudget() {
       if (!user) return
       try {
-        const currentBudget = await getBudget(user.uid)
+        const currentBudget = await getBudget(user.uid, month)
         if (currentBudget) {
           setBudgetState(currentBudget)
           setAmount(String(currentBudget.amount))
+        } else {
+          setBudgetState(null)
+          setAmount('')
         }
       } catch (err) {
         console.error('Error al cargar presupuesto:', err)
@@ -28,7 +36,7 @@ export default function BudgetPage() {
       }
     }
     loadBudget()
-  }, [user])
+  }, [user, month])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -38,9 +46,10 @@ export default function BudgetPage() {
     setMessage('')
 
     try {
-      const newBudget = await setBudget(user.uid, Number(amount))
+      const newBudget = await setBudget(user.uid, Number(amount), month)
       setBudgetState(newBudget)
       setMessage('Presupuesto guardado correctamente')
+      if (onSaved) onSaved()
     } catch (err) {
       setMessage('Error al guardar el presupuesto')
     } finally {

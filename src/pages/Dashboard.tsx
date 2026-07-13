@@ -7,41 +7,62 @@ import { useNavigate } from 'react-router-dom'
 import BudgetPage from '@/pages/Budget'
 import AddPurchase from '@/pages/AddPurchase'
 import PurchaseHistory from '@/pages/PurchaseHistory'
+import MonthNavigator from '@/components/MonthNavigator'
 import usePWAInstall from '@/hooks/usePWAInstall'
+
+function getCurrentMonth(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
 
 export default function Dashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [budgetAmount, setBudgetAmount] = useState(0)
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth)
+  const [budget, setBudget] = useState<number | null>(null)
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showBudgetForm, setShowBudgetForm] = useState(false)
+  const [budgetVersion, setBudgetVersion] = useState(0)
   const { isInstallable, promptInstall } = usePWAInstall()
 
   useEffect(() => {
+    let isMounted = true
+
     async function loadData() {
       if (!user) return
-      
+      setLoading(true)
+      setError('')
+
       try {
-        const [budget, spent] = await Promise.all([
-          getBudget(user.uid),
-          getTotalSpent(user.uid),
+        const [budgetData, spent] = await Promise.all([
+          getBudget(user.uid, selectedMonth),
+          getTotalSpent(user.uid, selectedMonth),
         ])
-        
-        if (budget) {
-          setBudgetAmount(budget.amount)
-        }
+
+        if (!isMounted) return
+
+        setBudget(budgetData ? budgetData.amount : null)
         setTotalSpent(spent)
-      } catch (err: any) {
-        console.error('Error cargando datos:', err, 'code:', err?.code)
-        setError('Error al cargar los datos. Recargá la página.')
+      } catch (err) {
+        console.error('Error cargando datos:', err)
+        if (isMounted) {
+          setError('Error al cargar los datos. Recargá la página.')
+        }
       } finally {
-        setLoading(false)
+        if (isMounted) {
+          setLoading(false)
+        }
       }
     }
-    
+
     loadData()
-  }, [user])
+
+    return () => {
+      isMounted = false
+    }
+  }, [user, selectedMonth, budgetVersion])
 
   async function handleLogout() {
     try {
@@ -53,8 +74,9 @@ export default function Dashboard() {
     }
   }
 
-  const remaining = budgetAmount - totalSpent
-  const percentage = budgetAmount > 0 ? (totalSpent / budgetAmount) * 100 : 0
+  const remaining = budget !== null ? budget - totalSpent : 0
+  const isOverBudget = budget !== null && totalSpent > budget
+  const percentage = budget !== null && budget > 0 ? (totalSpent / budget) * 100 : 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -63,8 +85,6 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-gray-900">Mercado Inteligente</h1>
           <div className="flex items-center gap-4">
             <span className="text-sm text-gray-600">{user?.email}</span>
-            <span className="text-xs text-gray-400">{user?.uid}</span>
-            {/* PWA install button */}
             {isInstallable ? (
               <button
                 onClick={() => void promptInstall()}
@@ -84,6 +104,8 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
+        <MonthNavigator month={selectedMonth} onChange={setSelectedMonth} />
+
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
             <p className="text-sm text-red-800">{error}</p>
@@ -94,34 +116,53 @@ export default function Dashboard() {
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
           </div>
+        ) : showBudgetForm ? (
+          <BudgetPage
+            month={selectedMonth}
+            onSaved={() => {
+              setShowBudgetForm(false)
+              setBudgetVersion(v => v + 1)
+            }}
+          />
         ) : (
           <>
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumen del mes</h2>
-              
-              {budgetAmount === 0 ? (
-                <p className="text-gray-600 mb-4">
-                  Configurá tu presupuesto mensual para empezar a controlar tus gastos.
-                </p>
-              ) : (
-                <>
-                  <div className="grid grid-cols-3 gap-4 mb-4">
+
+              <div className="grid grid-cols-3 gap-4 mb-4">
+                <div>
+                  <p className="text-sm text-gray-600">Gastado</p>
+                  <p className="text-2xl font-bold text-gray-900">${totalSpent.toLocaleString()}</p>
+                </div>
+                {budget !== null ? (
+                  <>
                     <div>
                       <p className="text-sm text-gray-600">Presupuesto</p>
-                      <p className="text-2xl font-bold text-gray-900">${budgetAmount.toLocaleString()}</p>
+                      <p className="text-2xl font-bold text-gray-900">${budget.toLocaleString()}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Gastado</p>
-                      <p className="text-2xl font-bold text-red-600">${totalSpent.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">Restante</p>
-                      <p className={`text-2xl font-bold ${remaining >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        ${remaining.toLocaleString()}
+                      <p className="text-sm text-gray-600">{isOverBudget ? 'Pasado' : 'Restante'}</p>
+                      <p className={`text-2xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                        ${Math.abs(remaining).toLocaleString()}
                       </p>
                     </div>
+                  </>
+                ) : (
+                  <div className="col-span-2">
+                    <p className="text-sm text-gray-600">Presupuesto</p>
+                    <p className="text-lg font-medium text-gray-500 mb-2">Sin presupuesto</p>
+                    <button
+                      onClick={() => setShowBudgetForm(true)}
+                      className="text-sm text-green-600 hover:text-green-800"
+                    >
+                      Definir presupuesto
+                    </button>
                   </div>
+                )}
+              </div>
 
+              {budget !== null && budget > 0 && (
+                <>
                   <div className="w-full bg-gray-200 rounded-full h-4">
                     <div
                       className={`h-4 rounded-full transition-all ${
@@ -138,11 +179,14 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BudgetPage />
+              <BudgetPage
+                month={selectedMonth}
+                onSaved={() => setBudgetVersion(v => v + 1)}
+              />
               <AddPurchase />
             </div>
 
-            <PurchaseHistory />
+            <PurchaseHistory month={selectedMonth} />
           </>
         )}
       </main>
