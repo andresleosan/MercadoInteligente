@@ -18,14 +18,14 @@
 | 2.2 | Crear páginas de Login y Registro | Hefesto | aprobada |
 | 2.3 | Implementar ruta protegida (redirect a login si no hay sesión) | Hefesto + Prometeo | aprobada |
 | 2.4 | Auditoría de seguridad de auth | Crío | aprobada |
-| 2.5 | Tests de auth | Temis | pendiente |
+| 2.5 | Tests de auth | Temis | aprobada |
 
 ### Fase 3 — Presupuesto
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
 | 3.1 | Implementar servicio de presupuesto (`src/services/budget.ts`) — crear, leer, actualizar presupuesto mensual | Prometeo | aprobada |
 | 3.2 | Crear página/componente de configuración de presupuesto mensual | Hefesto | aprobada |
-| 3.3 | Tests de presupuesto | Temis | pendiente |
+| 3.3 | Tests de presupuesto | Temis | aprobada |
 
 ### Fase 4 — Registro de compras
 | # | Tarea | Titán | Estado |
@@ -33,7 +33,7 @@
 | 4.1 | Implementar servicio de compras (`src/services/purchases.ts`) — agregar, listar, eliminar compras | Prometeo | aprobada |
 | 4.2 | Crear formulario de registro manual de compra (nombre, precio, cantidad) | Hefesto | aprobada |
 | 4.3 | Crear lista de compras del mes (historial) | Hefesto | aprobada |
-| 4.4 | Tests de registro de compras | Temis | pendiente |
+| 4.4 | Tests de registro de compras | Temis | aprobada |
 
 ### Fase 5 — Dashboard
 | # | Tarea | Titán | Estado |
@@ -41,12 +41,12 @@
 | 5.1 | Calcular total acumulado y presupuesto restante en tiempo real | Prometeo + Hefesto | aprobada |
 | 5.2 | Crear componente de barra de progreso (gasto vs. presupuesto) | Hefesto | aprobada |
 | 5.3 | Crear página de Dashboard | Hefesto | aprobada |
-| 5.4 | Tests de dashboard | Temis | pendiente |
+| 5.4 | Tests de dashboard | Temis | aprobada |
 
 ### Fase 6 — Cierre v1
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
 | 6.1 | Auditoría de seguridad completa (Firestore Rules, inputs, dependencias) | Crío | aprobada |
-| 6.2 | Tests de integración — flujo completo (registro → login → presupuesto → compra → dashboard) | Temis | en-progreso |
+| 6.2 | Tests de integración — flujo completo (registro → login → presupuesto → compra → dashboard) | Temis | aprobada |
 | 6.3 | Revisión final de arquitectura | Atlas | aprobada |
 | 6.4 | Deploy a Firebase Hosting | Jápeto | completada |
