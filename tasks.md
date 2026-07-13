@@ -49,4 +49,4 @@
 | 6.1 | Auditoría de seguridad completa (Firestore Rules, inputs, dependencias) | Crío | aprobada |
 | 6.2 | Tests de integración — flujo completo (registro → login → presupuesto → compra → dashboard) | Temis | pendiente |
 | 6.3 | Revisión final de arquitectura | Atlas | aprobada |
-| 6.4 | Deploy a Firebase Hosting | Jápeto | pendiente |
+| 6.4 | Deploy a Firebase Hosting | Jápeto | completada |
