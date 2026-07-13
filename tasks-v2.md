@@ -5,11 +5,13 @@
 ### Fase 1 — PWA Instalable
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 1.1 | Configurar vite-plugin-pwa con service worker | Atlas | pendiente |
-| 1.2 | Crear manifest.json con iconos y metadata | Hefesto | pendiente |
-| 1.3 | Agregar botón de instalación en la app | Hefesto | pendiente |
-| 1.4 | Configurar estrategias de cache para offline | Atlas | pendiente |
-| 1.5 | Tests de PWA (instalación, offline) | Temis | pendiente |
+| 1.1 | Configurar vite-plugin-pwa con service worker | Atlas | aprobada |
+| 1.2 | Crear manifest.json con iconos y metadata | Hefesto | aprobada |
+| 1.3 | Agregar botón de instalación en la app | Hefesto | aprobada |
+| 1.4 | Configurar estrategias de cache para offline | Atlas | aprobada |
+| 1.5 | Tests de PWA (instalación, offline) | Temis | aprobada |
+
+> **Verificado 2026-07-13:** `vite.config.ts` tiene `VitePWA` con `registerType: 'autoUpdate'`, `public/manifest.json` con iconos 192/512, `src/hooks/usePWAInstall.tsx` + botón en `Dashboard.tsx`, `src/pwa.test.ts` pasa. Build de Cloudflare Pages genera `dist/sw.js` + `dist/workbox-*.js` con precache de 7 entries.
 
 ### Fase 2 — OCR por Foto
 | # | Tarea | Titán | Estado |

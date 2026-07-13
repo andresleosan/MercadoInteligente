@@ -29,8 +29,7 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
   - **Auth:** autenticación de usuarios (email/password, Google)
   - **Firestore:** base de datos NoSQL para presupuestos, compras y productos
   - **Storage:** almacenamiento de fotos de tickets
-  - **Hosting:** despliegue estático gratuito
-- **Por qué:** Stack definido por el usuario. 0 USD/mes — Firebase free tier cubre auth, 1GB Firestore, 5GB Storage, 10GB Hosting/mes.
+- **Por qué:** Stack definido por el usuario. 0 USD/mes — Firebase free tier cubre auth, 1GB Firestore, 5GB Storage. Hosting migrado a Cloudflare Pages (ver sección Hosting / Despliegue).
 
 ## Base de datos
 - **Motor:** Cloud Firestore (NoSQL, document-based)
@@ -41,9 +40,11 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 - **Por qué:** Firestore es parte del ecosistema Firebase elegido. Su modelo de documentos encaja bien con la estructura jerárquica usuario → presupuesto → compras. Free tier suficiente para v1.
 
 ## Hosting / Despliegue
-- **Servicio:** Firebase Hosting (gratuito, 10GB/mes)
-- **CI/CD:** `firebase deploy` manual en v1. Se evalúa GitHub Actions para v2 si el proyecto crece.
-- **Por qué:** Integración nativa con el stack Firebase. Despliegue con un comando.
+- **Servicio:** Cloudflare Pages (gratuito, ancho de banda ilimitado, builds automáticos desde Git)
+- **CI/CD:** Cloudflare Pages auto-deploy desde `master` en GitHub. Build command: `npm run build`, output: `dist/`. Sin archivo de config en el repo (configurado vía dashboard de Cloudflare).
+- **Headers:** `public/_headers` con COOP/COEP para compatibilidad con Firebase Auth redirect (formato Cloudflare Pages).
+- **Migración:** Originalmente planificado para Firebase Hosting (v1). Migrado a Cloudflare Pages por mayor ancho de banda y build automático desde Git. `firebase.json` se mantiene para Firestore/Storage rules y emulators; la sección `hosting` ya no se usa para deploy.
+- **Por qué:** Cloudflare Pages es gratuito con ancho de banda ilimitado y CI/CD nativo desde GitHub, sin configuración de workflows manual. Firebase Hosting sigue siendo el backend (Auth/Firestore/Storage), solo el hosting estático migró.
 
 ## Testing
 - **Framework:** Vitest (integración nativa con Vite)
@@ -72,7 +73,7 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 | Crío | Sí | Auth, Firestore Security Rules |
 | Océano | No | Sin integraciones externas en v1 (Tesseract.js corre local) |
 | Hiperión | No | Optimización no es prioridad en v1 |
-| Jápeto | No | `firebase deploy` manual es suficiente en v1 |
+| Jápeto | Sí | Deploy a Cloudflare Pages (auto-deploy desde Git) |
 
 ## Convenciones de código
 - **Estilo:** ESLint + Prettier (configuración estándar de Vite + React)
