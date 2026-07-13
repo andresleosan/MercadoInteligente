@@ -90,3 +90,29 @@ export async function getAllBudgets(userId: string): Promise<Budget[]> {
     }
   })
 }
+
+export async function getBudgetsByMonthRange(
+  userId: string,
+  monthsBack: number,
+  referenceMonth: string
+): Promise<Map<string, number>> {
+  const budgets = new Map<string, number>()
+  const [refYear, refMonthNum] = referenceMonth.split('-').map(Number)
+  if (!refYear || !refMonthNum) return budgets
+
+  const promises: Promise<void>[] = []
+  for (let i = 0; i < monthsBack; i++) {
+    const date = new Date(refYear, refMonthNum - 1 - i, 1)
+    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`
+    promises.push(
+      getBudget(userId, month).then((budget) => {
+        if (budget) {
+          budgets.set(month, budget.amount)
+        }
+      })
+    )
+  }
+
+  await Promise.all(promises)
+  return budgets
+}
