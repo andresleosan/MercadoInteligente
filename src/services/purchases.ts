@@ -1,0 +1,86 @@
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  serverTimestamp,
+} from 'firebase/firestore'
+import { db } from '@/config/firebase'
+import type { Purchase, PurchaseItem } from '@/types'
+
+function getCurrentMonth(): string {
+  const now = new Date()
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
+}
+
+export async function addPurchase(
+  userId: string,
+  items: PurchaseItem[],
+  receiptImageUrl?: string
+): Promise<Purchase> {
+  const total = items.reduce((sum, item) => sum + item.totalPrice, 0)
+
+  const purchaseData = {
+    userId,
+    items,
+    total,
+    receiptImageUrl,
+    createdAt: serverTimestamp(),
+  }
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const docRef = await addDoc(purchasesRef, purchaseData)
+
+  return {
+    id: docRef.id,
+    userId,
+    items,
+    total,
+    receiptImageUrl,
+    createdAt: new Date(),
+  }
+}
+
+export async function getPurchases(userId: string, month?: string): Promise<Purchase[]> {
+  const targetMonth = month || getCurrentMonth()
+  const [year, monthNum] = targetMonth.split('-').map(Number)
+
+  const startDate = new Date(year!, monthNum! - 1, 1)
+  const endDate = new Date(year!, monthNum!, 0, 23, 59, 59)
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('createdAt', '>=', startDate),
+    where('createdAt', '<=', endDate),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      userId: data.userId,
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+  })
+}
+
+export async function deletePurchase(userId: string, purchaseId: string): Promise<void> {
+  const purchaseRef = doc(db, 'users', userId, 'purchases', purchaseId)
+  await deleteDoc(purchaseRef)
+}
+
+export async function getTotalSpent(userId: string, month?: string): Promise<number> {
+  const purchases = await getPurchases(userId, month)
+  return purchases.reduce((sum, purchase) => sum + purchase.total, 0)
+}
