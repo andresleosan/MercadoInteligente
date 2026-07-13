@@ -130,7 +130,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <p className="text-sm text-gray-600">Gastado</p>
-                  <p className="text-2xl font-bold text-red-600">${totalSpent.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-gray-900">${totalSpent.toLocaleString()}</p>
                 </div>
                 {budget !== null ? (
                   <>
