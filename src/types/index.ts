@@ -19,6 +19,7 @@ export interface PurchaseItem {
   quantity: number
   unitPrice: number
   totalPrice: number
+  confidence?: number
 }
 
 export interface Purchase {
@@ -28,4 +29,12 @@ export interface Purchase {
   total: number
   receiptImageUrl?: string
   createdAt: Date
+}
+
+export interface ParsedItem {
+  name: string
+  unitPrice: number
+  quantity: number
+  totalPrice: number
+  confidence: number
 }
