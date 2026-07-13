@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { loginWithEmail, loginWithGoogle, getGoogleRedirectResult } from '@/services/auth'
+import { isConfigValid } from '@/config/firebase'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -11,13 +12,35 @@ export default function Login() {
 
   useEffect(() => {
     async function checkRedirect() {
-      const result = await getGoogleRedirectResult()
-      if (result) {
-        navigate('/')
+      try {
+        const result = await getGoogleRedirectResult()
+        if (result) {
+          navigate('/')
+        }
+      } catch (err) {
+        console.error('Error verificando redirect:', err)
       }
     }
     checkRedirect()
   }, [navigate])
+
+  if (!isConfigValid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="rounded-md bg-red-50 p-6">
+            <h2 className="text-lg font-semibold text-red-800 mb-2">
+              Error de configuración
+            </h2>
+            <p className="text-sm text-red-700">
+              Las variables de entorno de Firebase no están configuradas. 
+              Agregá las variables VITE_FIREBASE_* en Cloudflare Pages → Settings → Environment variables.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -28,6 +51,7 @@ export default function Login() {
       await loginWithEmail(email, password)
       navigate('/')
     } catch (err) {
+      console.error('Error en login:', err)
       setError('Email o contraseña incorrectos')
     } finally {
       setLoading(false)
@@ -39,6 +63,7 @@ export default function Login() {
     try {
       await loginWithGoogle()
     } catch (err) {
+      console.error('Error en Google login:', err)
       setError('Error al iniciar sesión con Google')
     }
   }

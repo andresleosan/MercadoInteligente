@@ -10,7 +10,7 @@ import {
   Timestamp,
   serverTimestamp,
 } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, isConfigValid } from '@/config/firebase'
 import type { Purchase, PurchaseItem } from '@/types'
 
 function getCurrentMonth(): string {
@@ -23,6 +23,8 @@ export async function addPurchase(
   items: PurchaseItem[],
   receiptImageUrl?: string
 ): Promise<Purchase> {
+  if (!db) throw new Error('Firebase no inicializado')
+  
   const total = items.reduce((sum, item) => sum + item.totalPrice, 0)
 
   const purchaseData = {
@@ -47,6 +49,8 @@ export async function addPurchase(
 }
 
 export async function getPurchases(userId: string, month?: string): Promise<Purchase[]> {
+  if (!db || !isConfigValid) return []
+  
   const targetMonth = month || getCurrentMonth()
   const [year, monthNum] = targetMonth.split('-').map(Number)
 
@@ -77,6 +81,8 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
 }
 
 export async function deletePurchase(userId: string, purchaseId: string): Promise<void> {
+  if (!db) throw new Error('Firebase no inicializado')
+  
   const purchaseRef = doc(db, 'users', userId, 'purchases', purchaseId)
   await deleteDoc(purchaseRef)
 }

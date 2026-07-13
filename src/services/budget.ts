@@ -8,7 +8,7 @@ import {
   orderBy,
   serverTimestamp,
 } from 'firebase/firestore'
-import { db } from '@/config/firebase'
+import { db, isConfigValid } from '@/config/firebase'
 import type { Budget } from '@/types'
 
 function getCurrentMonth(): string {
@@ -17,6 +17,8 @@ function getCurrentMonth(): string {
 }
 
 export async function getBudget(userId: string, month?: string): Promise<Budget | null> {
+  if (!db || !isConfigValid) return null
+  
   const targetMonth = month || getCurrentMonth()
   const budgetRef = doc(db, 'users', userId, 'budgets', targetMonth)
   const budgetSnap = await getDoc(budgetRef)
@@ -37,6 +39,8 @@ export async function getBudget(userId: string, month?: string): Promise<Budget 
 }
 
 export async function setBudget(userId: string, amount: number, month?: string): Promise<Budget> {
+  if (!db) throw new Error('Firebase no inicializado')
+  
   const targetMonth = month || getCurrentMonth()
   const budgetRef = doc(db, 'users', userId, 'budgets', targetMonth)
 
@@ -68,6 +72,8 @@ export async function setBudget(userId: string, amount: number, month?: string):
 }
 
 export async function getAllBudgets(userId: string): Promise<Budget[]> {
+  if (!db || !isConfigValid) return []
+  
   const budgetsRef = collection(db, 'users', userId, 'budgets')
   const q = query(budgetsRef, orderBy('month', 'desc'))
   const querySnapshot = await getDocs(q)

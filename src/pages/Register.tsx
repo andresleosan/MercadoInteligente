@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { registerWithEmail, loginWithGoogle, getGoogleRedirectResult } from '@/services/auth'
+import { isConfigValid } from '@/config/firebase'
 
 export default function Register() {
   const [email, setEmail] = useState('')
@@ -12,13 +13,34 @@ export default function Register() {
 
   useEffect(() => {
     async function checkRedirect() {
-      const result = await getGoogleRedirectResult()
-      if (result) {
-        navigate('/')
+      try {
+        const result = await getGoogleRedirectResult()
+        if (result) {
+          navigate('/')
+        }
+      } catch (err) {
+        console.error('Error verificando redirect:', err)
       }
     }
     checkRedirect()
   }, [navigate])
+
+  if (!isConfigValid) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="rounded-md bg-red-50 p-6">
+            <h2 className="text-lg font-semibold text-red-800 mb-2">
+              Error de configuración
+            </h2>
+            <p className="text-sm text-red-700">
+              Las variables de entorno de Firebase no están configuradas.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -40,6 +62,7 @@ export default function Register() {
       await registerWithEmail(email, password)
       navigate('/')
     } catch (err) {
+      console.error('Error en registro:', err)
       setError('Error al crear la cuenta. Verificá el email.')
     } finally {
       setLoading(false)
@@ -51,6 +74,7 @@ export default function Register() {
     try {
       await loginWithGoogle()
     } catch (err) {
+      console.error('Error en Google register:', err)
       setError('Error al registrarse con Google')
     }
   }

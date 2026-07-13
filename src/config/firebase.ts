@@ -13,13 +13,16 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || undefined,
 }
 
-if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
-  console.error('Firebase config incompleta. Verificá las variables de entorno.')
+const isConfigValid = firebaseConfig.apiKey && firebaseConfig.projectId
+
+if (!isConfigValid) {
+  console.error('Firebase config incompleta. Verificá las variables de entorno en Cloudflare Pages.')
 }
 
-const app = initializeApp(firebaseConfig)
+const app = isConfigValid ? initializeApp(firebaseConfig) : null
 
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+export const auth = app ? getAuth(app) : null
+export const db = app ? getFirestore(app) : null
+export const storage = app ? getStorage(app) : null
 export default app
+export { isConfigValid }
