@@ -16,12 +16,14 @@
 ### Fase 2 — OCR por Foto
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 2.1 | Instalar y configurar Tesseract.js | Atlas | pendiente |
-| 2.2 | Crear servicio de OCR (`src/services/ocr.ts`) | Prometeo | pendiente |
-| 2.3 | Crear componente de captura de foto (cámara o galería) | Hefesto | pendiente |
-| 2.4 | Procesar imagen y extraer productos/precios | Prometeo | pendiente |
-| 2.5 | Mostrar resultados y permitir edición antes de guardar | Hefesto | pendiente |
-| 2.6 | Tests de OCR | Temis | pendiente |
+| 2.1 | Instalar y configurar Tesseract.js | Atlas | aprobada |
+| 2.2 | Crear servicio de OCR (`src/services/ocr.ts`) | Prometeo | aprobada |
+| 2.3 | Crear componente de captura de foto (cámara o galería) | Hefesto | aprobada |
+| 2.4 | Procesar imagen y extraer productos/precios | Prometeo | aprobada |
+| 2.5 | Mostrar resultados y permitir edición antes de guardar | Hefesto | aprobada |
+| 2.6 | Tests de OCR | Temis | aprobada |
+
+> **Verificado 2026-07-13:** Tesseract.js v5 con lazy-load + web worker, modelos spa+eng self-hosted en `public/tessdata/`, parser genérico con regex + filtro de confianza, hook `useOCR` orquestador, componentes `OCRCapture`/`OCRReview`/`ProductEditor`, integración en `AddPurchase.tsx` con 4 modos (manual/photo/review/error). 58/58 tests pasan, build de producción pasa.
 
 ### Fase 3 — Dashboard con Gráficos
 | # | Tarea | Titán | Estado |
