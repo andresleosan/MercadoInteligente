@@ -7,6 +7,7 @@ import {
   query,
   where,
   orderBy,
+  Timestamp,
   serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '@/config/firebase'
@@ -55,8 +56,8 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
-    where('createdAt', '>=', startDate),
-    where('createdAt', '<=', endDate),
+    where('createdAt', '>=', Timestamp.fromDate(startDate)),
+    where('createdAt', '<=', Timestamp.fromDate(endDate)),
     orderBy('createdAt', 'desc')
   )
 
