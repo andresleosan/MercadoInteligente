@@ -9,7 +9,7 @@ export interface Word {
 const PRODUCT_LINE_REGEX = /^(.+?)[\s\t]+(\d+[.,]\d{2})$/
 const QUANTITY_PREFIX_REGEX = /^(\d+)\s*[xX]\s*(.+?)[\s\t]+(\d+[.,]\d{2})$/
 const QUANTITY_SUFFIX_REGEX = /^(.+?)\s+[xX](\d+)[\s\t]+(\d+[.,]\d{2})$/
-const NON_PRODUCT_NAME_REGEX = /^(total|subtotal)\b/i
+const NON_PRODUCT_NAME_REGEX = /^(total|subtotal)\s*$/i
 
 function parsePrice(raw: string): number {
   return parseFloat(raw.replace(',', '.'))
