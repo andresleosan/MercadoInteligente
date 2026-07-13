@@ -1,7 +1,8 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -37,23 +38,33 @@ export async function loginWithEmail(email: string, password: string): Promise<F
   return credential.user
 }
 
-export async function loginWithGoogle(): Promise<User> {
-  const credential = await signInWithPopup(auth, googleProvider)
-  const firebaseUser = credential.user
+export async function loginWithGoogle(): Promise<void> {
+  await signInWithRedirect(auth, googleProvider)
+}
 
-  const user: User = {
-    uid: firebaseUser.uid,
-    email: firebaseUser.email!,
-    displayName: firebaseUser.displayName,
-    createdAt: new Date(),
+export async function getGoogleRedirectResult(): Promise<User | null> {
+  try {
+    const result = await getRedirectResult(auth)
+    if (!result) return null
+
+    const firebaseUser = result.user
+    const user: User = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email!,
+      displayName: firebaseUser.displayName,
+      createdAt: new Date(),
+    }
+
+    await setDoc(doc(db, 'users', firebaseUser.uid), {
+      ...user,
+      createdAt: serverTimestamp(),
+    }, { merge: true })
+
+    return user
+  } catch (error) {
+    console.error('Error en redirect result:', error)
+    return null
   }
-
-  await setDoc(doc(db, 'users', firebaseUser.uid), {
-    ...user,
-    createdAt: serverTimestamp(),
-  }, { merge: true })
-
-  return user
 }
 
 export async function logout(): Promise<void> {

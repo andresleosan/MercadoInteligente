@@ -14,21 +14,28 @@ export default function Dashboard() {
   const [budgetAmount, setBudgetAmount] = useState(0)
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function loadData() {
       if (!user) return
       
-      const [budget, spent] = await Promise.all([
-        getBudget(user.uid),
-        getTotalSpent(user.uid),
-      ])
-      
-      if (budget) {
-        setBudgetAmount(budget.amount)
+      try {
+        const [budget, spent] = await Promise.all([
+          getBudget(user.uid),
+          getTotalSpent(user.uid),
+        ])
+        
+        if (budget) {
+          setBudgetAmount(budget.amount)
+        }
+        setTotalSpent(spent)
+      } catch (err) {
+        console.error('Error cargando datos:', err)
+        setError('Error al cargar los datos. Recargá la página.')
+      } finally {
+        setLoading(false)
       }
-      setTotalSpent(spent)
-      setLoading(false)
     }
     
     loadData()
@@ -60,6 +67,12 @@ export default function Dashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+            <p className="text-sm text-red-800">{error}</p>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex justify-center py-8">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>

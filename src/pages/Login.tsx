@@ -1,6 +1,6 @@
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { loginWithEmail, loginWithGoogle } from '@/services/auth'
+import { loginWithEmail, loginWithGoogle, getGoogleRedirectResult } from '@/services/auth'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -8,6 +8,16 @@ export default function Login() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
+
+  useEffect(() => {
+    async function checkRedirect() {
+      const result = await getGoogleRedirectResult()
+      if (result) {
+        navigate('/')
+      }
+    }
+    checkRedirect()
+  }, [navigate])
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -26,15 +36,10 @@ export default function Login() {
 
   async function handleGoogleLogin() {
     setError('')
-    setLoading(true)
-
     try {
       await loginWithGoogle()
-      navigate('/')
     } catch (err) {
       setError('Error al iniciar sesión con Google')
-    } finally {
-      setLoading(false)
     }
   }
 
