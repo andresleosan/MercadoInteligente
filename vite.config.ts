@@ -57,5 +57,6 @@ export default defineConfig(async () => {
         'Cross-Origin-Embedder-Policy': 'require-corp',
       },
     },
+    assetsInclude: ['**/*.traineddata.gz'],
   }
 })
