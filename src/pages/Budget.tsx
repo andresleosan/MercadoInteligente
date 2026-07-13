@@ -14,12 +14,18 @@ export default function BudgetPage() {
   useEffect(() => {
     async function loadBudget() {
       if (!user) return
-      const currentBudget = await getBudget(user.uid)
-      if (currentBudget) {
-        setBudgetState(currentBudget)
-        setAmount(String(currentBudget.amount))
+      try {
+        const currentBudget = await getBudget(user.uid)
+        if (currentBudget) {
+          setBudgetState(currentBudget)
+          setAmount(String(currentBudget.amount))
+        }
+      } catch (err) {
+        console.error('Error al cargar presupuesto:', err)
+        setMessage('Error al cargar el presupuesto')
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     loadBudget()
   }, [user])

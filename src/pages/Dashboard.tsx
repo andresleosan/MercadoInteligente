@@ -42,8 +42,13 @@ export default function Dashboard() {
   }, [user])
 
   async function handleLogout() {
-    await logout()
-    navigate('/login')
+    try {
+      await logout()
+      navigate('/login')
+    } catch (err) {
+      console.error('Error al cerrar sesión:', err)
+      setError('Error al cerrar sesión. Intentá de nuevo.')
+    }
   }
 
   const remaining = budgetAmount - totalSpent

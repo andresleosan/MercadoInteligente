@@ -22,8 +22,13 @@ export default function PurchaseHistory() {
     if (!user) return
     if (!confirm('¿Eliminar esta compra?')) return
 
-    await deletePurchase(user.uid, purchaseId)
-    setPurchases(purchases.filter(p => p.id !== purchaseId))
+    try {
+      await deletePurchase(user.uid, purchaseId)
+      setPurchases(purchases.filter(p => p.id !== purchaseId))
+    } catch (err) {
+      console.error('Error al eliminar compra:', err)
+      alert('Error al eliminar la compra. Intentá de nuevo.')
+    }
   }
 
   if (loading) {
