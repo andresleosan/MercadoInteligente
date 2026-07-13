@@ -38,11 +38,13 @@
 ### Fase 4 — Historial Multi-Mes
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 4.1 | Crear selector de mes/año | Hefesto | pendiente |
-| 4.2 | Modificar queries para soportar cualquier mes | Prometeo | pendiente |
-| 4.3 | Crear página de historial con navegación | Hefesto | pendiente |
-| 4.4 | Mostrar resumen por mes (total, presupuesto, diferencia) | Hefesto | pendiente |
-| 4.5 | Tests de historial multi-mes | Temis | pendiente |
+| 4.1 | Crear selector de mes/año | Hefesto | aprobada |
+| 4.2 | Modificar queries para soportar cualquier mes | Prometeo | aprobada |
+| 4.3 | Crear página de historial con navegación | Hefesto | aprobada |
+| 4.4 | Mostrar resumen por mes (total, presupuesto, diferencia) | Hefesto | aprobada |
+| 4.5 | Tests de historial multi-mes | Temis | aprobada |
+
+> **Verificado 2026-07-13:** `MonthNavigator` con flechas ← → y label en español, `Dashboard` con `selectedMonth` sincronizado (presupuesto, total, historial), resumen 3 estados (normal/pasado/sin presupuesto), botón "Definir presupuesto" para meses sin budget, navegación libre (pasado y futuro), `isMounted` para cancelar queries stale. `Budget` y `PurchaseHistory` aceptan prop `month`. 71/71 tests pasan, build pasa.
 
 ### Fase 5 — Registro por Voz
 | # | Tarea | Titán | Estado |
