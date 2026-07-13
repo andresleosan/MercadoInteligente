@@ -24,6 +24,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [showBudgetForm, setShowBudgetForm] = useState(false)
+  const [budgetVersion, setBudgetVersion] = useState(0)
   const { isInstallable, promptInstall } = usePWAInstall()
 
   useEffect(() => {
@@ -61,7 +62,7 @@ export default function Dashboard() {
     return () => {
       isMounted = false
     }
-  }, [user, selectedMonth])
+  }, [user, selectedMonth, budgetVersion])
 
   async function handleLogout() {
     try {
@@ -120,6 +121,7 @@ export default function Dashboard() {
             month={selectedMonth}
             onSaved={() => {
               setShowBudgetForm(false)
+              setBudgetVersion(v => v + 1)
             }}
           />
         ) : (
@@ -177,7 +179,10 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BudgetPage month={selectedMonth} />
+              <BudgetPage
+                month={selectedMonth}
+                onSaved={() => setBudgetVersion(v => v + 1)}
+              />
               <AddPurchase />
             </div>
 

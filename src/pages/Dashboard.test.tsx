@@ -21,7 +21,16 @@ vi.mock('@/services/purchases', () => ({
   getPurchases: vi.fn(),
 }))
 vi.mock('@/pages/Budget', () => ({
-  default: () => <div data-testid="budget-form">Budget Form</div>,
+  default: ({ onSaved }: { onSaved?: () => void }) => (
+    <div data-testid="budget-form">
+      Budget Form
+      {onSaved && (
+        <button data-testid="budget-save-button" onClick={onSaved}>
+          Guardar
+        </button>
+      )}
+    </div>
+  ),
 }))
 vi.mock('@/pages/AddPurchase', () => ({
   default: () => <div data-testid="add-purchase">Add Purchase</div>,
@@ -160,5 +169,36 @@ describe('Dashboard multi-mes', () => {
     await waitFor(() => {
       expect(screen.getByTestId('purchase-history')).toBeInTheDocument()
     })
+  })
+
+  it('should reload budget and show it in summary after saving via Budget form', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(10000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Sin presupuesto')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /definir presupuesto/i }))
+
+    await waitFor(() => {
+      expect(screen.getByTestId('budget-form')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByTestId('budget-save-button'))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Sin presupuesto')).not.toBeInTheDocument()
+      expect(screen.getByText('Restante')).toBeInTheDocument()
+      expect(screen.getByText('$40.000')).toBeInTheDocument()
+    })
+
+    expect(getBudget).toHaveBeenCalledTimes(2)
   })
 })
