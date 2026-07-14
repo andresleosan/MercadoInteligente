@@ -2,9 +2,10 @@ import { useState, useEffect, type FormEvent } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
 import { addPurchase } from '@/services/purchases'
-import type { PurchaseItem } from '@/types'
+import type { PurchaseItem, ParsedItem } from '@/types'
 import OCRCapture from '@/components/OCRCapture'
 import OCRReview from '@/components/OCRReview'
+import VoiceCapture from '@/components/VoiceCapture'
 
 export default function AddPurchase() {
   const { user } = useAuth()
@@ -13,7 +14,8 @@ export default function AddPurchase() {
   ])
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
-  const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error'>('manual')
+  const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
+  const [voiceItems, setVoiceItems] = useState<ParsedItem[]>([])
   const ocr = useOCR(user?.uid ?? null)
 
   useEffect(() => {
@@ -83,13 +85,20 @@ export default function AddPurchase() {
       </h2>
 
       {mode === 'manual' && (
-        <div className="mb-6">
+        <div className="mb-6 space-y-2">
           <button
             type="button"
             onClick={() => setMode('photo')}
             className="w-full py-2 px-4 border border-green-600 rounded-md text-sm font-medium text-green-700 hover:bg-green-50"
           >
             📷 Registrar por foto
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('voice')}
+            className="w-full py-2 px-4 border border-purple-600 rounded-md text-sm font-medium text-purple-700 hover:bg-purple-50"
+          >
+            🎤 Registrar por voz
           </button>
         </div>
       )}
@@ -156,6 +165,37 @@ export default function AddPurchase() {
               Cargar manualmente
             </button>
           </div>
+        </div>
+      )}
+
+      {mode === 'voice' && (
+        <div className="mb-6">
+          <VoiceCapture
+            onDone={(items) => {
+              setVoiceItems(items)
+              setMode('voice-review')
+            }}
+            onBack={() => setMode('manual')}
+          />
+        </div>
+      )}
+
+      {mode === 'voice-review' && (
+        <div className="mb-6">
+          <OCRReview
+            items={voiceItems}
+            imageUrl={null}
+            userId={user!.uid}
+            onSaved={() => {
+              setVoiceItems([])
+              setMode('manual')
+              setMessage('Compra registrada correctamente')
+            }}
+            onRetry={() => {
+              setVoiceItems([])
+              setMode('voice')
+            }}
+          />
         </div>
       )}
 
