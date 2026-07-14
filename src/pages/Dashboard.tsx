@@ -9,6 +9,7 @@ import AddPurchase from '@/pages/AddPurchase'
 import PurchaseHistory from '@/pages/PurchaseHistory'
 import MonthNavigator from '@/components/MonthNavigator'
 import usePWAInstall from '@/hooks/usePWAInstall'
+import ChartsSection from '@/components/ChartsSection'
 
 function getCurrentMonth(): string {
   const now = new Date()
@@ -177,6 +178,8 @@ export default function Dashboard() {
                 </>
               )}
             </div>
+
+            <ChartsSection userId={user!.uid} selectedMonth={selectedMonth} />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <BudgetPage
