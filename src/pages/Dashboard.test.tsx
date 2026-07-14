@@ -40,6 +40,13 @@ vi.mock('@/pages/PurchaseHistory', () => ({
     <div data-testid="purchase-history">History for {month}</div>
   ),
 }))
+vi.mock('@/components/ChartsSection', () => ({
+  default: ({ userId, selectedMonth }: { userId: string; selectedMonth: string }) => (
+    <div data-testid="charts-section" data-userid={userId} data-month={selectedMonth}>
+      Charts Section
+    </div>
+  ),
+}))
 
 function renderDashboard() {
   return render(
@@ -200,5 +207,21 @@ describe('Dashboard multi-mes', () => {
     })
 
     expect(getBudget).toHaveBeenCalledTimes(2)
+  })
+
+  it('should render ChartsSection with userId and selectedMonth', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      const charts = screen.getByTestId('charts-section')
+      expect(charts).toBeInTheDocument()
+      expect(charts.getAttribute('data-userid')).toBe('user-1')
+      expect(charts.getAttribute('data-month')).toMatch(/^\d{4}-\d{2}$/)
+    })
   })
 })

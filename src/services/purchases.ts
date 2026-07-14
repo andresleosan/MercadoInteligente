@@ -87,3 +87,33 @@ export async function getTotalSpent(userId: string, month?: string): Promise<num
   const purchases = await getPurchases(userId, month)
   return purchases.reduce((sum, purchase) => sum + purchase.total, 0)
 }
+
+export async function getPurchasesByDateRange(
+  userId: string,
+  startDate: Date,
+  endDate: Date
+): Promise<Purchase[]> {
+  if (!db || !isConfigValid) return []
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('createdAt', '>=', Timestamp.fromDate(startDate)),
+    where('createdAt', '<=', Timestamp.fromDate(endDate)),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      userId: data.userId,
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+  })
+}

@@ -29,13 +29,13 @@
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
 | 3.1 | Instalar Recharts | Atlas | aprobada |
-| 3.2 | Crear gráfico de gastos por mes (barras) | Hefesto | aprobada |
-| 3.3 | Crear gráfico de gastos por categoría (pie chart) | Hefesto | aprobada |
+| 3.2 | Crear gráfico de gastos por mes (barras + línea presupuesto) | Hefesto | aprobada |
+| 3.3 | Crear gráfico de top 5 productos (barra horizontal, reemplaza pie chart) | Hefesto | aprobada |
 | 3.4 | Crear gráfico de tendencia de gastos (línea) | Hefesto | aprobada |
-| 3.5 | Integrar gráficos en Dashboard | Hefesto | aprobada |
+| 3.5 | Integrar gráficos en Dashboard (colapsable + lazy-load) | Hefesto | aprobada |
 | 3.6 | Tests de gráficos | Temis | aprobada |
 
-> **Branch separado:** `feat/dashboard-graficos`. No mergeado a master aún. Pendiente merging antes de deploy v2.
+> **Verificado 2026-07-13:** Recharts v2 instalado. `getPurchasesByDateRange` en `purchases.ts`, `getBudgetsByMonthRange` en `budget.ts`, `analytics.ts` con `getTotalSpentByMonth` + `getTopProducts`. `ChartsContent` con 3 gráficos: ComposedChart (barras gastado + línea presupuesto), BarChart horizontal (top 5 productos), LineChart (tendencia). `ChartsSection` colapsable con `React.lazy` (Recharts en chunk separado, 383 kB). Integrado en `Dashboard.tsx` entre resumen y grid. 88/88 tests pasan, build de producción pasa.
 
 ### Fase 4 — Historial Multi-Mes
 | # | Tarea | Titán | Estado |
