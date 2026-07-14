@@ -52,8 +52,7 @@ export default function Login() {
       navigate('/')
     } catch (err) {
       console.error('Error en login:', err)
-      const msg = (err as any)?.message || 'Email o contraseña incorrectos'
-      setError(msg)
+      setError('Email o contraseña incorrectos')
     } finally {
       setLoading(false)
     }

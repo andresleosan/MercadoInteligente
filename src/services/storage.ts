@@ -1,10 +1,27 @@
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { storage } from '@/config/firebase'
 
-function getExtension(file: File): string {
-  if (file.type === 'image/png') return 'png'
-  if (file.type === 'image/webp') return 'webp'
-  return 'jpg'
+const MAX_WIDTH = 1920
+const JPEG_QUALITY = 0.8
+
+async function compressImage(file: File): Promise<Blob> {
+  const img = await createImageBitmap(file)
+  const { width: origW, height: origH } = img
+
+  let w = origW
+  let h = origH
+  if (w > MAX_WIDTH) {
+    h = Math.round((h / w) * MAX_WIDTH)
+    w = MAX_WIDTH
+  }
+
+  const canvas = new OffscreenCanvas(w, h)
+  const ctx = canvas.getContext('2d')!
+  ctx.drawImage(img, 0, 0, w, h)
+
+  const blob = await canvas.convertToBlob({ type: 'image/jpeg', quality: JPEG_QUALITY })
+  img.close()
+  return blob
 }
 
 export async function uploadReceiptImage(
@@ -14,10 +31,10 @@ export async function uploadReceiptImage(
 ): Promise<string> {
   if (!storage) throw new Error('Storage no inicializado')
 
-  const ext = getExtension(file)
-  const path = `receipts/${userId}/${purchaseId}.${ext}`
+  const compressed = await compressImage(file)
+  const path = `receipts/${userId}/${purchaseId}.jpg`
   const storageRef = ref(storage, path)
 
-  await uploadBytes(storageRef, file)
+  await uploadBytes(storageRef, compressed)
   return getDownloadURL(storageRef)
 }

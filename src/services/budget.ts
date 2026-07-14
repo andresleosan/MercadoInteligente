@@ -10,11 +10,7 @@ import {
 } from 'firebase/firestore'
 import { db, isConfigValid } from '@/config/firebase'
 import type { Budget } from '@/types'
-
-function getCurrentMonth(): string {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-}
+import { getCurrentMonth } from '@/utils/date'
 
 export async function getBudget(userId: string, month?: string): Promise<Budget | null> {
   if (!db || !isConfigValid) return null

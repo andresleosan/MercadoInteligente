@@ -12,11 +12,7 @@ import {
 } from 'firebase/firestore'
 import { db, isConfigValid } from '@/config/firebase'
 import type { Purchase, PurchaseItem } from '@/types'
-
-function getCurrentMonth(): string {
-  const now = new Date()
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`
-}
+import { getCurrentMonth } from '@/utils/date'
 
 export async function addPurchase(
   userId: string,

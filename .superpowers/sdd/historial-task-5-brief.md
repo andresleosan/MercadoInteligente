@@ -1,32 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { logout } from '@/services/auth'
-import { getBudget } from '@/services/budget'
-import { getTotalSpent } from '@/services/purchases'
-import { useNavigate } from 'react-router-dom'
-import BudgetPage from '@/pages/Budget'
-import AddPurchase from '@/pages/AddPurchase'
-import PurchaseHistory from '@/pages/PurchaseHistory'
-import MonthNavigator from '@/components/MonthNavigator'
-import usePWAInstall from '@/hooks/usePWAInstall'
-import { getCurrentMonth } from '@/utils/date'
-
-export default function Dashboard() {
-  const { user } = useAuth()
-  const navigate = useNavigate()
-  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth)
-  const [budget, setBudget] = useState<number | null>(null)
-  const [totalSpent, setTotalSpent] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState('')
-  const [showBudgetForm, setShowBudgetForm] = useState(false)
-  const [budgetVersion, setBudgetVersion] = useState(0)
-  const { isInstallable, promptInstall } = usePWAInstall()
-
-  useEffect(() => {
-    let isMounted = true
-
-    async function loadData() {
+﻿    async function loadData() {
       if (!user) return
       setLoading(true)
       setError('')
@@ -44,7 +16,7 @@ export default function Dashboard() {
       } catch (err) {
         console.error('Error cargando datos:', err)
         if (isMounted) {
-          setError('Error al cargar los datos. Recargá la página.')
+          setError('Error al cargar los datos. RecargÃ¡ la pÃ¡gina.')
         }
       } finally {
         if (isMounted) {
@@ -58,15 +30,15 @@ export default function Dashboard() {
     return () => {
       isMounted = false
     }
-  }, [user, selectedMonth, budgetVersion])
+  }, [user, selectedMonth])
 
   async function handleLogout() {
     try {
       await logout()
       navigate('/login')
     } catch (err) {
-      console.error('Error al cerrar sesión:', err)
-      setError('Error al cerrar sesión. Intentá de nuevo.')
+      console.error('Error al cerrar sesiÃ³n:', err)
+      setError('Error al cerrar sesiÃ³n. IntentÃ¡ de nuevo.')
     }
   }
 
@@ -93,7 +65,7 @@ export default function Dashboard() {
               onClick={handleLogout}
               className="text-sm text-red-600 hover:text-red-800"
             >
-              Cerrar sesión
+              Cerrar sesiÃ³n
             </button>
           </div>
         </div>
@@ -117,7 +89,6 @@ export default function Dashboard() {
             month={selectedMonth}
             onSaved={() => {
               setShowBudgetForm(false)
-              setBudgetVersion(v => v + 1)
             }}
           />
         ) : (
@@ -128,7 +99,7 @@ export default function Dashboard() {
               <div className="grid grid-cols-3 gap-4 mb-4">
                 <div>
                   <p className="text-sm text-gray-600">Gastado</p>
-                  <p className="text-2xl font-bold text-gray-900">${totalSpent.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-red-600">${totalSpent.toLocaleString()}</p>
                 </div>
                 {budget !== null ? (
                   <>
@@ -175,10 +146,7 @@ export default function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BudgetPage
-                month={selectedMonth}
-                onSaved={() => setBudgetVersion(v => v + 1)}
-              />
+              <BudgetPage month={selectedMonth} />
               <AddPurchase />
             </div>
 
@@ -189,3 +157,27 @@ export default function Dashboard() {
     </div>
   )
 }
+```
+
+Cambios clave:
+- Import `MonthNavigator` y `getCurrentMonth` helper.
+- Estado `selectedMonth` (default: `getCurrentMonth()`), `budget` (ahora `number | null`), `showBudgetForm`.
+- `useEffect` con `isMounted` flag y dep `[user, selectedMonth]` â€” recarga al cambiar mes, cancela queries pendientes.
+- `getBudget` y `getTotalSpent` llamados con `selectedMonth`.
+- Resumen 3 estados: normal (restante verde), pasado (rojo), sin presupuesto (botÃ³n definir).
+- `showBudgetForm` renderiza `<BudgetPage month={selectedMonth} onSaved={...} />` en lugar del Dashboard.
+- `<BudgetPage month={selectedMonth} />` en la grid (no solo mes actual).
+- `<PurchaseHistory month={selectedMonth} />` (no solo mes actual).
+- Eliminado el `{user?.uid}` del header (era info de debug innecesaria).
+
+- [ ] **Step 2: Verify typecheck**
+
+Run: `npx tsc -b --noEmit`
+Expected: PASS.
+
+- [ ] **Step 3: Verify build**
+
+Run: `npm run build`
+Expected: PASS.
+
+- [ ] **Step 4: Commit**

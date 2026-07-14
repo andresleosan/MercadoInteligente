@@ -7,7 +7,12 @@ const PATTERN_WITH_A = /^(?:(\d+)\s+)?(.+?)\s+a\s+(\d{1,3}(?:\.\d{3})*|\d+)$/
 const PATTERN_WITHOUT_A = /^(?:(\d+)\s+)?(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)$/
 
 function parsePrice(raw: string): number {
-  return parseInt(raw.replace(/\./g, ''), 10)
+  const cleaned = raw.replace(/,/g, '')
+  const dotIndex = cleaned.lastIndexOf('.')
+  if (dotIndex !== -1 && cleaned.length - dotIndex <= 3) {
+    return parseFloat(cleaned)
+  }
+  return parseInt(cleaned.replace(/\./g, ''), 10)
 }
 
 function cleanName(raw: string): string {

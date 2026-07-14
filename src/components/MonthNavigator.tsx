@@ -1,3 +1,5 @@
+import { memo } from 'react'
+
 interface Props {
   month: string
   onChange: (month: string) => void
@@ -22,7 +24,7 @@ function formatLabel(month: string): string {
   return `${MONTHS[monthNum! - 1]} ${year}`
 }
 
-export default function MonthNavigator({ month, onChange }: Props) {
+export default memo(function MonthNavigator({ month, onChange }: Props) {
   return (
     <div className="flex items-center justify-between bg-white rounded-lg shadow p-4">
       <button
@@ -44,4 +46,4 @@ export default function MonthNavigator({ month, onChange }: Props) {
       </button>
     </div>
   )
-}
+})

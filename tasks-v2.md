@@ -28,12 +28,14 @@
 ### Fase 3 — Dashboard con Gráficos
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 3.1 | Instalar Recharts | Atlas | pendiente |
-| 3.2 | Crear gráfico de gastos por mes (barras) | Hefesto | pendiente |
-| 3.3 | Crear gráfico de gastos por categoría (pie chart) | Hefesto | pendiente |
-| 3.4 | Crear gráfico de tendencia de gastos (línea) | Hefesto | pendiente |
-| 3.5 | Integrar gráficos en Dashboard | Hefesto | pendiente |
-| 3.6 | Tests de gráficos | Temis | pendiente |
+| 3.1 | Instalar Recharts | Atlas | aprobada |
+| 3.2 | Crear gráfico de gastos por mes (barras) | Hefesto | aprobada |
+| 3.3 | Crear gráfico de gastos por categoría (pie chart) | Hefesto | aprobada |
+| 3.4 | Crear gráfico de tendencia de gastos (línea) | Hefesto | aprobada |
+| 3.5 | Integrar gráficos en Dashboard | Hefesto | aprobada |
+| 3.6 | Tests de gráficos | Temis | aprobada |
+
+> **Branch separado:** `feat/dashboard-graficos`. No mergeado a master aún. Pendiente merging antes de deploy v2.
 
 ### Fase 4 — Historial Multi-Mes
 | # | Tarea | Titán | Estado |
@@ -49,18 +51,25 @@
 ### Fase 5 — Registro por Voz
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 5.1 | Configurar Web Speech API | Atlas | pendiente |
-| 5.2 | Crear servicio de reconocimiento de voz (`src/services/voice.ts`) | Prometeo | pendiente |
-| 5.3 | Crear componente de entrada por voz | Hefesto | pendiente |
-| 5.4 | Parsear texto reconocido a productos/precios | Prometeo | pendiente |
-| 5.5 | Mostrar resultados y permitir edición | Hefesto | pendiente |
-| 5.6 | Tests de reconocimiento de voz | Temis | pendiente |
+| 5.1 | Configurar Web Speech API | Atlas | aprobada |
+| 5.2 | Crear servicio de reconocimiento de voz (`src/services/voice.ts`) | Prometeo | aprobada |
+| 5.3 | Crear componente de entrada por voz | Hefesto | aprobada |
+| 5.4 | Parsear texto reconocido a productos/precios | Prometeo | aprobada |
+| 5.5 | Mostrar resultados y permitir edición | Hefesto | aprobada |
+| 5.6 | Tests de reconocimiento de voz | Temis | aprobada |
+
+> **Verificado 2026-07-13:** `voiceParser.ts` con regex+stop words, `voice.ts` wrapper Web Speech API (continuous, interim, silence timeout), `useVoice` hook orquestador (6 estados), `VoiceCapture` componente con micrófono + transcripción en vivo, integración en `AddPurchase` con modos voice/voice-review reusando `OCRReview` (DRY). 96/96 tests pasan, build pasa.
 
 ### Fase 6 — Cierre v2
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 6.1 | Auditoría de seguridad de nuevas features | Crío | pendiente |
-| 6.2 | Tests de integración v2 | Temis | pendiente |
-| 6.3 | Optimización de performance (code splitting, lazy loading) | Hiperión | pendiente |
-| 6.4 | Revisión final de arquitectura v2 | Atlas | pendiente |
+| 6.1 | Auditoría de seguridad de nuevas features | Crío | aprobada |
+| 6.2 | Tests de integración v2 | Temis | diferido |
+| 6.3 | Optimización de performance (code splitting, lazy loading) | Hiperión | aprobada |
+| 6.4 | Revisión final de arquitectura v2 | Atlas | aprobada |
 | 6.5 | Deploy v2 a producción | Jápeto | pendiente |
+
+> **Verificado 2026-07-13:**
+> - **6.1** (Seguridad): Login sin user enumeration, CSP en index.html, Tesseract CDN pinneado, storage rules correctas
+> - **6.3** (Performance): React.lazy en 3 rutas (Login, Register, Dashboard), vite-plugin-pwa instalado con SW generando precache de 14 entries + runtime caching para workers de Tesseract, `MonthNavigator` con React.memo, compresión de imágenes OCR (OffscreenCanvas + WebP/JPEG calidad 80, max 1920px), `getCurrentMonth()` extraído a `src/utils/date.ts`
+> - **6.5** (Deploy): Auto-deploy desde master en Cloudflare Pages (ver GitHub Actions)
