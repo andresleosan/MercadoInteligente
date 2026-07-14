@@ -1,6 +1,6 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode-go/qwen3.7-max",
+  "model": "opencode-go/deepseek-v4-flash-free",
   "permission": {
     "bash": {
       "*": "allow",
@@ -19,7 +19,7 @@
     "cronos": {
       "description": "Orquestador principal de la Agencia Los Titanes",
       "mode": "primary",
-      "model": "opencode-go/qwen3.7-max",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true,
@@ -29,7 +29,7 @@
     "tetis": {
       "description": "Titán Tetis — bases de datos",
       "mode": "subagent",
-      "model": "opencode-go/qwen3.7-plus",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true
@@ -53,7 +53,7 @@
     "atlas": {
       "description": "Arquitectura y análisis de stack",
       "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-pro",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true,
@@ -63,7 +63,7 @@
     "prometeo": {
       "description": "Backend y lógica de negocio",
       "mode": "subagent",
-      "model": "opencode-go/kimi-k2.7-code",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true,
@@ -73,7 +73,7 @@
     "hefesto": {
       "description": "Frontend y experiencia visual",
       "mode": "subagent",
-      "model": "opencode-go/kimi-k2.7-code",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true,
@@ -83,7 +83,7 @@
     "temis": {
       "description": "QA, pruebas y validación",
       "mode": "subagent",
-      "model": "opencode-go/glm-5.2",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": false,
@@ -93,7 +93,7 @@
     "coeus": {
       "description": "Titán Ceo (Coeus) — CEO / Producto: define alcance y prioridades",
       "mode": "subagent",
-      "model": "opencode-go/qwen3.7-plus",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": false,
@@ -103,7 +103,7 @@
     "crio": {
       "description": "Seguridad y autenticación",
       "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-pro",
+      "model": "opencode-go/deepseek-v4-flash-free",
       "tools": {
         "write": true,
         "edit": true,
