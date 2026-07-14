@@ -13,7 +13,7 @@ import type { Budget } from '@/types'
 import { getCurrentMonth } from '@/utils/date'
 
 export async function getBudget(userId: string, month?: string): Promise<Budget | null> {
-  if (!db || !isConfigValid) return null
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
   
   const targetMonth = month || getCurrentMonth()
   const budgetRef = doc(db, 'users', userId, 'budgets', targetMonth)
@@ -68,7 +68,7 @@ export async function setBudget(userId: string, amount: number, month?: string):
 }
 
 export async function getAllBudgets(userId: string): Promise<Budget[]> {
-  if (!db || !isConfigValid) return []
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
   
   const budgetsRef = collection(db, 'users', userId, 'budgets')
   const q = query(budgetsRef, orderBy('month', 'desc'))

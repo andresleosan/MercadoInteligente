@@ -45,7 +45,7 @@ export async function addPurchase(
 }
 
 export async function getPurchases(userId: string, month?: string): Promise<Purchase[]> {
-  if (!db || !isConfigValid) return []
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
   
   const targetMonth = month || getCurrentMonth()
   const [year, monthNum] = targetMonth.split('-').map(Number)
@@ -93,7 +93,7 @@ export async function getPurchasesByDateRange(
   startDate: Date,
   endDate: Date
 ): Promise<Purchase[]> {
-  if (!db || !isConfigValid) return []
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(

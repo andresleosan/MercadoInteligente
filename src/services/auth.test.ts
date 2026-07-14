@@ -115,17 +115,15 @@ describe('Auth Service', () => {
 
       const result = await getGoogleRedirectResult()
 
-      expect(result?.uid).toBe('test-uid')
-      expect(result?.email).toBe('test@example.com')
+      expect(result?.user.uid).toBe('test-uid')
+      expect(result?.user.email).toBe('test@example.com')
       expect(setDoc).toHaveBeenCalled()
     })
 
-    it('should return null on error', async () => {
+    it('should throw on error', async () => {
       vi.mocked(getRedirectResult).mockRejectedValue(new Error('Test error'))
 
-      const result = await getGoogleRedirectResult()
-
-      expect(result).toBeNull()
+      await expect(getGoogleRedirectResult()).rejects.toThrow('Test error')
     })
   })
 

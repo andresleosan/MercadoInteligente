@@ -51,31 +51,26 @@ export async function loginWithGoogle(): Promise<void> {
   await signInWithRedirect(auth, googleProvider)
 }
 
-export async function getGoogleRedirectResult(): Promise<User | null> {
+export async function getGoogleRedirectResult(): Promise<{ user: User } | null> {
   if (!auth || !db) return null
-  
-  try {
-    const result = await getRedirectResult(auth)
-    if (!result) return null
 
-    const firebaseUser = result.user
-    const user: User = {
-      uid: firebaseUser.uid,
-      email: firebaseUser.email!,
-      displayName: firebaseUser.displayName,
-      createdAt: new Date(),
-    }
+  const result = await getRedirectResult(auth)
+  if (!result) return null
 
-    await setDoc(doc(db, 'users', firebaseUser.uid), {
-      ...user,
-      createdAt: serverTimestamp(),
-    }, { merge: true })
-
-    return user
-  } catch (error) {
-    console.error('Error en redirect result:', error)
-    return null
+  const firebaseUser = result.user
+  const user: User = {
+    uid: firebaseUser.uid,
+    email: firebaseUser.email!,
+    displayName: firebaseUser.displayName,
+    createdAt: new Date(),
   }
+
+  await setDoc(doc(db, 'users', firebaseUser.uid), {
+    ...user,
+    createdAt: serverTimestamp(),
+  }, { merge: true })
+
+  return { user }
 }
 
 export async function logout(): Promise<void> {

@@ -19,6 +19,7 @@ export default function Login() {
         }
       } catch (err) {
         console.error('Error verificando redirect:', err)
+        setError('Error al iniciar sesión con Google. Verificá la configuración de Firebase.')
       }
     }
     checkRedirect()
