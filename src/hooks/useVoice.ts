@@ -16,7 +16,7 @@ export function useVoice() {
   statusRef.current = status
 
   const reset = useCallback(() => {
-    stopRef.current()
+    try { stopRef.current() } catch {}
     stopRef.current = () => {}
     transcriptRef.current = ''
     setStatus('idle')
