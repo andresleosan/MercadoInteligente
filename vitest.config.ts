@@ -8,7 +8,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
-    exclude: ['MercadoInteligente/**', 'node_modules/**'],
+    exclude: ['MercadoInteligente/**', 'node_modules/**', '.opencode/**'],
   },
   resolve: {
     alias: {

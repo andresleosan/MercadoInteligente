@@ -70,6 +70,7 @@ export default function AddPurchase() {
       setItems([{ name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }])
       setMessage('Compra registrada correctamente')
     } catch (err) {
+      console.error('Error al registrar la compra:', err)
       setMessage('Error al registrar la compra')
     } finally {
       setSaving(false)

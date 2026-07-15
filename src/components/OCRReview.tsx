@@ -46,7 +46,8 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
     try {
       await addPurchase(userId, items, imageUrl ?? undefined)
       onSaved()
-    } catch {
+    } catch (err) {
+      console.error('Error al guardar compra desde OCR:', err)
       setError('No se pudo guardar la compra. Intentá de nuevo.')
     } finally {
       setSaving(false)

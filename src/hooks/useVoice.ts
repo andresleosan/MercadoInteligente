@@ -65,6 +65,9 @@ export function useVoice() {
             setItems(parsed)
             setStatus('done')
           }
+        } else if (currentStatus === 'listening' || currentStatus === 'transcribing') {
+          setError('No escuchamos nada. Reintenta.')
+          setStatus('error')
         }
       },
     })

@@ -12,14 +12,25 @@ export async function runOCR(imageFile: File): Promise<OCRResult> {
 
   const langPath = `${import.meta.env.BASE_URL}tessdata`
 
-  const worker = await createWorker('spa+eng', OEM.LSTM_ONLY, {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined
+  const TIMEOUT_SENTINEL = Symbol('ocr-timeout')
+
+  const workerInitPromise = createWorker('spa+eng', OEM.LSTM_ONLY, {
     langPath,
     workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/worker.min.js',
     corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@5',
   })
 
-  let timeoutId: ReturnType<typeof setTimeout> | undefined
-  const TIMEOUT_SENTINEL = Symbol('ocr-timeout')
+  const initTimeoutPromise = new Promise<typeof TIMEOUT_SENTINEL>((resolve) => {
+    timeoutId = setTimeout(() => resolve(TIMEOUT_SENTINEL), OCR_TIMEOUT_MS)
+  })
+
+  const initResult = await Promise.race([workerInitPromise, initTimeoutPromise])
+  if (initResult === TIMEOUT_SENTINEL) {
+    throw new Error('OCR timeout — worker initialization failed')
+  }
+  const worker = initResult
+
   const timeoutPromise = new Promise<typeof TIMEOUT_SENTINEL>((resolve) => {
     timeoutId = setTimeout(() => resolve(TIMEOUT_SENTINEL), OCR_TIMEOUT_MS)
   })
