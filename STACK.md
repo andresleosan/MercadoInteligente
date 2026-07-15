@@ -42,7 +42,7 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 ## Hosting / Despliegue
 - **Servicio:** Cloudflare Pages (gratuito, ancho de banda ilimitado, builds automáticos desde Git)
 - **CI/CD:** Cloudflare Pages auto-deploy desde `master` en GitHub. Build command: `npm run build`, output: `dist/`. Sin archivo de config en el repo (configurado vía dashboard de Cloudflare).
-- **Headers:** `public/_headers` con COOP (same-origin-allow-popups) para compatibilidad con popups OAuth.
+- **Headers:** Sin COOP/COEP personalizados. `signInWithPopup` funciona con BCG unrestricted (default).
 - **Migración:** Originalmente planificado para Firebase Hosting (v1). Migrado a Cloudflare Pages por mayor ancho de banda y build automático desde Git. `firebase.json` se mantiene para Firestore/Storage rules y emulators; la sección `hosting` ya no se usa para deploy.
 - **Por qué:** Cloudflare Pages es gratuito con ancho de banda ilimitado y CI/CD nativo desde GitHub, sin configuración de workflows manual. Firebase Hosting sigue siendo el backend (Auth/Firestore/Storage), solo el hosting estático migró.
 
