@@ -1,13 +1,12 @@
 import { initializeApp } from 'firebase/app'
 import { getAuth, connectAuthEmulator } from 'firebase/auth'
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore'
-import { getStorage, connectStorageEmulator } from 'firebase/storage'
+
 
 const REQUIRED_VARS = [
   'VITE_FIREBASE_API_KEY',
   'VITE_FIREBASE_AUTH_DOMAIN',
   'VITE_FIREBASE_PROJECT_ID',
-  'VITE_FIREBASE_STORAGE_BUCKET',
   'VITE_FIREBASE_MESSAGING_SENDER_ID',
   'VITE_FIREBASE_APP_ID',
 ] as const
@@ -38,7 +37,6 @@ const app = isConfigValid ? initializeApp(firebaseConfig) : null
 
 export const auth = app ? getAuth(app) : null
 export const db = app ? getFirestore(app) : null
-export const storage = app ? getStorage(app) : null
 export default app
 export { isConfigValid, missingVars }
 
@@ -51,10 +49,7 @@ if (useEmulator) {
     if (db) {
       connectFirestoreEmulator(db, 'localhost', 8085)
     }
-    if (storage) {
-      connectStorageEmulator(storage, 'localhost', 9199)
-    }
-    console.info('Conectado a Firebase Emulator (auth@9099, firestore@8085, storage@9199)')
+    console.info('Conectado a Firebase Emulator (auth@9099, firestore@8085)')
   } catch (e) {
     console.warn('No se pudo conectar a emuladores:', e)
   }

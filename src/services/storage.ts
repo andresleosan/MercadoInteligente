@@ -1,6 +1,6 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { storage } from '@/config/firebase'
+import { supabase } from '@/services/supabase'
 
+const BUCKET = 'receipts'
 const MAX_WIDTH = 1920
 const JPEG_QUALITY = 0.8
 
@@ -29,12 +29,20 @@ export async function uploadReceiptImage(
   file: File,
   purchaseId: string
 ): Promise<string> {
-  if (!storage) throw new Error('Storage no inicializado')
+  if (!supabase) throw new Error('Storage no inicializado')
 
   const compressed = await compressImage(file)
-  const path = `receipts/${userId}/${purchaseId}.jpg`
-  const storageRef = ref(storage, path)
+  const path = `${userId}/${purchaseId}.jpg`
 
-  await uploadBytes(storageRef, compressed)
-  return getDownloadURL(storageRef)
+  const { error } = await supabase.storage
+    .from(BUCKET)
+    .upload(path, compressed, { contentType: 'image/jpeg', upsert: true })
+
+  if (error) throw error
+
+  const { data: { publicUrl } } = supabase.storage
+    .from(BUCKET)
+    .getPublicUrl(path)
+
+  return publicUrl
 }

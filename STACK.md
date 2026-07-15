@@ -28,7 +28,7 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 - **Tecnología:** Firebase
   - **Auth:** autenticación de usuarios (email/password, Google)
   - **Firestore:** base de datos NoSQL para presupuestos, compras y productos
-  - **Storage:** almacenamiento de fotos de tickets
+  - ~~**Storage:** almacenamiento de fotos de tickets~~ → migrado a Supabase Storage (v2)
 - **Por qué:** Stack definido por el usuario. 0 USD/mes — Firebase free tier cubre auth, 1GB Firestore, 5GB Storage. Hosting migrado a Cloudflare Pages (ver sección Hosting / Despliegue).
 
 ## Base de datos
@@ -53,12 +53,12 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 
 ## Integraciones externas
 - **Tesseract.js OCR** — corre 100% en el navegador, no es una API externa
-- Sin otras integraciones en v1
+- **Supabase Storage** — almacenamiento de fotos de tickets (reemplazó Firebase Storage)
 
 ## Gestión de secretos
-- ¿`.gitignore` instalado y completado?: pendiente (se completa en A3)
-- ¿`.env.example` documentado?: pendiente (se crea con el código)
-- **Mecanismo:** Firebase config (API keys del lado del cliente, restringidas por dominio en Firebase Console). Sin secretos del lado del servidor en v1 (Firestore Security Rules reemplazan backend tradicional).
+- ¿`.gitignore` instalado y completado?: sí
+- ¿`.env.example` documentado?: sí
+- **Mecanismo:** Firebase config (API keys del lado del cliente, restringidas por dominio en Firebase Console) + Supabase anon key (restringida por RLS). Sin secretos del lado del servidor.
 
 ## Titanes activos para este proyecto
 | Titán | Participa | Motivo |
