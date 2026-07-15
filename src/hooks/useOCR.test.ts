@@ -4,7 +4,7 @@ import { useOCR } from '@/hooks/useOCR'
 import { runOCR } from '@/services/ocr'
 
 vi.mock('@/services/storage', () => ({
-  uploadReceiptImage: vi.fn().mockResolvedValue('https://storage.googleapis.com/receipts/user-1/abc.jpg'),
+  uploadReceiptImage: vi.fn().mockResolvedValue('https://supabase.co/storage/v1/productos/user-1/abc.jpg'),
 }))
 vi.mock('@/services/ocr', () => ({
   runOCR: vi.fn().mockResolvedValue({
@@ -48,7 +48,7 @@ describe('useOCR', () => {
     expect(result.current.status).toBe('done')
     expect(result.current.items).toHaveLength(2)
     expect(result.current.items[0].name).toBe('Leche entera 1L')
-    expect(result.current.imageUrl).toBe('https://storage.googleapis.com/receipts/user-1/abc.jpg')
+    expect(result.current.imageUrl).toBe('https://supabase.co/storage/v1/productos/user-1/abc.jpg')
   })
 
   it('should set error state if OCR fails', async () => {

@@ -28,32 +28,32 @@ describe('Storage Service', () => {
   })
 
   it('should upload compressed image and return URL', async () => {
-    vi.mocked(supabase!.storage.from('receipts').upload).mockResolvedValue({ data: null, error: null })
-    vi.mocked(supabase!.storage.from('receipts').getPublicUrl).mockReturnValue({
-      data: { publicUrl: 'https://supabase.co/storage/v1/receipts/user-1/purchase-123.jpg' },
+    vi.mocked(supabase!.storage.from('productos').upload).mockResolvedValue({ data: null, error: null })
+    vi.mocked(supabase!.storage.from('productos').getPublicUrl).mockReturnValue({
+      data: { publicUrl: 'https://supabase.co/storage/v1/productos/user-1/purchase-123.jpg' },
     })
 
     const file = new File(['dummy'], 'ticket.jpg', { type: 'image/jpeg' })
     const url = await uploadReceiptImage('user-1', file, 'purchase-123')
 
-    expect(supabase!.storage.from('receipts').upload).toHaveBeenCalledWith(
+    expect(supabase!.storage.from('productos').upload).toHaveBeenCalledWith(
       'user-1/purchase-123.jpg',
       expect.any(Blob),
       { contentType: 'image/jpeg', upsert: true }
     )
-    expect(url).toBe('https://supabase.co/storage/v1/receipts/user-1/purchase-123.jpg')
+    expect(url).toBe('https://supabase.co/storage/v1/productos/user-1/purchase-123.jpg')
   })
 
   it('should convert all images to .jpg after compression', async () => {
-    vi.mocked(supabase!.storage.from('receipts').upload).mockResolvedValue({ data: null, error: null })
-    vi.mocked(supabase!.storage.from('receipts').getPublicUrl).mockReturnValue({
-      data: { publicUrl: 'https://supabase.co/storage/v1/receipts/user-1/purchase-456.jpg' },
+    vi.mocked(supabase!.storage.from('productos').upload).mockResolvedValue({ data: null, error: null })
+    vi.mocked(supabase!.storage.from('productos').getPublicUrl).mockReturnValue({
+      data: { publicUrl: 'https://supabase.co/storage/v1/productos/user-1/purchase-456.jpg' },
     })
 
     const file = new File(['dummy'], 'ticket.png', { type: 'image/png' })
     await uploadReceiptImage('user-1', file, 'purchase-456')
 
-    expect(supabase!.storage.from('receipts').upload).toHaveBeenCalledWith(
+    expect(supabase!.storage.from('productos').upload).toHaveBeenCalledWith(
       'user-1/purchase-456.jpg',
       expect.any(Blob),
       { contentType: 'image/jpeg', upsert: true }

@@ -1,6 +1,6 @@
 import { supabase } from '@/services/supabase'
 
-const BUCKET = 'receipts'
+const BUCKET = 'productos'
 const MAX_WIDTH = 1920
 const JPEG_QUALITY = 0.8
 
