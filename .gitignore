@@ -39,6 +39,9 @@ firebase-debug.log
 firestore-debug.log
 ui-debug.log
 
+# Clon anidado (prevenir clone accidental del repo dentro de sí mismo)
+MercadoInteligente/
+
 # Agencia Los Titanes (documentación del proyecto, no se commitea)
 titanes-proyecto/
 AUDITORIA-SEGURIDAD.md
