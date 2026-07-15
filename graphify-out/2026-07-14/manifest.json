@@ -1,0 +1,1427 @@
+{
+  ".opencode/opencode.json": {
+    "mtime": 1784071387.993207,
+    "ast_hash": "1efe24ecf938911d4f23e4b1c6ec91f7",
+    "semantic_hash": ""
+  },
+  ".opencode/plugins/graphify.js": {
+    "mtime": 1784071254.7066352,
+    "ast_hash": "b33d000860642c6f4907a877e0387a21",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/eslint.config.js": {
+    "mtime": 1783999099.2880116,
+    "ast_hash": "a859553e5d59b7217275e3e99daef762",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/firebase.json": {
+    "mtime": 1783999099.2880116,
+    "ast_hash": "9fba8bf057275918b3c4cebf53b3b25c",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/firestore.indexes.json": {
+    "mtime": 1783999099.2940602,
+    "ast_hash": "31ef93a533525231b0b712e137964b5c",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/opencode.json": {
+    "mtime": 1783999099.2960572,
+    "ast_hash": "5dff8f2954c8fa1e8d7f96985fbd09d9",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/postcss.config.js": {
+    "mtime": 1783999099.4564633,
+    "ast_hash": "5b84f4567208c7c747079c0477373231",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/public/manifest.json": {
+    "mtime": 1783999099.6363654,
+    "ast_hash": "3cde5298bd1abe17d58112f97aaf16df",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/App.tsx": {
+    "mtime": 1783999100.0042138,
+    "ast_hash": "966b0ee20e90164ff522dbac79972a57",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ChartsContent.test.tsx": {
+    "mtime": 1783999100.0062633,
+    "ast_hash": "637ca4f6c02352c19d3e406f307eb2bc",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ChartsContent.tsx": {
+    "mtime": 1783999100.013735,
+    "ast_hash": "13ab21f44cdc207fae3ca25487cc545c",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ChartsSection.test.tsx": {
+    "mtime": 1783999100.0953808,
+    "ast_hash": "f9f6360481519a1a2563c330bfa7c456",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ChartsSection.tsx": {
+    "mtime": 1783999100.0973816,
+    "ast_hash": "53d5529daa18f8fa259ed86542783369",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/MonthNavigator.test.tsx": {
+    "mtime": 1783999100.1013777,
+    "ast_hash": "ad446789c2befd03d1a4c6ee4a863a1d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/MonthNavigator.tsx": {
+    "mtime": 1783999100.1033764,
+    "ast_hash": "28e4ebeac0ca6ee3a4fcd3515c3a1d1f",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/OCRCapture.test.tsx": {
+    "mtime": 1783999100.1043763,
+    "ast_hash": "8617e6a3ee9b08f2a0a6e3a997c31271",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/OCRCapture.tsx": {
+    "mtime": 1783999100.105375,
+    "ast_hash": "f4db8ef5153be7a5cee66e93c9442418",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/OCRReview.test.tsx": {
+    "mtime": 1783999100.106374,
+    "ast_hash": "2d39249aa0f67a70194b03d938404d03",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/OCRReview.tsx": {
+    "mtime": 1783999100.106374,
+    "ast_hash": "b09bb7d4b9ad81aaec31f05d423481fe",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ProductEditor.test.tsx": {
+    "mtime": 1783999100.1083736,
+    "ast_hash": "ca2d4836a558555aa387fc4f39632691",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ProductEditor.tsx": {
+    "mtime": 1783999100.1783302,
+    "ast_hash": "1eac737f3669cfab6135e20f4dc1cc41",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/ProtectedRoute.tsx": {
+    "mtime": 1783999100.1843264,
+    "ast_hash": "8a4c80e8bba54533284155d1553680fa",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/VoiceCapture.test.tsx": {
+    "mtime": 1783999100.1853263,
+    "ast_hash": "d6b03ffe150abd2ab20314cb4cb76bad",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/components/VoiceCapture.tsx": {
+    "mtime": 1783999100.1863256,
+    "ast_hash": "3b6071632fa59f143ccc47fa2490eba5",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/config/firebase.ts": {
+    "mtime": 1783999100.1873248,
+    "ast_hash": "6444d394de74b4719e633248f9d8abc4",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/useAuth.ts": {
+    "mtime": 1783999100.1893234,
+    "ast_hash": "89966c6b771733dac9ea3479d7353232",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/useOCR.test.ts": {
+    "mtime": 1783999100.1903229,
+    "ast_hash": "3a524a7b34070be5e48f64e9a58ae6c2",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/useOCR.ts": {
+    "mtime": 1783999100.1906357,
+    "ast_hash": "5be5efce9ad7ef2185f3d83284a49a54",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/usePWAInstall.tsx": {
+    "mtime": 1783999100.191607,
+    "ast_hash": "7f2eaff98ea2a2af14a9b4cce66f0804",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/useVoice.test.ts": {
+    "mtime": 1783999100.26357,
+    "ast_hash": "a5c88805c2441200f472c41d486e0f81",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/hooks/useVoice.ts": {
+    "mtime": 1783999100.2685676,
+    "ast_hash": "dff295e820e4afba28a3f91bccd2fb2c",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/main.tsx": {
+    "mtime": 1783999100.3637955,
+    "ast_hash": "f591cca7d8250bad287f0b750d4f78ad",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/AddPurchase.test.tsx": {
+    "mtime": 1783999100.46478,
+    "ast_hash": "3b80d688f6ec9bc6cbbf9ce8fbe1bb98",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/AddPurchase.tsx": {
+    "mtime": 1783999100.654666,
+    "ast_hash": "02ca6002d05a223ea85f57ff0c75dcdb",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/Budget.tsx": {
+    "mtime": 1783999100.6671784,
+    "ast_hash": "218a2f65cf8147d2df939491c0d0ac5d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/Dashboard.test.tsx": {
+    "mtime": 1783999100.7581239,
+    "ast_hash": "cbd672e24736781c67b3b540ac344d2b",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/Dashboard.tsx": {
+    "mtime": 1783999100.7611225,
+    "ast_hash": "aa63a44cf27ec75b058952ccda3ac414",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/Login.tsx": {
+    "mtime": 1783999100.7631197,
+    "ast_hash": "e1b7f17054a7cd39c54d2447bc0e9f63",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/PurchaseHistory.tsx": {
+    "mtime": 1783999100.7641191,
+    "ast_hash": "33db5f5ebdec4f29413f5941aec38918",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pages/Register.tsx": {
+    "mtime": 1783999100.7641191,
+    "ast_hash": "9f181fc8e16547a6d0eb1bde83bf2186",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/pwa.test.ts": {
+    "mtime": 1783999100.7651186,
+    "ast_hash": "a38e7842a2ac4637615e5dcaa4849743",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/analytics.test.ts": {
+    "mtime": 1783999100.7661178,
+    "ast_hash": "23480f4d9d69764277ebdf1479efd26b",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/analytics.ts": {
+    "mtime": 1783999100.7671173,
+    "ast_hash": "3520d5a9d4a9c4bd8a5fe363d496921d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/auth.test.ts": {
+    "mtime": 1783999100.768117,
+    "ast_hash": "9b3c6b4d8205b3b479eca0fe1ac59ab4",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/auth.ts": {
+    "mtime": 1783999100.8380737,
+    "ast_hash": "890d256e989d8ac388fce251b8560b63",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/budget.test.ts": {
+    "mtime": 1783999100.9525073,
+    "ast_hash": "f68dd9fb8c52ef08f336c65fab587c11",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/budget.ts": {
+    "mtime": 1783999101.0359628,
+    "ast_hash": "45114158d50edeb4da9e029db805efd3",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/ocr.test.ts": {
+    "mtime": 1783999101.036962,
+    "ast_hash": "f6a27510243f2e0e2fb01ecb0dc989d0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/ocr.ts": {
+    "mtime": 1783999101.1354046,
+    "ast_hash": "6fe52db4ad5488bd0c78fba18b6437d9",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/purchases.test.ts": {
+    "mtime": 1783999101.137403,
+    "ast_hash": "571814cd5a5718b3c7eb33a771eb1683",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/purchases.ts": {
+    "mtime": 1783999101.2288504,
+    "ast_hash": "de910a54bea83c4b58547a553fb3ecf1",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/storage.test.ts": {
+    "mtime": 1783999101.331102,
+    "ast_hash": "c4f04de14dac52c4050d5e0f7e803b97",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/storage.ts": {
+    "mtime": 1783999101.3380969,
+    "ast_hash": "b9d3b59388048bae86b58c180483fb73",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/ticketParser.test.ts": {
+    "mtime": 1783999101.4265475,
+    "ast_hash": "2655f4a78d179764f59a1e5a1e1ec9f2",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/ticketParser.ts": {
+    "mtime": 1783999101.5105042,
+    "ast_hash": "e48393e2893528420147df937505eaf4",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/voice.test.ts": {
+    "mtime": 1783999101.5145035,
+    "ast_hash": "9159d57c446de868599a6e8bc4ba2713",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/voice.ts": {
+    "mtime": 1783999101.5155027,
+    "ast_hash": "5e17b9ceae23d3b001a53ec104932a72",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/voiceParser.test.ts": {
+    "mtime": 1783999101.5929587,
+    "ast_hash": "5ca157f16fad8646197d0200e23d67cc",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/services/voiceParser.ts": {
+    "mtime": 1783999101.600954,
+    "ast_hash": "8ec9ae18f76beb9b9ccd23783f7ad877",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/test/setup.ts": {
+    "mtime": 1783999101.601954,
+    "ast_hash": "dc972af1d2b80e79814a7e1999178b15",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/types/index.ts": {
+    "mtime": 1783999101.6029527,
+    "ast_hash": "ab169f30a2273658c26abd118f8416f0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/utils/date.ts": {
+    "mtime": 1783999101.6049516,
+    "ast_hash": "2c504554550ae0cd6b3f13af7cca77d3",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/src/vite-env.d.ts": {
+    "mtime": 1783999101.6049516,
+    "ast_hash": "837b6f0588f257de8c85c9c652df5d97",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/tailwind.config.js": {
+    "mtime": 1783999101.605951,
+    "ast_hash": "9afb21cebd97d1d0507d3a6067926a05",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/tsconfig.json": {
+    "mtime": 1783999101.608949,
+    "ast_hash": "6c0eec70bfdd0a1259b23a617d177803",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/tsconfig.node.json": {
+    "mtime": 1783999101.6924038,
+    "ast_hash": "6ce115c12bbbe2203c35e696f3781b66",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/vite.config.ts": {
+    "mtime": 1783999101.6944017,
+    "ast_hash": "d2f9fd1b1ea5579c6a18168c4c65c722",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/vitest.config.ts": {
+    "mtime": 1783999101.7868493,
+    "ast_hash": "e701669967cf205d7bf8a1b508614db3",
+    "semantic_hash": ""
+  },
+  "eslint.config.js": {
+    "mtime": 1783898089.4915564,
+    "ast_hash": "2683e26e70707841590ff4ad24253919",
+    "semantic_hash": ""
+  },
+  "firebase.json": {
+    "mtime": 1783921094.1768172,
+    "ast_hash": "a15ac5d49f622216d3c9749fb1ce7942",
+    "semantic_hash": ""
+  },
+  "firestore.indexes.json": {
+    "mtime": 1783901527.5869615,
+    "ast_hash": "6c1369bcee45fa3baebaaf77f2dc3ae3",
+    "semantic_hash": ""
+  },
+  "opencode.json": {
+    "mtime": 1783995044.2081554,
+    "ast_hash": "5dff8f2954c8fa1e8d7f96985fbd09d9",
+    "semantic_hash": ""
+  },
+  "postcss.config.js": {
+    "mtime": 1783897897.4242296,
+    "ast_hash": "ef3ba2a81ba19f8ea5ddf625521e96f0",
+    "semantic_hash": ""
+  },
+  "public/manifest.json": {
+    "mtime": 1783916987.9824712,
+    "ast_hash": "3cde5298bd1abe17d58112f97aaf16df",
+    "semantic_hash": ""
+  },
+  "src/App.tsx": {
+    "mtime": 1784003540.016086,
+    "ast_hash": "5012bb58ee04ce85255a677709065db8",
+    "semantic_hash": ""
+  },
+  "src/components/ChartsContent.test.tsx": {
+    "mtime": 1783997038.6804461,
+    "ast_hash": "637ca4f6c02352c19d3e406f307eb2bc",
+    "semantic_hash": ""
+  },
+  "src/components/ChartsContent.tsx": {
+    "mtime": 1783997038.6914394,
+    "ast_hash": "13ab21f44cdc207fae3ca25487cc545c",
+    "semantic_hash": ""
+  },
+  "src/components/ChartsSection.test.tsx": {
+    "mtime": 1783997038.6924388,
+    "ast_hash": "f9f6360481519a1a2563c330bfa7c456",
+    "semantic_hash": ""
+  },
+  "src/components/ChartsSection.tsx": {
+    "mtime": 1783997038.693438,
+    "ast_hash": "53d5529daa18f8fa259ed86542783369",
+    "semantic_hash": ""
+  },
+  "src/components/MonthNavigator.test.tsx": {
+    "mtime": 1783982470.9199424,
+    "ast_hash": "ad446789c2befd03d1a4c6ee4a863a1d",
+    "semantic_hash": ""
+  },
+  "src/components/MonthNavigator.tsx": {
+    "mtime": 1783996254.981274,
+    "ast_hash": "28e4ebeac0ca6ee3a4fcd3515c3a1d1f",
+    "semantic_hash": ""
+  },
+  "src/components/OCRCapture.test.tsx": {
+    "mtime": 1783968570.6699195,
+    "ast_hash": "8617e6a3ee9b08f2a0a6e3a997c31271",
+    "semantic_hash": ""
+  },
+  "src/components/OCRCapture.tsx": {
+    "mtime": 1783968570.6749158,
+    "ast_hash": "f4db8ef5153be7a5cee66e93c9442418",
+    "semantic_hash": ""
+  },
+  "src/components/OCRReview.test.tsx": {
+    "mtime": 1783968570.7627866,
+    "ast_hash": "2d39249aa0f67a70194b03d938404d03",
+    "semantic_hash": ""
+  },
+  "src/components/OCRReview.tsx": {
+    "mtime": 1783968570.8540673,
+    "ast_hash": "b09bb7d4b9ad81aaec31f05d423481fe",
+    "semantic_hash": ""
+  },
+  "src/components/ProductEditor.test.tsx": {
+    "mtime": 1783968570.9450104,
+    "ast_hash": "ca2d4836a558555aa387fc4f39632691",
+    "semantic_hash": ""
+  },
+  "src/components/ProductEditor.tsx": {
+    "mtime": 1783968571.0379534,
+    "ast_hash": "1eac737f3669cfab6135e20f4dc1cc41",
+    "semantic_hash": ""
+  },
+  "src/components/ProtectedRoute.tsx": {
+    "mtime": 1783900457.592184,
+    "ast_hash": "4ebe88e3a7843b4f6dca7b2f3b9b02a4",
+    "semantic_hash": ""
+  },
+  "src/components/VoiceCapture.test.tsx": {
+    "mtime": 1783995044.215151,
+    "ast_hash": "d6b03ffe150abd2ab20314cb4cb76bad",
+    "semantic_hash": ""
+  },
+  "src/components/VoiceCapture.tsx": {
+    "mtime": 1783995044.2371385,
+    "ast_hash": "3b6071632fa59f143ccc47fa2490eba5",
+    "semantic_hash": ""
+  },
+  "src/config/firebase.ts": {
+    "mtime": 1784003482.1711361,
+    "ast_hash": "648ef106829044a9f9e5fa018f7ca12d",
+    "semantic_hash": ""
+  },
+  "src/contexts/AuthContext.tsx": {
+    "mtime": 1784003536.2154734,
+    "ast_hash": "2c42d9f416254efbb4999dd1af2102f5",
+    "semantic_hash": ""
+  },
+  "src/hooks/useAuth.ts": {
+    "mtime": 1784003536.6704943,
+    "ast_hash": "985a10992c618fecf39d7e219536964c",
+    "semantic_hash": ""
+  },
+  "src/hooks/useOCR.test.ts": {
+    "mtime": 1783968571.1326602,
+    "ast_hash": "3a524a7b34070be5e48f64e9a58ae6c2",
+    "semantic_hash": ""
+  },
+  "src/hooks/useOCR.ts": {
+    "mtime": 1783968571.2166097,
+    "ast_hash": "5be5efce9ad7ef2185f3d83284a49a54",
+    "semantic_hash": ""
+  },
+  "src/hooks/usePWAInstall.tsx": {
+    "mtime": 1783916987.9824712,
+    "ast_hash": "7f2eaff98ea2a2af14a9b4cce66f0804",
+    "semantic_hash": ""
+  },
+  "src/hooks/useVoice.test.ts": {
+    "mtime": 1783995044.2421348,
+    "ast_hash": "a5c88805c2441200f472c41d486e0f81",
+    "semantic_hash": ""
+  },
+  "src/hooks/useVoice.ts": {
+    "mtime": 1783995044.2661214,
+    "ast_hash": "dff295e820e4afba28a3f91bccd2fb2c",
+    "semantic_hash": ""
+  },
+  "src/main.tsx": {
+    "mtime": 1783897940.3846865,
+    "ast_hash": "a3150907ddf2842367caa98e12a33298",
+    "semantic_hash": ""
+  },
+  "src/pages/AddPurchase.test.tsx": {
+    "mtime": 1783995044.300099,
+    "ast_hash": "3b80d688f6ec9bc6cbbf9ce8fbe1bb98",
+    "semantic_hash": ""
+  },
+  "src/pages/AddPurchase.tsx": {
+    "mtime": 1783995044.313091,
+    "ast_hash": "02ca6002d05a223ea85f57ff0c75dcdb",
+    "semantic_hash": ""
+  },
+  "src/pages/Budget.tsx": {
+    "mtime": 1783982470.9219408,
+    "ast_hash": "218a2f65cf8147d2df939491c0d0ac5d",
+    "semantic_hash": ""
+  },
+  "src/pages/Dashboard.test.tsx": {
+    "mtime": 1783997038.7054305,
+    "ast_hash": "cbd672e24736781c67b3b540ac344d2b",
+    "semantic_hash": ""
+  },
+  "src/pages/Dashboard.tsx": {
+    "mtime": 1783997112.4657845,
+    "ast_hash": "aa63a44cf27ec75b058952ccda3ac414",
+    "semantic_hash": ""
+  },
+  "src/pages/Login.tsx": {
+    "mtime": 1784003572.8472981,
+    "ast_hash": "cbabc6ffb729eff51352ac552dc48f0a",
+    "semantic_hash": ""
+  },
+  "src/pages/PurchaseHistory.tsx": {
+    "mtime": 1783982470.9249396,
+    "ast_hash": "33db5f5ebdec4f29413f5941aec38918",
+    "semantic_hash": ""
+  },
+  "src/pages/Register.tsx": {
+    "mtime": 1784003595.2524502,
+    "ast_hash": "dfc24d6c5f9cd727395f226456ee7e43",
+    "semantic_hash": ""
+  },
+  "src/pwa.test.ts": {
+    "mtime": 1783917477.9647746,
+    "ast_hash": "a38e7842a2ac4637615e5dcaa4849743",
+    "semantic_hash": ""
+  },
+  "src/services/analytics.test.ts": {
+    "mtime": 1783997038.7204213,
+    "ast_hash": "23480f4d9d69764277ebdf1479efd26b",
+    "semantic_hash": ""
+  },
+  "src/services/analytics.ts": {
+    "mtime": 1783997038.7334132,
+    "ast_hash": "3520d5a9d4a9c4bd8a5fe363d496921d",
+    "semantic_hash": ""
+  },
+  "src/services/auth.test.ts": {
+    "mtime": 1784004102.3308158,
+    "ast_hash": "5d35de8453e94b59aa9d041ff3d9a714",
+    "semantic_hash": ""
+  },
+  "src/services/auth.ts": {
+    "mtime": 1784003568.0331445,
+    "ast_hash": "bacee4602e1414e2c3f50732cd70a122",
+    "semantic_hash": ""
+  },
+  "src/services/budget.test.ts": {
+    "mtime": 1783913494.5093925,
+    "ast_hash": "50aadb89e4088cb6a32e587fe7e629d0",
+    "semantic_hash": ""
+  },
+  "src/services/budget.ts": {
+    "mtime": 1784003572.1871512,
+    "ast_hash": "552f454282c4d088fffb1c9b759cdd0b",
+    "semantic_hash": ""
+  },
+  "src/services/ocr.test.ts": {
+    "mtime": 1783968571.3962383,
+    "ast_hash": "f6a27510243f2e0e2fb01ecb0dc989d0",
+    "semantic_hash": ""
+  },
+  "src/services/ocr.ts": {
+    "mtime": 1783968571.4873464,
+    "ast_hash": "6fe52db4ad5488bd0c78fba18b6437d9",
+    "semantic_hash": ""
+  },
+  "src/services/purchases.test.ts": {
+    "mtime": 1783913508.9362292,
+    "ast_hash": "1cea453b11c768db70f589d535c97731",
+    "semantic_hash": ""
+  },
+  "src/services/purchases.ts": {
+    "mtime": 1784003571.3817847,
+    "ast_hash": "110bd73cff8e02caf449ad73c3b9b8f6",
+    "semantic_hash": ""
+  },
+  "src/services/storage.test.ts": {
+    "mtime": 1783996682.9305122,
+    "ast_hash": "c4f04de14dac52c4050d5e0f7e803b97",
+    "semantic_hash": ""
+  },
+  "src/services/storage.ts": {
+    "mtime": 1783996302.7025006,
+    "ast_hash": "b9d3b59388048bae86b58c180483fb73",
+    "semantic_hash": ""
+  },
+  "src/services/ticketParser.test.ts": {
+    "mtime": 1783968571.6735842,
+    "ast_hash": "2655f4a78d179764f59a1e5a1e1ec9f2",
+    "semantic_hash": ""
+  },
+  "src/services/ticketParser.ts": {
+    "mtime": 1783968571.8447711,
+    "ast_hash": "e48393e2893528420147df937505eaf4",
+    "semantic_hash": ""
+  },
+  "src/services/voice.test.ts": {
+    "mtime": 1783995044.322085,
+    "ast_hash": "9159d57c446de868599a6e8bc4ba2713",
+    "semantic_hash": ""
+  },
+  "src/services/voice.ts": {
+    "mtime": 1783995044.353067,
+    "ast_hash": "5e17b9ceae23d3b001a53ec104932a72",
+    "semantic_hash": ""
+  },
+  "src/services/voiceParser.test.ts": {
+    "mtime": 1783995044.3540657,
+    "ast_hash": "5ca157f16fad8646197d0200e23d67cc",
+    "semantic_hash": ""
+  },
+  "src/services/voiceParser.ts": {
+    "mtime": 1783995916.1041336,
+    "ast_hash": "8ec9ae18f76beb9b9ccd23783f7ad877",
+    "semantic_hash": ""
+  },
+  "src/test/setup.ts": {
+    "mtime": 1783898087.3633847,
+    "ast_hash": "994c5bf3f0f8742b450d0ab09b0d6bb9",
+    "semantic_hash": ""
+  },
+  "src/types/index.ts": {
+    "mtime": 1783968571.8587627,
+    "ast_hash": "ab169f30a2273658c26abd118f8416f0",
+    "semantic_hash": ""
+  },
+  "src/utils/date.ts": {
+    "mtime": 1783995928.9136813,
+    "ast_hash": "8a5dec2069d31da5427dcae309d45687",
+    "semantic_hash": ""
+  },
+  "src/vite-env.d.ts": {
+    "mtime": 1783897932.0446775,
+    "ast_hash": "061353569f4ae4a17c1b7a1c604116d2",
+    "semantic_hash": ""
+  },
+  "tailwind.config.js": {
+    "mtime": 1783897897.343956,
+    "ast_hash": "3346df3fd0a1ea3f84440703bf8fd2cb",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1783923647.2474573,
+    "ast_hash": "0263775e16956f1cf2a05a5d8a73425d",
+    "semantic_hash": ""
+  },
+  "tsconfig.node.json": {
+    "mtime": 1783897889.5700788,
+    "ast_hash": "a65e6336b99c4e921b35c12ed7b1c1ca",
+    "semantic_hash": ""
+  },
+  "vite.config.ts": {
+    "mtime": 1783996227.6227248,
+    "ast_hash": "d2f9fd1b1ea5579c6a18168c4c65c722",
+    "semantic_hash": ""
+  },
+  "vitest.config.ts": {
+    "mtime": 1784003988.1159902,
+    "ast_hash": "6d91e4936f2aafd66b12384dea6be185",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/final-review-diff.md": {
+    "mtime": 1783989981.6610055,
+    "ast_hash": "febcdba11398aed4dc875f77c23529ba",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-1-brief.md": {
+    "mtime": 1783989981.6620045,
+    "ast_hash": "34b9b7c13ebadfcbbba66427a6d043f8",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-2-brief.md": {
+    "mtime": 1783989981.6620045,
+    "ast_hash": "b428620ec7c82b202e0c5aa548332dc5",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-3-brief.md": {
+    "mtime": 1783989981.6708794,
+    "ast_hash": "3189a1176cce578309199ac733d3c2e8",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-4-brief.md": {
+    "mtime": 1783989981.6718788,
+    "ast_hash": "38606daa3a1189a3d287e0c05633462e",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-5-brief.md": {
+    "mtime": 1783989981.6728778,
+    "ast_hash": "a3b16569a9cb2c0959a59ce8cd2ad02e",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-6-brief.md": {
+    "mtime": 1783989981.6738777,
+    "ast_hash": "7feb835b02c8daf41e8a98a187095368",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/graficos-task-7-brief.md": {
+    "mtime": 1783989981.6738777,
+    "ast_hash": "0ac47f56274dfdc3359d69fa745eebcd",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-final-review-diff.md": {
+    "mtime": 1783989981.6748772,
+    "ast_hash": "fdba9356132c346f9a56294995154f64",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-1-brief.md": {
+    "mtime": 1783989981.6758761,
+    "ast_hash": "ff93ec8f4c0da74aeca9ed6bae987a46",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-1-diff.md": {
+    "mtime": 1783989981.6758761,
+    "ast_hash": "228e2a18cd806cf7838c39a59b1389ad",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-1-report.md": {
+    "mtime": 1783989981.6768756,
+    "ast_hash": "f2e426b9102761cc3a4031b443267c90",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-2-brief.md": {
+    "mtime": 1783989981.6788757,
+    "ast_hash": "b34b98ebf693ec3705cdea47498de892",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-2-diff.md": {
+    "mtime": 1783989981.755827,
+    "ast_hash": "fcf921bfbf15965547b12fa6084cd1d5",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-2-report.md": {
+    "mtime": 1783989981.7644503,
+    "ast_hash": "a11f2d9b56d0021bc76b128dc7a5e1a6",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-3-brief.md": {
+    "mtime": 1783989981.773444,
+    "ast_hash": "5d99f3627b397e25b873fcbe543acaa5",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-3-diff.md": {
+    "mtime": 1783989981.8554018,
+    "ast_hash": "74e0b9f3eb05b4b1802bf68bb73d89cb",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-3-report.md": {
+    "mtime": 1783989981.8574004,
+    "ast_hash": "bde8ba032fe7cec2e21ef4cb37a0564e",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-4-brief.md": {
+    "mtime": 1783989981.9428515,
+    "ast_hash": "15aaca9a9560c25ebc0b3eb284a6e5f0",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-4-diff.md": {
+    "mtime": 1783989981.9448504,
+    "ast_hash": "9e5a62d6a6f8dbb10710cb38aa989089",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-4-report.md": {
+    "mtime": 1783989981.9468484,
+    "ast_hash": "b57a6c5cc41b8a71c2968589a82b9279",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-5-brief.md": {
+    "mtime": 1783989981.947848,
+    "ast_hash": "dacd0abbf00b9a285855a32b51c369c0",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-5-diff.md": {
+    "mtime": 1783989981.9488468,
+    "ast_hash": "e854f7bf6ad720321be131c12ed84e90",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-5-report.md": {
+    "mtime": 1783989981.9508462,
+    "ast_hash": "5ee1313e82c88aeb62f5bc02cc8ca2a1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-6-brief.md": {
+    "mtime": 1783989981.9521265,
+    "ast_hash": "09a463e7f24ceab26c84644239fa281d",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/historial-task-6-report.md": {
+    "mtime": 1783989982.0333245,
+    "ast_hash": "a250626583a86068ebbe926984f9e591",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/progress-graficos.md": {
+    "mtime": 1783989982.045373,
+    "ast_hash": "dc9379457ca614d6f651c1637cdc2e24",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/progress-historial.md": {
+    "mtime": 1783989982.1180036,
+    "ast_hash": "e0b95bb3407c51e024dde9efce7e3a0f",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/progress.md": {
+    "mtime": 1783995044.2061565,
+    "ast_hash": "3d6cfbfd25c7ce8b332721b2a052ad21",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-1-brief.md": {
+    "mtime": 1783990137.035612,
+    "ast_hash": "f5613276388eea1fc309359add6586d8",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-1-diff.md": {
+    "mtime": 1783990969.5191483,
+    "ast_hash": "1679e40094a2fd05612706cf4c7c709e",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-1-report.md": {
+    "mtime": 1783990867.0061283,
+    "ast_hash": "abc214543c25e32f63d46045e0f60c4c",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-10-brief.md": {
+    "mtime": 1783989982.1270375,
+    "ast_hash": "7a030bd395e9fbe041f5621660fa3cf1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-2-brief.md": {
+    "mtime": 1783991122.2941933,
+    "ast_hash": "6a8c7c5b8c7eb566a2b3962ff0a124a6",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-2-diff.md": {
+    "mtime": 1783991711.275149,
+    "ast_hash": "032d154afa45bbbc9952d028aa473123",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-2-report.md": {
+    "mtime": 1783991675.297795,
+    "ast_hash": "b4495affed79717c52d582740db7d4a1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-3-brief.md": {
+    "mtime": 1783991823.0884583,
+    "ast_hash": "2ba8e3b51fb2f08717c743d7de304330",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-3-diff.md": {
+    "mtime": 1783992516.8804781,
+    "ast_hash": "a3e11dedfe4fa464895f1d7b9235fd80",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-3-report.md": {
+    "mtime": 1783992498.0508666,
+    "ast_hash": "bd66515001090edaea7851c7ecf2592a",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-4-brief.md": {
+    "mtime": 1783992754.0487309,
+    "ast_hash": "083ca92deae340341eb5e083649caf72",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-4-diff.md": {
+    "mtime": 1783993190.0447185,
+    "ast_hash": "ca99acddcd4d92aa6c1647b06fa97ba1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-4-report.md": {
+    "mtime": 1783993178.3349643,
+    "ast_hash": "876e8c336cf62b75651e5f9109573820",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-5-brief.md": {
+    "mtime": 1783993321.9807029,
+    "ast_hash": "6d0d19caa8cc0072c5d0656776b666e1",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-5-diff.md": {
+    "mtime": 1783994332.5366094,
+    "ast_hash": "ddd8b6080b205edd13b920a64103d3c0",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-5-report.md": {
+    "mtime": 1783994292.4591994,
+    "ast_hash": "e02f747bc95f4deb12359a662850385e",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-6-brief.md": {
+    "mtime": 1783989982.4262831,
+    "ast_hash": "ce3de4768fad614273c0b5531aefcc70",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-6-diff.md": {
+    "mtime": 1783989982.5072458,
+    "ast_hash": "83bc07c58218c2a6325848df56305416",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-6-report.md": {
+    "mtime": 1783989982.5112436,
+    "ast_hash": "18619d9aaec248e2e28b5d64ab50a4fa",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-7-brief.md": {
+    "mtime": 1783989982.5142415,
+    "ast_hash": "86ceea487a756ff822d8548c1a4e0a55",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-7-diff.md": {
+    "mtime": 1783989982.51624,
+    "ast_hash": "92627f1e5fdb01043fa2187985a28ffe",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-7-report.md": {
+    "mtime": 1783989982.5172398,
+    "ast_hash": "95ef5f3e5f2d64b28b54ca46b0b8954c",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-8-brief.md": {
+    "mtime": 1783989982.5951526,
+    "ast_hash": "5147b0670529656579808bc45baf91bd",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-8-diff.md": {
+    "mtime": 1783989982.6061459,
+    "ast_hash": "ab35fbf333d19c00cf5bb54c487e870d",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-8-report.md": {
+    "mtime": 1783989982.611143,
+    "ast_hash": "6e5b75d3a8f742ba572f4bec4ca4971f",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-9-brief.md": {
+    "mtime": 1783989982.6873684,
+    "ast_hash": "90a2ed67a130dce462f8b2a0af39b9f8",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-9-diff.md": {
+    "mtime": 1783989982.7041748,
+    "ast_hash": "99a16e1f0f71a515afbf8e59d6fd0090",
+    "semantic_hash": ""
+  },
+  ".superpowers/sdd/task-9-report.md": {
+    "mtime": 1783989982.8076162,
+    "ast_hash": "3eb571a8fa0d78038f36447db9b40c3d",
+    "semantic_hash": ""
+  },
+  "AGENTS.md": {
+    "mtime": 1784071254.660882,
+    "ast_hash": "21ceb6533048be51308e69e7b74a35cf",
+    "semantic_hash": ""
+  },
+  "AUDITORIA.md": {
+    "mtime": 1784003140.7680078,
+    "ast_hash": "774bb8a1da803199a4eeeb679b0ea36a",
+    "semantic_hash": ""
+  },
+  "BRIEF.md": {
+    "mtime": 1783897248.5058012,
+    "ast_hash": "3028247acf5240c91ea7ef956ea4ff5b",
+    "semantic_hash": ""
+  },
+  "BUILD.md": {
+    "mtime": 1784003229.3663137,
+    "ast_hash": "106777cc485c408913a49f70e706ef7e",
+    "semantic_hash": ""
+  },
+  "FIREBASE.md": {
+    "mtime": 1784003211.353771,
+    "ast_hash": "8a7584554ff41cb8ec685eed41bd835c",
+    "semantic_hash": ""
+  },
+  "LOGIN_GOOGLE.md": {
+    "mtime": 1784003162.2388115,
+    "ast_hash": "9238e049e4bafb20482b366e79c06c12",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/final-review-diff.md": {
+    "mtime": 1783999098.6225758,
+    "ast_hash": "febcdba11398aed4dc875f77c23529ba",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-1-brief.md": {
+    "mtime": 1783999098.691995,
+    "ast_hash": "34b9b7c13ebadfcbbba66427a6d043f8",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-2-brief.md": {
+    "mtime": 1783999098.691995,
+    "ast_hash": "b428620ec7c82b202e0c5aa548332dc5",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-3-brief.md": {
+    "mtime": 1783999098.692994,
+    "ast_hash": "3189a1176cce578309199ac733d3c2e8",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-4-brief.md": {
+    "mtime": 1783999098.6939936,
+    "ast_hash": "38606daa3a1189a3d287e0c05633462e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-5-brief.md": {
+    "mtime": 1783999098.6959934,
+    "ast_hash": "a3b16569a9cb2c0959a59ce8cd2ad02e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-6-brief.md": {
+    "mtime": 1783999098.6969917,
+    "ast_hash": "7feb835b02c8daf41e8a98a187095368",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/graficos-task-7-brief.md": {
+    "mtime": 1783999098.6979923,
+    "ast_hash": "0ac47f56274dfdc3359d69fa745eebcd",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-final-review-diff.md": {
+    "mtime": 1783999098.6990597,
+    "ast_hash": "fdba9356132c346f9a56294995154f64",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-1-brief.md": {
+    "mtime": 1783999098.7000601,
+    "ast_hash": "ff93ec8f4c0da74aeca9ed6bae987a46",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-1-diff.md": {
+    "mtime": 1783999098.7000601,
+    "ast_hash": "228e2a18cd806cf7838c39a59b1389ad",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-1-report.md": {
+    "mtime": 1783999098.7010589,
+    "ast_hash": "f2e426b9102761cc3a4031b443267c90",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-2-brief.md": {
+    "mtime": 1783999098.7020588,
+    "ast_hash": "b34b98ebf693ec3705cdea47498de892",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-2-diff.md": {
+    "mtime": 1783999098.703058,
+    "ast_hash": "fcf921bfbf15965547b12fa6084cd1d5",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-2-report.md": {
+    "mtime": 1783999098.7040575,
+    "ast_hash": "a11f2d9b56d0021bc76b128dc7a5e1a6",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-3-brief.md": {
+    "mtime": 1783999098.705057,
+    "ast_hash": "5d99f3627b397e25b873fcbe543acaa5",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-3-diff.md": {
+    "mtime": 1783999098.7070565,
+    "ast_hash": "74e0b9f3eb05b4b1802bf68bb73d89cb",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-3-report.md": {
+    "mtime": 1783999098.7775168,
+    "ast_hash": "bde8ba032fe7cec2e21ef4cb37a0564e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-4-brief.md": {
+    "mtime": 1783999098.7795172,
+    "ast_hash": "15aaca9a9560c25ebc0b3eb284a6e5f0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-4-diff.md": {
+    "mtime": 1783999098.7815151,
+    "ast_hash": "9e5a62d6a6f8dbb10710cb38aa989089",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-4-report.md": {
+    "mtime": 1783999098.7835133,
+    "ast_hash": "b57a6c5cc41b8a71c2968589a82b9279",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-5-brief.md": {
+    "mtime": 1783999098.7835133,
+    "ast_hash": "dacd0abbf00b9a285855a32b51c369c0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-5-diff.md": {
+    "mtime": 1783999098.7845123,
+    "ast_hash": "e854f7bf6ad720321be131c12ed84e90",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-5-report.md": {
+    "mtime": 1783999098.7855117,
+    "ast_hash": "5ee1313e82c88aeb62f5bc02cc8ca2a1",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-6-brief.md": {
+    "mtime": 1783999098.7855117,
+    "ast_hash": "09a463e7f24ceab26c84644239fa281d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/historial-task-6-report.md": {
+    "mtime": 1783999098.7865112,
+    "ast_hash": "a250626583a86068ebbe926984f9e591",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/progress-graficos.md": {
+    "mtime": 1783999098.7875102,
+    "ast_hash": "dc9379457ca614d6f651c1637cdc2e24",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/progress-historial.md": {
+    "mtime": 1783999098.7875102,
+    "ast_hash": "e0b95bb3407c51e024dde9efce7e3a0f",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/progress.md": {
+    "mtime": 1783999098.7885091,
+    "ast_hash": "3d6cfbfd25c7ce8b332721b2a052ad21",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-1-brief.md": {
+    "mtime": 1783999098.8554673,
+    "ast_hash": "de9f2223491618eaca0508971820a999",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-1-diff.md": {
+    "mtime": 1783999098.8644626,
+    "ast_hash": "1679e40094a2fd05612706cf4c7c709e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-1-report.md": {
+    "mtime": 1783999098.8664615,
+    "ast_hash": "46c1bdd1616a241f5567c70e849228ec",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-10-brief.md": {
+    "mtime": 1783999098.8674605,
+    "ast_hash": "7a030bd395e9fbe041f5621660fa3cf1",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-2-brief.md": {
+    "mtime": 1783999098.86846,
+    "ast_hash": "596149fd3a6933695adba2758b0f9ab9",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-2-diff.md": {
+    "mtime": 1783999098.86846,
+    "ast_hash": "032d154afa45bbbc9952d028aa473123",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-2-report.md": {
+    "mtime": 1783999098.8704588,
+    "ast_hash": "33ee6b12efdef7fdc9305776bef44734",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-3-brief.md": {
+    "mtime": 1783999098.8724377,
+    "ast_hash": "72785842fb7a06b9c999e8713e152de3",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-3-diff.md": {
+    "mtime": 1783999098.9443934,
+    "ast_hash": "a3e11dedfe4fa464895f1d7b9235fd80",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-3-report.md": {
+    "mtime": 1783999098.9455419,
+    "ast_hash": "35e7f1478d3d3270236b2f00f8b01038",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-4-brief.md": {
+    "mtime": 1783999098.946545,
+    "ast_hash": "c6cc5f815e35cb7b381dd1d583f0a589",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-4-diff.md": {
+    "mtime": 1783999098.948544,
+    "ast_hash": "ca99acddcd4d92aa6c1647b06fa97ba1",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-4-report.md": {
+    "mtime": 1783999098.9505422,
+    "ast_hash": "042f002739be4219d9b058cdb7dc03b3",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-5-brief.md": {
+    "mtime": 1783999098.951767,
+    "ast_hash": "f28a33a2656033153fd5113150b0c099",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-5-diff.md": {
+    "mtime": 1783999098.9519343,
+    "ast_hash": "ddd8b6080b205edd13b920a64103d3c0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-5-report.md": {
+    "mtime": 1783999098.9529345,
+    "ast_hash": "18104dd9deac2147616e663dd0a602ed",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-6-brief.md": {
+    "mtime": 1783999098.953934,
+    "ast_hash": "ce3de4768fad614273c0b5531aefcc70",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-6-diff.md": {
+    "mtime": 1783999098.9549334,
+    "ast_hash": "83bc07c58218c2a6325848df56305416",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-6-report.md": {
+    "mtime": 1783999098.9559324,
+    "ast_hash": "18619d9aaec248e2e28b5d64ab50a4fa",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-7-brief.md": {
+    "mtime": 1783999098.9569314,
+    "ast_hash": "86ceea487a756ff822d8548c1a4e0a55",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-7-diff.md": {
+    "mtime": 1783999099.0283945,
+    "ast_hash": "92627f1e5fdb01043fa2187985a28ffe",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-7-report.md": {
+    "mtime": 1783999099.0343904,
+    "ast_hash": "95ef5f3e5f2d64b28b54ca46b0b8954c",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-8-brief.md": {
+    "mtime": 1783999099.0351899,
+    "ast_hash": "5147b0670529656579808bc45baf91bd",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-8-diff.md": {
+    "mtime": 1783999099.0361898,
+    "ast_hash": "ab35fbf333d19c00cf5bb54c487e870d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-8-report.md": {
+    "mtime": 1783999099.0371888,
+    "ast_hash": "6e5b75d3a8f742ba572f4bec4ca4971f",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-9-brief.md": {
+    "mtime": 1783999099.0381882,
+    "ast_hash": "90a2ed67a130dce462f8b2a0af39b9f8",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-9-diff.md": {
+    "mtime": 1783999099.0421865,
+    "ast_hash": "99a16e1f0f71a515afbf8e59d6fd0090",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/.superpowers/sdd/task-9-report.md": {
+    "mtime": 1783999099.1176443,
+    "ast_hash": "3eb571a8fa0d78038f36447db9b40c3d",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/BRIEF.md": {
+    "mtime": 1783999099.119642,
+    "ast_hash": "60b7efae71ddb3b417ff0cfa21f23c5e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/STACK.md": {
+    "mtime": 1783999099.1206422,
+    "ast_hash": "8b80c6827685a95d5f719ad93b6cc338",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/plans/2026-07-13-dashboard-graficos.md": {
+    "mtime": 1783999099.202073,
+    "ast_hash": "9fb68b3f76d3f1500b539e9618fac967",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/plans/2026-07-13-historial-multi-mes.md": {
+    "mtime": 1783999099.202073,
+    "ast_hash": "79fc9cabb8407766b30c0b885bf69bb7",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/plans/2026-07-13-ocr-por-foto.md": {
+    "mtime": 1783999099.202073,
+    "ast_hash": "6bc3f7fd32e1486c695297ee9a913131",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/plans/2026-07-13-voice-recognition.md": {
+    "mtime": 1783999099.202073,
+    "ast_hash": "e7d66aefef30f5f801c1337a9adc58ce",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/specs/2026-07-13-dashboard-graficos-design.md": {
+    "mtime": 1783999099.2080784,
+    "ast_hash": "b844b6a624e1896fac89192da32a931b",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/specs/2026-07-13-historial-multi-mes-design.md": {
+    "mtime": 1783999099.2080784,
+    "ast_hash": "dc9ae7f2dfd1ea2ccba39b0a968c8dd0",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/specs/2026-07-13-ocr-por-foto-design.md": {
+    "mtime": 1783999099.2080784,
+    "ast_hash": "119949117572f8ed9588193c1a4a6cba",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/docs/superpowers/specs/2026-07-13-voice-recognition-design.md": {
+    "mtime": 1783999099.2880116,
+    "ast_hash": "a588f733323bf3cee105ddb0058beaac",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/index.html": {
+    "mtime": 1783999099.2950594,
+    "ast_hash": "1a4e8d401378e8c7572d9c1b2677c5a9",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/tasks-v2.md": {
+    "mtime": 1783999101.6069515,
+    "ast_hash": "5d8bf96b5165f2a4ef05e5fb5ab3579e",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/tasks.md": {
+    "mtime": 1783999101.6079502,
+    "ast_hash": "3ba15100c0387fc8d3fc382b0b101749",
+    "semantic_hash": ""
+  },
+  "PRODUCTOS.md": {
+    "mtime": 1784003185.3838222,
+    "ast_hash": "264855611a5987aeb46de377b01a046d",
+    "semantic_hash": ""
+  },
+  "STACK.md": {
+    "mtime": 1783924225.0354683,
+    "ast_hash": "87f2caae046d00c02543edaae541454f",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-07-13-dashboard-graficos.md": {
+    "mtime": 1783984016.9707248,
+    "ast_hash": "8017eb078776498bb17cf35b3db97426",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-07-13-historial-multi-mes.md": {
+    "mtime": 1783974122.5979154,
+    "ast_hash": "d4978430b31a44250ac6a9ba8ca26363",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-07-13-ocr-por-foto.md": {
+    "mtime": 1783952573.6892974,
+    "ast_hash": "bf3ecc0d7fb47ce2707d0488a59ddce5",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-07-13-voice-recognition.md": {
+    "mtime": 1783995044.2071562,
+    "ast_hash": "e7d66aefef30f5f801c1337a9adc58ce",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-07-13-dashboard-graficos-design.md": {
+    "mtime": 1783983883.2832484,
+    "ast_hash": "bf7aca490fdaeb4fcde9a608e8e37bcf",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-07-13-historial-multi-mes-design.md": {
+    "mtime": 1783973992.5485182,
+    "ast_hash": "7cfbfc96685a1556a93d0b47a27b0004",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-07-13-ocr-por-foto-design.md": {
+    "mtime": 1783990008.8132036,
+    "ast_hash": "119949117572f8ed9588193c1a4a6cba",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-07-13-voice-recognition-design.md": {
+    "mtime": 1783997038.6374745,
+    "ast_hash": "a588f733323bf3cee105ddb0058beaac",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1783995914.7532973,
+    "ast_hash": "36b68e23ed0621b8e56ac7b7470d09d7",
+    "semantic_hash": ""
+  },
+  "tasks-v2.md": {
+    "mtime": 1783997160.2115731,
+    "ast_hash": "5d8bf96b5165f2a4ef05e5fb5ab3579e",
+    "semantic_hash": ""
+  },
+  "tasks.md": {
+    "mtime": 1783913725.0874398,
+    "ast_hash": "d90a13686b037802dcb74575301c7a16",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/public/icons/icon-192.svg": {
+    "mtime": 1783999099.6223726,
+    "ast_hash": "196ced8e54d4aa3ad677cbb75a920aa5",
+    "semantic_hash": ""
+  },
+  "MercadoInteligente/public/icons/icon-512.svg": {
+    "mtime": 1783999099.6333683,
+    "ast_hash": "489213fb1426a06208820ee83709a2e4",
+    "semantic_hash": ""
+  },
+  "public/icons/icon-192.svg": {
+    "mtime": 1783916987.5878885,
+    "ast_hash": "196ced8e54d4aa3ad677cbb75a920aa5",
+    "semantic_hash": ""
+  },
+  "public/icons/icon-512.svg": {
+    "mtime": 1783916987.6458032,
+    "ast_hash": "489213fb1426a06208820ee83709a2e4",
+    "semantic_hash": ""
+  }
+}
