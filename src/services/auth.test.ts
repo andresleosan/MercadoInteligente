@@ -11,8 +11,7 @@ import { auth, db, isConfigValid } from '@/config/firebase'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
@@ -82,48 +81,31 @@ describe('Auth Service', () => {
   })
 
   describe('loginWithGoogle', () => {
-    it('should redirect to Google login', async () => {
-      vi.mocked(signInWithRedirect).mockResolvedValue(undefined)
-
-      await loginWithGoogle()
-
-      expect(signInWithRedirect).toHaveBeenCalled()
-    })
-  })
-
-  describe('getGoogleRedirectResult', () => {
-    it('should return null if no redirect result', async () => {
-      vi.mocked(getRedirectResult).mockResolvedValue(null)
-
-      const result = await getGoogleRedirectResult()
-
-      expect(result).toBeNull()
-    })
-
-    it('should return user and save to Firestore if redirect result exists', async () => {
+    it('should sign in with Google popup and save to Firestore', async () => {
       const mockUser = {
         uid: 'test-uid',
         email: 'test@example.com',
         displayName: 'Test User',
       }
-      
-      vi.mocked(getRedirectResult).mockResolvedValue({
+
+      vi.mocked(signInWithPopup).mockResolvedValue({
         user: mockUser,
       } as any)
-      
+
       vi.mocked(setDoc).mockResolvedValue(undefined)
 
-      const result = await getGoogleRedirectResult()
+      await loginWithGoogle()
 
-      expect(result?.user.uid).toBe('test-uid')
-      expect(result?.user.email).toBe('test@example.com')
+      expect(signInWithPopup).toHaveBeenCalled()
       expect(setDoc).toHaveBeenCalled()
     })
+  })
 
-    it('should throw on error', async () => {
-      vi.mocked(getRedirectResult).mockRejectedValue(new Error('Test error'))
+  describe('getGoogleRedirectResult', () => {
+    it('should return null (deprecated)', async () => {
+      const result = await getGoogleRedirectResult()
 
-      await expect(getGoogleRedirectResult()).rejects.toThrow('Test error')
+      expect(result).toBeNull()
     })
   })
 

@@ -1,8 +1,7 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithRedirect,
-  getRedirectResult,
+  signInWithPopup,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -47,16 +46,8 @@ export async function loginWithEmail(email: string, password: string): Promise<F
 }
 
 export async function loginWithGoogle(): Promise<void> {
-  if (!auth) throw new Error('Firebase no inicializado')
-  await signInWithRedirect(auth, googleProvider)
-}
-
-export async function getGoogleRedirectResult(): Promise<{ user: User } | null> {
-  if (!auth || !db) return null
-
-  const result = await getRedirectResult(auth)
-  if (!result) return null
-
+  if (!auth || !db) throw new Error('Firebase no inicializado')
+  const result = await signInWithPopup(auth, googleProvider)
   const firebaseUser = result.user
   const user: User = {
     uid: firebaseUser.uid,
@@ -64,13 +55,14 @@ export async function getGoogleRedirectResult(): Promise<{ user: User } | null> 
     displayName: firebaseUser.displayName,
     createdAt: new Date(),
   }
-
   await setDoc(doc(db, 'users', firebaseUser.uid), {
     ...user,
     createdAt: serverTimestamp(),
   }, { merge: true })
+}
 
-  return { user }
+export async function getGoogleRedirectResult(): Promise<{ user: User } | null> {
+  return null
 }
 
 export async function logout(): Promise<void> {

@@ -1,6 +1,6 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { registerWithEmail, loginWithGoogle, getGoogleRedirectResult } from '@/services/auth'
+import { registerWithEmail, loginWithGoogle } from '@/services/auth'
 import { isConfigValid } from '@/config/firebase'
 
 export default function Register() {
@@ -10,21 +10,6 @@ export default function Register() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
-
-  useEffect(() => {
-    async function checkRedirect() {
-      try {
-        const result = await getGoogleRedirectResult()
-        if (result) {
-          navigate('/')
-        }
-      } catch (err) {
-        console.error('Error verificando redirect:', err)
-        setError('Error al iniciar sesión con Google. Verificá la configuración de Firebase.')
-      }
-    }
-    checkRedirect()
-  }, [navigate])
 
   if (!isConfigValid) {
     return (
@@ -74,6 +59,7 @@ export default function Register() {
     setError('')
     try {
       await loginWithGoogle()
+      navigate('/')
     } catch (err) {
       console.error('Error en Google register:', err)
       setError('Error al registrarse con Google')
