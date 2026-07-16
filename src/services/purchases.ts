@@ -23,15 +23,25 @@ export async function addPurchase(
   
   const total = items.reduce((sum, item) => sum + item.totalPrice, 0)
 
-  const purchaseData = {
+  const purchaseData: Record<string, unknown> = {
     userId,
     items,
     total,
-    receiptImageUrl,
     createdAt: serverTimestamp(),
+  }
+  if (receiptImageUrl !== undefined) {
+    purchaseData.receiptImageUrl = receiptImageUrl
+  }
+
+  const undefinedFields = Object.entries(purchaseData)
+    .filter(([_, v]) => v === undefined)
+    .map(([k]) => k)
+  if (undefinedFields.length > 0) {
+    console.error(`[purchases] Campo(s) undefined en purchaseData:`, undefinedFields, purchaseData)
   }
 
   const purchasesRef = collection(db, 'users', userId, 'purchases')
+  console.log('[purchases] purchaseData:', JSON.stringify(purchaseData, (_, v) => v === undefined ? '__undefined__' : v))
   const docRef = await addDoc(purchasesRef, purchaseData)
 
   return {
