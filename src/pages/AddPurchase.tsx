@@ -14,7 +14,7 @@ interface Props {
 export default function AddPurchase({ onSaved }: Props) {
   const { user } = useAuth()
   const [items, setItems] = useState<PurchaseItem[]>([
-    { name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }
+    { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }
   ])
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -52,7 +52,7 @@ export default function AddPurchase({ onSaved }: Props) {
   }
 
   function addItem() {
-    setItems([...items, { name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }])
+    setItems([...items, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
   }
 
   function removeItem(index: number) {
@@ -76,7 +76,7 @@ export default function AddPurchase({ onSaved }: Props) {
     try {
       console.log('[AddPurchase:handleSubmit] UID SAVE:', user.uid, '| items:', JSON.stringify(validItems))
       await addPurchase(user.uid, validItems)
-      setItems([{ name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }])
+      setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
       setMessage('Compra registrada correctamente')
       handleSaved()
     } catch (err) {
@@ -237,9 +237,10 @@ export default function AddPurchase({ onSaved }: Props) {
                   type="number"
                   min="1"
                   required
-                  value={item.quantity}
+                  value={item.quantity || ''}
                   onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                   className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                  placeholder="1"
                 />
               </div>
               <div className="col-span-3">
@@ -251,10 +252,10 @@ export default function AddPurchase({ onSaved }: Props) {
                   min="0"
                   step="10"
                   required
-                  value={item.unitPrice}
+                  value={item.unitPrice || ''}
                   onChange={(e) => updateItem(index, 'unitPrice', e.target.value)}
                   className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                  placeholder="0"
+                  placeholder="Precio"
                 />
               </div>
               <div className="col-span-2">

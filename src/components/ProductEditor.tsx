@@ -9,7 +9,7 @@ interface Props {
 
 export default function ProductEditor({ initialItem, onSave, onCancel }: Props) {
   const [name, setName] = useState(initialItem?.name ?? '')
-  const [quantity, setQuantity] = useState(initialItem?.quantity ?? 1)
+  const [quantity, setQuantity] = useState(initialItem?.quantity ?? 0)
   const [unitPrice, setUnitPrice] = useState(initialItem?.unitPrice ?? 0)
 
   function handleSubmit(e: FormEvent) {
@@ -44,9 +44,10 @@ export default function ProductEditor({ initialItem, onSave, onCancel }: Props) 
             id="product-editor-quantity"
             type="number"
             min="1"
-            value={quantity}
+            value={quantity || ''}
             onChange={(e) => setQuantity(Number(e.target.value))}
             className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+            placeholder="1"
           />
         </div>
         <div>
@@ -56,9 +57,10 @@ export default function ProductEditor({ initialItem, onSave, onCancel }: Props) 
             type="number"
             min="0"
             step="10"
-            value={unitPrice}
+            value={unitPrice || ''}
             onChange={(e) => setUnitPrice(Number(e.target.value))}
             className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+            placeholder="Precio"
           />
         </div>
       </div>
