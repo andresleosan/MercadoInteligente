@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'Mercado Inteligente',
         short_name: 'Mercado',
         description: 'Controlá tus gastos de mercado y registra compras con OCR',
-        theme_color: '#10B981',
-        background_color: '#ffffff',
+        theme_color: '#00a86b',
+        background_color: '#0f0f12',
         display: 'standalone',
         start_url: '/',
         icons: [
