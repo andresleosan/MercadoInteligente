@@ -56,7 +56,7 @@ function renderDashboard() {
   )
 }
 
-describe('Dashboard multi-mes', () => {
+describe('Dashboard', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -85,11 +85,11 @@ describe('Dashboard multi-mes', () => {
     renderDashboard()
 
     await waitFor(() => {
-      expect(screen.getByText('Gastado')).toBeInTheDocument()
-      expect(screen.getByText('Presupuesto')).toBeInTheDocument()
       expect(screen.getByText('Restante')).toBeInTheDocument()
       expect(screen.getByText('$20.000')).toBeInTheDocument()
     })
+
+    expect(screen.getAllByText('Presupuesto').length).toBe(2)
   })
 
   it('should show Pasado in red when spent > budget', async () => {
@@ -106,7 +106,7 @@ describe('Dashboard multi-mes', () => {
     })
   })
 
-  it('should show Sin presupuesto and Definir button when budget is null', async () => {
+  it('should show Sin presupuesto when budget is null', async () => {
     const { getBudget } = await import('@/services/budget')
     const { getTotalSpent } = await import('@/services/purchases')
     vi.mocked(getBudget).mockResolvedValue(null)
@@ -116,11 +116,10 @@ describe('Dashboard multi-mes', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Sin presupuesto')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /definir presupuesto/i })).toBeInTheDocument()
     })
   })
 
-  it('should open Budget form when Definir presupuesto clicked', async () => {
+  it('should render budget form inline (no showBudgetForm toggle)', async () => {
     const { getBudget } = await import('@/services/budget')
     const { getTotalSpent } = await import('@/services/purchases')
     vi.mocked(getBudget).mockResolvedValue(null)
@@ -129,16 +128,8 @@ describe('Dashboard multi-mes', () => {
     renderDashboard()
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /definir presupuesto/i })).toBeInTheDocument()
-    })
-
-    expect(screen.getByText('Resumen del mes')).toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: /definir presupuesto/i }))
-
-    await waitFor(() => {
       expect(screen.getByTestId('budget-form')).toBeInTheDocument()
-      expect(screen.queryByText('Resumen del mes')).not.toBeInTheDocument()
+      expect(screen.getByText('Resumen del mes')).toBeInTheDocument()
     })
   })
 
@@ -174,6 +165,12 @@ describe('Dashboard multi-mes', () => {
     renderDashboard()
 
     await waitFor(() => {
+      expect(screen.getByRole('button', { name: /historial de compras/i })).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /historial de compras/i }))
+
+    await waitFor(() => {
       expect(screen.getByTestId('purchase-history')).toBeInTheDocument()
     })
   })
@@ -192,12 +189,6 @@ describe('Dashboard multi-mes', () => {
       expect(screen.getByText('Sin presupuesto')).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /definir presupuesto/i }))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('budget-form')).toBeInTheDocument()
-    })
-
     fireEvent.click(screen.getByTestId('budget-save-button'))
 
     await waitFor(() => {
@@ -209,13 +200,21 @@ describe('Dashboard multi-mes', () => {
     expect(getBudget).toHaveBeenCalledTimes(2)
   })
 
-  it('should render ChartsSection with userId and selectedMonth', async () => {
+  it('should render ChartsSection when Graficos card is expanded', async () => {
     const { getBudget } = await import('@/services/budget')
     const { getTotalSpent } = await import('@/services/purchases')
     vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /presupuesto/i })).toBeInTheDocument()
+    })
+
+    expect(screen.queryByTestId('charts-section')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /gráficos/i }))
 
     await waitFor(() => {
       const charts = screen.getByTestId('charts-section')

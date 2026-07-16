@@ -11,6 +11,19 @@ import MonthNavigator from '@/components/MonthNavigator'
 import usePWAInstall from '@/hooks/usePWAInstall'
 import ChartsSection from '@/components/ChartsSection'
 import { getCurrentMonth } from '@/utils/date'
+import ExpandableCard from '@/components/ui/ExpandableCard'
+import {
+  Wallet,
+  TrendingUp,
+  History,
+  PlusCircle,
+  BarChart3,
+  LogOut,
+  Download,
+  User,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react'
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -20,7 +33,6 @@ export default function Dashboard() {
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [showBudgetForm, setShowBudgetForm] = useState(false)
   const [budgetVersion, setBudgetVersion] = useState(0)
   const [purchaseVersion, setPurchaseVersion] = useState(0)
   const { isInstallable, promptInstall } = usePWAInstall()
@@ -43,8 +55,7 @@ export default function Dashboard() {
 
         setBudget(budgetData ? budgetData.amount : null)
         setTotalSpent(spent)
-      } catch (err) {
-        console.error('Error cargando datos:', err)
+      } catch {
         if (isMounted) {
           setError('Error al cargar los datos. Recargá la página.')
         }
@@ -66,9 +77,8 @@ export default function Dashboard() {
     try {
       await logout()
       navigate('/login')
-    } catch (err) {
-      console.error('Error al cerrar sesión:', err)
-      setError('Error al cerrar sesión. Intentá de nuevo.')
+    } catch {
+      setError('Error al cerrar sesión.')
     }
   }
 
@@ -77,116 +87,146 @@ export default function Dashboard() {
   const percentage = budget !== null && budget > 0 ? (totalSpent / budget) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">Mercado Inteligente</h1>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{user?.email}</span>
+    <div className="min-h-screen bg-bg-base">
+      {/* Header */}
+      <header className="bg-bg-header border-b border-border-subtle">
+        <div className="max-w-[640px] mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Wallet className="text-accent-green" size={20} />
+            <span className="text-sm font-semibold text-text-primary">Mercado Inteligente</span>
+          </div>
+          <div className="flex items-center gap-3">
             {isInstallable ? (
               <button
                 onClick={() => void promptInstall()}
-                className="text-sm text-green-600 hover:text-green-800"
+                className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary transition-colors"
               >
-                Instalar app
+                <Download size={14} />
+                Instalar
               </button>
             ) : null}
+            <div className="flex items-center gap-2 text-xs text-text-secondary">
+              <User size={14} />
+              {user?.email}
+            </div>
             <button
               onClick={handleLogout}
-              className="text-sm text-red-600 hover:text-red-800"
+              className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-red transition-colors"
             >
-              Cerrar sesión
+              <LogOut size={14} />
+              Salir
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 space-y-6">
-        <MonthNavigator month={selectedMonth} onChange={setSelectedMonth} />
-
+      {/* Main */}
+      <main className="max-w-[640px] mx-auto px-4 py-5 space-y-4">
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-sm text-red-800">{error}</p>
+          <div className="flex items-center gap-2 bg-accent-red/10 border border-accent-red/30 rounded-radius-sm px-4 py-3">
+            <AlertCircle size={16} className="text-accent-red shrink-0" />
+            <p className="text-sm text-accent-red">{error}</p>
           </div>
         )}
 
         {loading ? (
-          <div className="flex justify-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          <div className="flex justify-center py-16">
+            <Loader2 className="animate-spin text-accent-green" size={28} />
           </div>
-        ) : showBudgetForm ? (
-          <BudgetPage
-            month={selectedMonth}
-            onSaved={() => {
-              setShowBudgetForm(false)
-              setBudgetVersion(v => v + 1)
-            }}
-          />
         ) : (
           <>
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Resumen del mes</h2>
+            {/* 1. Presupuesto */}
+            <ExpandableCard
+              title="Presupuesto"
+              icon={<Wallet size={18} />}
+              defaultExpanded
+            >
+              <BudgetPage
+                month={selectedMonth}
+                onSaved={() => setBudgetVersion(v => v + 1)}
+              />
+            </ExpandableCard>
 
-              <div className="grid grid-cols-3 gap-4 mb-4">
+            {/* 2. Resumen del mes */}
+            <ExpandableCard
+              title="Resumen del mes"
+              icon={<TrendingUp size={18} />}
+              defaultExpanded
+            >
+              <MonthNavigator month={selectedMonth} onChange={setSelectedMonth} />
+
+              <div className="mt-4 grid grid-cols-3 gap-3">
                 <div>
-                  <p className="text-sm text-gray-600">Gastado</p>
-                  <p className="text-2xl font-bold text-gray-900">${totalSpent.toLocaleString()}</p>
+                  <p className="text-xs text-text-secondary">Gastado</p>
+                  <p className="text-2xl font-bold text-text-primary">
+                    ${totalSpent.toLocaleString()}
+                  </p>
                 </div>
                 {budget !== null ? (
                   <>
                     <div>
-                      <p className="text-sm text-gray-600">Presupuesto</p>
-                      <p className="text-2xl font-bold text-gray-900">${budget.toLocaleString()}</p>
+                      <p className="text-xs text-text-secondary">Presupuesto</p>
+                      <p className="text-2xl font-bold text-text-primary">
+                        ${budget.toLocaleString()}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">{isOverBudget ? 'Pasado' : 'Restante'}</p>
-                      <p className={`text-2xl font-bold ${isOverBudget ? 'text-red-600' : 'text-green-600'}`}>
+                      <p className="text-xs text-text-secondary">
+                        {isOverBudget ? 'Pasado' : 'Restante'}
+                      </p>
+                      <p className={`text-2xl font-bold ${isOverBudget ? 'text-accent-red' : 'text-accent-green'}`}>
                         ${Math.abs(remaining).toLocaleString()}
                       </p>
                     </div>
                   </>
                 ) : (
                   <div className="col-span-2">
-                    <p className="text-sm text-gray-600">Presupuesto</p>
-                    <p className="text-lg font-medium text-gray-500 mb-2">Sin presupuesto</p>
-                    <button
-                      onClick={() => setShowBudgetForm(true)}
-                      className="text-sm text-green-600 hover:text-green-800"
-                    >
-                      Definir presupuesto
-                    </button>
+                    <p className="text-xs text-text-secondary">Presupuesto</p>
+                    <p className="text-sm text-text-muted mt-1">Sin presupuesto</p>
                   </div>
                 )}
               </div>
 
               {budget !== null && budget > 0 && (
-                <>
-                  <div className="w-full bg-gray-200 rounded-full h-4">
+                <div className="mt-4">
+                  <div className="w-full bg-border-subtle rounded-full h-2">
                     <div
-                      className={`h-4 rounded-full transition-all ${
-                        percentage > 100 ? 'bg-red-600' : percentage > 80 ? 'bg-yellow-500' : 'bg-green-600'
+                      className={`h-2 rounded-full transition-all ${
+                        percentage > 100 ? 'bg-accent-red' : percentage > 80 ? 'bg-accent-amber' : 'bg-accent-green'
                       }`}
                       style={{ width: `${Math.min(percentage, 100)}%` }}
-                    ></div>
+                    />
                   </div>
-                  <p className="text-sm text-gray-600 mt-2">
+                  <p className="text-xs text-text-muted mt-2">
                     {percentage.toFixed(1)}% del presupuesto utilizado
                   </p>
-                </>
+                </div>
               )}
-            </div>
+            </ExpandableCard>
 
-            <ChartsSection userId={user!.uid} selectedMonth={selectedMonth} />
+            {/* 3. Historial de compras */}
+            <ExpandableCard
+              title="Historial de compras"
+              icon={<History size={18} />}
+            >
+              <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
+            </ExpandableCard>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <BudgetPage
-                month={selectedMonth}
-                onSaved={() => setBudgetVersion(v => v + 1)}
-              />
+            {/* 4. Registrar compra */}
+            <ExpandableCard
+              title="Registrar compra"
+              icon={<PlusCircle size={18} />}
+            >
               <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
-            </div>
+            </ExpandableCard>
 
-            <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
+            {/* 5. Gráficos */}
+            <ExpandableCard
+              title="Gráficos"
+              icon={<BarChart3 size={18} />}
+            >
+              <ChartsSection userId={user!.uid} selectedMonth={selectedMonth} />
+            </ExpandableCard>
           </>
         )}
       </main>

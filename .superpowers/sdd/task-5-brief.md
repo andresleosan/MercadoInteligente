@@ -1,172 +1,680 @@
-﻿### Task 5: Integrar en AddPurchase — modo voz
+﻿# Task 5: Dashboard refactor — dark layout with ExpandableCards
 
 **Files:**
-- Modify: `src/pages/AddPurchase.tsx`
-- Create: `src/pages/AddPurchase.test.tsx`
+- Modify: `src/pages/Dashboard.tsx` — full rewrite
+- Modify: `src/pages/Dashboard.test.tsx` — full rewrite
+- Modify: `src/tests/integration/dashboard-multi-month.test.tsx` — full rewrite
 
-**Interfaces:**
-- Consumes: `VoiceCapture`, `OCRReview` (reusado con `imageUrl={null}`)
+## Dashboard.tsx
 
-- [ ] **Step 1: Write the failing integration test**
+Replace entire file with:
 
-```ts
-// src/pages/AddPurchase.test.tsx
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import AddPurchase from './AddPurchase'
+```tsx
+import { useState, useEffect } from 'react'
+import { useAuth } from '@/hooks/useAuth'
+import { logout } from '@/services/auth'
+import { getBudget } from '@/services/budget'
+import { getTotalSpent } from '@/services/purchases'
+import { useNavigate } from 'react-router-dom'
+import BudgetPage from '@/pages/Budget'
+import AddPurchase from '@/pages/AddPurchase'
+import PurchaseHistory from '@/pages/PurchaseHistory'
+import MonthNavigator from '@/components/MonthNavigator'
+import usePWAInstall from '@/hooks/usePWAInstall'
+import ChartsSection from '@/components/ChartsSection'
+import { getCurrentMonth } from '@/utils/date'
+import ExpandableCard from '@/components/ui/ExpandableCard'
+import {
+  Wallet,
+  TrendingUp,
+  History,
+  PlusCircle,
+  BarChart3,
+  LogOut,
+  Download,
+  User,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react'
 
-vi.mock('@/hooks/useAuth', () => ({
-  useAuth: vi.fn(() => ({ user: { uid: 'test-uid' }, loading: false })),
+export default function Dashboard() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth)
+  const [budget, setBudget] = useState<number | null>(null)
+  const [totalSpent, setTotalSpent] = useState(0)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+  const [budgetVersion, setBudgetVersion] = useState(0)
+  const [purchaseVersion, setPurchaseVersion] = useState(0)
+  const { isInstallable, promptInstall } = usePWAInstall()
+
+  useEffect(() => {
+    let isMounted = true
+
+    async function loadData() {
+      if (!user) return
+      setLoading(true)
+      setError('')
+
+      try {
+        const [budgetData, spent] = await Promise.all([
+          getBudget(user.uid, selectedMonth),
+          getTotalSpent(user.uid, selectedMonth),
+        ])
+
+        if (!isMounted) return
+
+        setBudget(budgetData ? budgetData.amount : null)
+        setTotalSpent(spent)
+      } catch {
+        if (isMounted) {
+          setError('Error al cargar los datos. Recargá la página.')
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    loadData()
+
+    return () => {
+      isMounted = false
+    }
+  }, [user, selectedMonth, budgetVersion, purchaseVersion])
+
+  async function handleLogout() {
+    try {
+      await logout()
+      navigate('/login')
+    } catch {
+      setError('Error al cerrar sesión.')
+    }
+  }
+
+  const remaining = budget !== null ? budget - totalSpent : 0
+  const isOverBudget = budget !== null && totalSpent > budget
+  const percentage = budget !== null && budget > 0 ? (totalSpent / budget) * 100 : 0
+
+  return (
+    <div className="min-h-screen bg-bg-base">
+      {/* Header */}
+      <header className="bg-bg-header border-b border-border-subtle">
+        <div className="max-w-[640px] mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <Wallet className="text-accent-green" size={20} />
+            <span className="text-sm font-semibold text-text-primary">Mercado Inteligente</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {isInstallable ? (
+              <button
+                onClick={() => void promptInstall()}
+                className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary transition-colors"
+              >
+                <Download size={14} />
+                Instalar
+              </button>
+            ) : null}
+            <div className="flex items-center gap-2 text-xs text-text-secondary">
+              <User size={14} />
+              {user?.email}
+            </div>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-red transition-colors"
+            >
+              <LogOut size={14} />
+              Salir
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="max-w-[640px] mx-auto px-4 py-5 space-y-4">
+        {error && (
+          <div className="flex items-center gap-2 bg-accent-red/10 border border-accent-red/30 rounded-radius-sm px-4 py-3">
+            <AlertCircle size={16} className="text-accent-red shrink-0" />
+            <p className="text-sm text-accent-red">{error}</p>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <Loader2 className="animate-spin text-accent-green" size={28} />
+          </div>
+        ) : (
+          <>
+            {/* 1. Presupuesto */}
+            <ExpandableCard
+              title="Presupuesto"
+              icon={<Wallet size={18} />}
+              defaultExpanded
+            >
+              <BudgetPage
+                month={selectedMonth}
+                onSaved={() => setBudgetVersion(v => v + 1)}
+              />
+            </ExpandableCard>
+
+            {/* 2. Resumen del mes */}
+            <ExpandableCard
+              title="Resumen del mes"
+              icon={<TrendingUp size={18} />}
+              defaultExpanded
+            >
+              <MonthNavigator month={selectedMonth} onChange={setSelectedMonth} />
+
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <div>
+                  <p className="text-xs text-text-secondary">Gastado</p>
+                  <p className="text-2xl font-bold text-text-primary">
+                    ${totalSpent.toLocaleString()}
+                  </p>
+                </div>
+                {budget !== null ? (
+                  <>
+                    <div>
+                      <p className="text-xs text-text-secondary">Presupuesto</p>
+                      <p className="text-2xl font-bold text-text-primary">
+                        ${budget.toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-text-secondary">
+                        {isOverBudget ? 'Pasado' : 'Restante'}
+                      </p>
+                      <p className={`text-2xl font-bold ${isOverBudget ? 'text-accent-red' : 'text-accent-green'}`}>
+                        ${Math.abs(remaining).toLocaleString()}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="col-span-2">
+                    <p className="text-xs text-text-secondary">Presupuesto</p>
+                    <p className="text-sm text-text-muted mt-1">Sin presupuesto</p>
+                  </div>
+                )}
+              </div>
+
+              {budget !== null && budget > 0 && (
+                <div className="mt-4">
+                  <div className="w-full bg-border-subtle rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all ${
+                        percentage > 100 ? 'bg-accent-red' : percentage > 80 ? 'bg-accent-amber' : 'bg-accent-green'
+                      }`}
+                      style={{ width: `${Math.min(percentage, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-text-muted mt-2">
+                    {percentage.toFixed(1)}% del presupuesto utilizado
+                  </p>
+                </div>
+              )}
+            </ExpandableCard>
+
+            {/* 3. Historial de compras */}
+            <ExpandableCard
+              title="Historial de compras"
+              icon={<History size={18} />}
+            >
+              <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
+            </ExpandableCard>
+
+            {/* 4. Registrar compra */}
+            <ExpandableCard
+              title="Registrar compra"
+              icon={<PlusCircle size={18} />}
+            >
+              <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
+            </ExpandableCard>
+
+            {/* 5. Gráficos */}
+            <ExpandableCard
+              title="Gráficos"
+              icon={<BarChart3 size={18} />}
+            >
+              <ChartsSection userId={user!.uid} selectedMonth={selectedMonth} />
+            </ExpandableCard>
+          </>
+        )}
+      </main>
+    </div>
+  )
+}
+```
+
+## Dashboard.test.tsx
+
+Replace entire file with:
+
+```tsx
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import Dashboard from './Dashboard'
+
+vi.mock('@/hooks/useAuth', () => {
+  const user = { uid: 'user-1', email: 'test@test.com' }
+  return { useAuth: () => ({ user }) }
+})
+vi.mock('@/hooks/usePWAInstall', () => ({
+  default: () => ({ isInstallable: false, promptInstall: vi.fn() }),
 }))
-
-vi.mock('@/hooks/useOCR', () => ({
-  useOCR: vi.fn(() => ({
-    status: 'idle',
-    items: [],
-    imageUrl: null,
-    error: null,
-    processTicket: vi.fn(),
-    reset: vi.fn(),
-  })),
+vi.mock('@/services/auth', () => ({
+  logout: vi.fn(),
 }))
-
-vi.mock('@/hooks/useVoice', () => ({
-  useVoice: vi.fn(() => ({
-    status: 'idle',
-    items: [],
-    transcript: '',
-    error: null,
-    startListening: vi.fn(),
-    reset: vi.fn(),
-  })),
+vi.mock('@/services/budget', () => ({
+  getBudget: vi.fn(),
 }))
-
-vi.mock('@/components/VoiceCapture', () => ({
-  default: ({ onDone }: any) => (
-    <button onClick={() => onDone([{ name: 'Leche', unitPrice: 1200, quantity: 1, totalPrice: 1200, confidence: 100 }])}>
-      VoiceCaptureMock
-    </button>
+vi.mock('@/services/purchases', () => ({
+  getTotalSpent: vi.fn(),
+  getPurchases: vi.fn(),
+}))
+vi.mock('@/pages/Budget', () => ({
+  default: ({ onSaved }: { onSaved?: () => void }) => (
+    <div data-testid="budget-form">
+      Budget Form
+      {onSaved && (
+        <button data-testid="budget-save-button" onClick={onSaved}>
+          Guardar
+        </button>
+      )}
+    </div>
+  ),
+}))
+vi.mock('@/pages/AddPurchase', () => ({
+  default: () => <div data-testid="add-purchase">Add Purchase</div>,
+}))
+vi.mock('@/pages/PurchaseHistory', () => ({
+  default: ({ month }: { month?: string }) => (
+    <div data-testid="purchase-history">History for {month}</div>
+  ),
+}))
+vi.mock('@/components/ChartsSection', () => ({
+  default: ({ userId, selectedMonth }: { userId: string; selectedMonth: string }) => (
+    <div data-testid="charts-section" data-userid={userId} data-month={selectedMonth}>
+      Charts Section
+    </div>
   ),
 }))
 
-describe('AddPurchase', () => {
-  it('renderiza botones de foto y voz en modo manual', () => {
-    render(<AddPurchase />)
-    expect(screen.getByText(/registrar por foto/i)).toBeTruthy()
-    expect(screen.getByText(/registrar por voz/i)).toBeTruthy()
+function renderDashboard() {
+  return render(
+    <MemoryRouter>
+      <Dashboard />
+    </MemoryRouter>
+  )
+}
+
+describe('Dashboard', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
   })
 
-  it('al hacer clic en voz, cambia a modo voice', async () => {
-    render(<AddPurchase />)
-    const user = userEvent.setup()
-    await user.click(screen.getByText(/registrar por voz/i))
-    expect(screen.getByText('VoiceCaptureMock')).toBeTruthy()
+  it('should show current month label on load', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    const now = new Date()
+    const monthName = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'][now.getMonth()]
+    await waitFor(() => {
+      expect(screen.getByText(`${monthName} ${now.getFullYear()}`)).toBeInTheDocument()
+    })
   })
 
-  it('vuelve a manual con boton Volver desde voz', async () => {
-    render(<AddPurchase />)
-    const user = userEvent.setup()
-    await user.click(screen.getByText(/registrar por voz/i))
-    // VoiceCapture mock will fire onDone immediately -- check that OCRReview appears
-    expect(await screen.findByText(/Leche/)).toBeTruthy()
+  it('should show resumen with presupuesto and restante when budget exists', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Gastado')).toBeInTheDocument()
+      expect(screen.getByText('Presupuesto')).toBeInTheDocument()
+      expect(screen.getByText('Restante')).toBeInTheDocument()
+      expect(screen.getByText('$20.000')).toBeInTheDocument()
+    })
+  })
+
+  it('should show Pasado in red when spent > budget', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(80000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Pasado')).toBeInTheDocument()
+      expect(screen.getByText('$30.000')).toBeInTheDocument()
+    })
+  })
+
+  it('should show Sin presupuesto when budget is null', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue(null)
+    vi.mocked(getTotalSpent).mockResolvedValue(0)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Sin presupuesto')).toBeInTheDocument()
+    })
+  })
+
+  it('should render budget form inline (no showBudgetForm toggle)', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue(null)
+    vi.mocked(getTotalSpent).mockResolvedValue(0)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('budget-form')).toBeInTheDocument()
+      expect(screen.getByText('Resumen del mes')).toBeInTheDocument()
+    })
+  })
+
+  it('should call services with selectedMonth when navigating', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
+    })
+
+    vi.mocked(getBudget).mockClear()
+    vi.mocked(getTotalSpent).mockClear()
+
+    fireEvent.click(screen.getByRole('button', { name: /mes anterior/i }))
+
+    await waitFor(() => {
+      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
+      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.any(String))
+    })
+  })
+
+  it('should pass month to PurchaseHistory', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('purchase-history')).toBeInTheDocument()
+    })
+  })
+
+  it('should reload budget and show it in summary after saving via Budget form', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget)
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(10000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Sin presupuesto')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByTestId('budget-save-button'))
+
+    await waitFor(() => {
+      expect(screen.queryByText('Sin presupuesto')).not.toBeInTheDocument()
+      expect(screen.getByText('Restante')).toBeInTheDocument()
+      expect(screen.getByText('$40.000')).toBeInTheDocument()
+    })
+
+    expect(getBudget).toHaveBeenCalledTimes(2)
+  })
+
+  it('should render ChartsSection when Graficos card is expanded', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Presupuesto')).toBeInTheDocument()
+    })
+
+    // ChartsSection is inside ExpandableCard (collapsed by default)
+    expect(screen.queryByTestId('charts-section')).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /gráficos/i }))
+
+    await waitFor(() => {
+      const charts = screen.getByTestId('charts-section')
+      expect(charts).toBeInTheDocument()
+      expect(charts.getAttribute('data-userid')).toBe('user-1')
+      expect(charts.getAttribute('data-month')).toMatch(/^\d{4}-\d{2}$/)
+    })
   })
 })
 ```
 
-- [ ] **Step 2: Run to verify the test reference works
+## dashboard-multi-month.test.tsx
 
-Run: `npx vitest run src/pages/AddPurchase.test.tsx 2>&1`
-Expected: Tests reference the modules correctly
+Replace entire file with:
 
-- [ ] **Step 3: Modify AddPurchase.tsx**
-
-Changes:
-1. Import VoiceCapture
-2. Extend mode type
-3. Add state for voiceItems
-4. Add voice button next to photo button
-5. Add voice mode rendering
-6. Add voice-review mode rendering
-
-The current AddPurchase.tsx has these imports:
 ```tsx
-import { useState, useEffect, type FormEvent } from 'react'
-import { useAuth } from '@/hooks/useAuth'
-import { useOCR } from '@/hooks/useOCR'
-import { addPurchase } from '@/services/purchases'
-import type { PurchaseItem } from '@/types'
-import OCRCapture from '@/components/OCRCapture'
-import OCRReview from '@/components/OCRReview'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import Dashboard from '@/pages/Dashboard'
+
+vi.mock('@/hooks/useAuth', () => ({
+  useAuth: () => ({ user: { uid: 'user-1', email: 'test@test.com' } }),
+}))
+vi.mock('@/hooks/usePWAInstall', () => ({
+  default: () => ({ isInstallable: false, promptInstall: vi.fn() }),
+}))
+vi.mock('@/services/auth', () => ({
+  logout: vi.fn(),
+}))
+vi.mock('@/services/budget', () => ({
+  getBudget: vi.fn(),
+}))
+vi.mock('@/services/purchases', () => ({
+  getTotalSpent: vi.fn(),
+  getPurchases: vi.fn(),
+}))
+vi.mock('@/pages/Budget', () => ({
+  default: ({ onSaved }: { onSaved?: () => void }) => (
+    <div data-testid="budget-form">
+      Budget Form
+      {onSaved && <button data-testid="budget-save-button" onClick={onSaved}>Guardar</button>}
+    </div>
+  ),
+}))
+vi.mock('@/pages/AddPurchase', () => ({
+  default: () => <div data-testid="add-purchase">Add Purchase</div>,
+}))
+vi.mock('@/pages/PurchaseHistory', () => ({
+  default: ({ month }: { month?: string }) => (
+    <div data-testid="purchase-history">History for {month}</div>
+  ),
+}))
+vi.mock('@/components/ChartsSection', () => ({
+  default: ({ userId, selectedMonth }: { userId: string; selectedMonth: string }) => (
+    <div data-testid="charts-section" data-userid={userId} data-month={selectedMonth}>Charts Section</div>
+  ),
+}))
+
+function renderDashboard() {
+  return render(<MemoryRouter><Dashboard /></MemoryRouter>)
+}
+
+describe('Dashboard Multi-Month Integration', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('loads budget and spent data for the selected month', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(getBudget).toHaveBeenCalledWith('user-1', expect.stringMatching(/^\d{4}-\d{2}$/))
+      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.stringMatching(/^\d{4}-\d{2}$/))
+      expect(screen.getByText('Gastado')).toBeInTheDocument()
+      expect(screen.getByText('$30.000')).toBeInTheDocument()
+    })
+  })
+
+  it('navigates to previous month and reloads data', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Gastado')).toBeInTheDocument()
+    })
+
+    vi.mocked(getBudget).mockClear()
+    vi.mocked(getTotalSpent).mockClear()
+
+    vi.mocked(getBudget).mockResolvedValue({ amount: 30000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(15000)
+
+    fireEvent.click(screen.getByRole('button', { name: /mes anterior/i }))
+
+    await waitFor(() => {
+      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
+      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.any(String))
+    })
+  })
+
+  it('navigates to next month and reloads data', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Gastado')).toBeInTheDocument()
+    })
+
+    vi.mocked(getBudget).mockClear()
+    vi.mocked(getTotalSpent).mockClear()
+
+    vi.mocked(getBudget).mockResolvedValue({ amount: 70000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(60000)
+
+    fireEvent.click(screen.getByRole('button', { name: /mes siguiente/i }))
+
+    await waitFor(() => {
+      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
+      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.any(String))
+    })
+  })
+
+  it('shows different budget data when navigating between months', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('$30.000')).toBeInTheDocument()
+      expect(screen.getByText('$20.000')).toBeInTheDocument()
+    })
+
+    vi.mocked(getBudget).mockResolvedValue({ amount: 80000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(20000)
+
+    fireEvent.click(screen.getByRole('button', { name: /mes siguiente/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('$20.000')).toBeInTheDocument()
+      expect(screen.getByText('$60.000')).toBeInTheDocument()
+    })
+  })
+
+  it('passes selectedMonth to ChartsSection when expanded', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('Presupuesto')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /gráficos/i }))
+
+    await waitFor(() => {
+      const charts = screen.getByTestId('charts-section')
+      expect(charts).toBeInTheDocument()
+      expect(charts.getAttribute('data-month')).toMatch(/^\d{4}-\d{2}$/)
+    })
+  })
+
+  it('passes selectedMonth to PurchaseHistory', async () => {
+    const { getBudget } = await import('@/services/budget')
+    const { getTotalSpent } = await import('@/services/purchases')
+    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
+    vi.mocked(getTotalSpent).mockResolvedValue(30000)
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByTestId('purchase-history')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByRole('button', { name: /mes anterior/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText(/History for/)).toBeInTheDocument()
+    })
+  })
+})
 ```
 
-Add imports for VoiceCapture and ParsedItem type:
-```tsx
-import VoiceCapture from '@/components/VoiceCapture'
-import type { ParsedItem } from '@/types'
-```
+## Steps
 
-Extend the mode state and add voiceItems state:
-```tsx
-const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
-const [voiceItems, setVoiceItems] = useState<ParsedItem[]>([])
-```
-
-In the manual mode section (after the photo button), add:
-```tsx
-<button
-  type="button"
-  onClick={() => setMode('voice')}
-  className="w-full py-2 px-4 border border-purple-600 rounded-md text-sm font-medium text-purple-700 hover:bg-purple-50"
->
-  🎤 Registrar por voz
-</button>
-```
-
-Before the manual form (after the error mode section), add voice modes:
-```tsx
-{mode === 'voice' && (
-  <div className="mb-6">
-    <VoiceCapture
-      onDone={(items) => {
-        setVoiceItems(items)
-        setMode('voice-review')
-      }}
-      onBack={() => setMode('manual')}
-    />
-  </div>
-)}
-
-{mode === 'voice-review' && (
-  <div className="mb-6">
-    <OCRReview
-      items={voiceItems}
-      imageUrl={null}
-      userId={user!.uid}
-      onSaved={() => {
-        setVoiceItems([])
-        setMode('manual')
-        setMessage('Compra registrada correctamente')
-      }}
-      onRetry={() => {
-        setVoiceItems([])
-        setMode('voice')
-      }}
-    />
-  </div>
-)}
-```
-
-Note: OCRReview expects `items: ParsedItem[]` and internally creates `PurchaseItem[]` from it. Since `ParsedItem[]` is assignable to `PurchaseItem[]` (same shape, confidence is required in ParsedItem but optional in PurchaseItem), TypeScript accepts it.
-
-- [ ] **Step 4: Run tests to verify they pass**
-
-Run: `npx vitest run src/pages/AddPurchase.test.tsx 2>&1`
-Expected: All 3 tests PASS
-
-- [ ] **Step 5: Commit**
+- [ ] Write all 3 files with the exact content above
+- [ ] Run the dashboard tests: `npx vitest run src/pages/Dashboard.test.tsx src/tests/integration/dashboard-multi-month.test.tsx`
+- [ ] Run full build: `npx vite build 2>&1`
+- [ ] Commit
 
 ```bash
-git add src/pages/AddPurchase.tsx src/pages/AddPurchase.test.tsx
-git commit -m "feat: integrar voz en AddPurchase -- nuevos modos voice y voice-review"
+git add src/pages/Dashboard.tsx src/pages/Dashboard.test.tsx src/tests/integration/dashboard-multi-month.test.tsx
+git commit -m "feat: Dashboard refactor completo con ExpandableCards, header premium, jerarquia v2"
 ```
