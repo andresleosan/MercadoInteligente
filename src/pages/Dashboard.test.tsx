@@ -86,10 +86,10 @@ describe('Dashboard', () => {
 
     await waitFor(() => {
       expect(screen.getByText('Restante')).toBeInTheDocument()
+      expect(screen.getByText('Gastado')).toBeInTheDocument()
       expect(screen.getByText('$20.000')).toBeInTheDocument()
+      expect(screen.getAllByText('Presupuesto')).toHaveLength(2)
     })
-
-    expect(screen.getAllByText('Presupuesto').length).toBe(2)
   })
 
   it('should show Pasado in red when spent > budget', async () => {
