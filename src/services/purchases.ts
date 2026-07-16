@@ -63,6 +63,11 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   const startDate = new Date(year!, monthNum! - 1, 1)
   const endDate = new Date(year!, monthNum!, 0, 23, 59, 59)
 
+  const path = `users/${userId}/purchases`
+  console.log('[purchases:getPurchases] UID READ:', userId, '| month:', targetMonth)
+  console.log('[purchases:getPurchases] QUERY PATH:', path)
+  console.log('[purchases:getPurchases] startDate:', startDate.toISOString(), 'endDate:', endDate.toISOString())
+
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
@@ -72,6 +77,10 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   )
 
   const querySnapshot = await getDocs(q)
+  console.log('[purchases:getPurchases] docs found:', querySnapshot.docs.length)
+  querySnapshot.docs.forEach((d) => {
+    console.log('[purchases:getPurchases] doc id:', d.id, 'createdAt:', d.data().createdAt)
+  })
 
   return querySnapshot.docs.map((doc) => {
     const data = doc.data()

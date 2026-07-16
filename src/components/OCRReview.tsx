@@ -44,6 +44,7 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
     setSaving(true)
     setError('')
     try {
+      console.log('[OCRReview:handleSavePurchase] UID SAVE:', userId, '| imageUrl:', imageUrl, '| items count:', items.length)
       await addPurchase(userId, items, imageUrl ?? undefined)
       onSaved()
     } catch (err) {

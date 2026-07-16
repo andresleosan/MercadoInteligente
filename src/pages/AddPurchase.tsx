@@ -7,7 +7,11 @@ import OCRCapture from '@/components/OCRCapture'
 import OCRReview from '@/components/OCRReview'
 import VoiceCapture from '@/components/VoiceCapture'
 
-export default function AddPurchase() {
+interface Props {
+  onSaved?: () => void
+}
+
+export default function AddPurchase({ onSaved }: Props) {
   const { user } = useAuth()
   const [items, setItems] = useState<PurchaseItem[]>([
     { name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }
@@ -43,6 +47,10 @@ export default function AddPurchase() {
     setItems(newItems)
   }
 
+  function handleSaved() {
+    onSaved?.()
+  }
+
   function addItem() {
     setItems([...items, { name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }])
   }
@@ -66,9 +74,11 @@ export default function AddPurchase() {
     setMessage('')
 
     try {
+      console.log('[AddPurchase:handleSubmit] UID SAVE:', user.uid, '| items:', JSON.stringify(validItems))
       await addPurchase(user.uid, validItems)
       setItems([{ name: '', quantity: 1, unitPrice: 0, totalPrice: 0 }])
       setMessage('Compra registrada correctamente')
+      handleSaved()
     } catch (err) {
       console.error('Error al registrar la compra:', err)
       setMessage('Error al registrar la compra')
@@ -132,6 +142,7 @@ export default function AddPurchase() {
               ocr.reset()
               setMode('manual')
               setMessage('Compra registrada correctamente')
+              handleSaved()
             }}
             onRetry={() => {
               ocr.reset()
@@ -191,6 +202,7 @@ export default function AddPurchase() {
               setVoiceItems([])
               setMode('manual')
               setMessage('Compra registrada correctamente')
+              handleSaved()
             }}
             onRetry={() => {
               setVoiceItems([])

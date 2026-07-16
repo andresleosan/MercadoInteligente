@@ -5,9 +5,10 @@ import type { Purchase } from '@/types'
 
 interface Props {
   month?: string
+  version?: number
 }
 
-export default function PurchaseHistory({ month }: Props) {
+export default function PurchaseHistory({ month, version }: Props) {
   const { user } = useAuth()
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
@@ -20,8 +21,10 @@ export default function PurchaseHistory({ month }: Props) {
       if (!user) return
       try {
         setError('')
+        console.log('[PurchaseHistory] UID READ:', user.uid, '| month:', month)
         const data = await getPurchases(user.uid, month)
         if (isMounted) {
+          console.log('[PurchaseHistory] purchases loaded:', data.length)
           setPurchases(data)
         }
       } catch (err) {
@@ -40,7 +43,7 @@ export default function PurchaseHistory({ month }: Props) {
     return () => {
       isMounted = false
     }
-  }, [user, month])
+  }, [user, month, version])
 
   async function handleDelete(purchaseId: string) {
     if (!user) return
