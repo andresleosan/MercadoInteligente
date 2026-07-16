@@ -64,12 +64,16 @@
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
 | 6.1 | Auditoría de seguridad de nuevas features | Crío | aprobada |
-| 6.2 | Tests de integración v2 | Temis | diferido |
+| 6.2 | Tests de integración v2 | Temis | aprobada |
 | 6.3 | Optimización de performance (code splitting, lazy loading) | Hiperión | aprobada |
 | 6.4 | Revisión final de arquitectura v2 | Atlas | aprobada |
-| 6.5 | Deploy v2 a producción | Jápeto | pendiente |
+| 6.5 | Deploy v2 a producción | Jápeto | completada |
 
 > **Verificado 2026-07-13:**
 > - **6.1** (Seguridad): Login sin user enumeration, CSP en index.html, Tesseract CDN pinneado, storage rules correctas
 > - **6.3** (Performance): React.lazy en 3 rutas (Login, Register, Dashboard), vite-plugin-pwa instalado con SW generando precache de 14 entries + runtime caching para workers de Tesseract, `MonthNavigator` con React.memo, compresión de imágenes OCR (OffscreenCanvas + WebP/JPEG calidad 80, max 1920px), `getCurrentMonth()` extraído a `src/utils/date.ts`
 > - **6.5** (Deploy): Auto-deploy desde master en Cloudflare Pages (ver GitHub Actions)
+
+> **Verificado 2026-07-16:**
+> - **6.2** (Tests): 132/132 tests pasan. Corregido test de ProductEditor (valor esperado incorrecto para input numérico vacío)
+> - **6.5** (Deploy): Push a master完成, Cloudflare Pages auto-deploy activado. Commit: a45856b
