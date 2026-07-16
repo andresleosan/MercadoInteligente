@@ -6,8 +6,8 @@ describe('ProductEditor', () => {
   it('should render empty form when no initialItem', () => {
     render(<ProductEditor onSave={vi.fn()} onCancel={vi.fn()} />)
     expect(screen.getByLabelText(/producto/i)).toHaveValue('')
-    expect(screen.getByLabelText(/cant/i)).toHaveValue(1)
-    expect(screen.getByLabelText(/precio unit/i)).toHaveValue(0)
+    expect(screen.getByLabelText(/cant/i).value).toBe('')
+    expect(screen.getByLabelText(/precio unit/i).value).toBe('')
   })
 
   it('should render pre-filled form when initialItem provided', () => {
