@@ -12,38 +12,42 @@ export default function PurchaseHistory({ month, version }: Props) {
   const { user } = useAuth()
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
+  const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+
+  async function loadPurchases() {
+    if (!user) return
+    try {
+      setError('')
+      console.log('[PurchaseHistory] UID READ:', user.uid, '| month:', month)
+      const data = await getPurchases(user.uid, month)
+      console.log('[PurchaseHistory] purchases loaded:', data.length)
+      setPurchases(data)
+    } catch (err) {
+      console.error('Error al cargar compras:', err)
+      setError('Error al cargar las compras. Reintentar.')
+    }
+  }
 
   useEffect(() => {
     let isMounted = true
 
-    async function loadPurchases() {
-      if (!user) return
-      try {
-        setError('')
-        console.log('[PurchaseHistory] UID READ:', user.uid, '| month:', month)
-        const data = await getPurchases(user.uid, month)
-        if (isMounted) {
-          console.log('[PurchaseHistory] purchases loaded:', data.length)
-          setPurchases(data)
-        }
-      } catch (err) {
-        console.error('Error al cargar compras:', err)
-        if (isMounted) {
-          setError('Error al cargar las compras. Reintentar.')
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false)
-        }
-      }
+    async function initialLoad() {
+      await loadPurchases()
+      if (isMounted) setLoading(false)
     }
-    loadPurchases()
+    initialLoad()
 
     return () => {
       isMounted = false
     }
   }, [user, month, version])
+
+  async function handleRefresh() {
+    setRefreshing(true)
+    await loadPurchases()
+    setRefreshing(false)
+  }
 
   async function handleDelete(purchaseId: string) {
     if (!user) return
@@ -72,13 +76,11 @@ export default function PurchaseHistory({ month, version }: Props) {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Historial de compras</h2>
         <p className="text-sm text-red-600 mb-3">{error}</p>
         <button
-          onClick={() => {
-            setLoading(true)
-            loadPurchases()
-          }}
-          className="text-sm text-green-600 hover:text-green-800"
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
         >
-          Reintentar
+          {refreshing ? 'Actualizando...' : 'Reintentar'}
         </button>
       </div>
     )
@@ -87,7 +89,16 @@ export default function PurchaseHistory({ month, version }: Props) {
   if (purchases.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Historial de compras</h2>
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-xl font-semibold text-gray-900">Historial de compras</h2>
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
+          >
+            {refreshing ? 'Actualizando...' : 'Actualizar historial'}
+          </button>
+        </div>
         <p className="text-gray-600">Sin compras en este mes.</p>
       </div>
     )
@@ -95,7 +106,16 @@ export default function PurchaseHistory({ month, version }: Props) {
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Historial de compras</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold text-gray-900">Historial de compras</h2>
+        <button
+          onClick={handleRefresh}
+          disabled={refreshing}
+          className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
+        >
+          {refreshing ? 'Actualizando...' : 'Actualizar historial'}
+        </button>
+      </div>
 
       <div className="space-y-4">
         {purchases.map((purchase) => (
@@ -135,18 +155,4 @@ export default function PurchaseHistory({ month, version }: Props) {
       </div>
     </div>
   )
-
-  async function loadPurchases() {
-    if (!user) return
-    try {
-      setError('')
-      const data = await getPurchases(user.uid, month)
-      setPurchases(data)
-    } catch (err) {
-      console.error('Error al cargar compras:', err)
-      setError('Error al cargar las compras. Reintentar.')
-    } finally {
-      setLoading(false)
-    }
-  }
 }
