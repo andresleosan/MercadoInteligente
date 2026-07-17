@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom'
 import { loginWithEmail, loginWithGoogle } from '@/services/auth'
 import { isConfigValid } from '@/config/firebase'
 import { ShoppingCart, Loader2 } from 'lucide-react'
+import { DarkCard } from '@/components/ui/DarkCard'
+import { DarkInput } from '@/components/ui/DarkInput'
+import { DarkButton } from '@/components/ui/DarkButton'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -15,7 +18,7 @@ export default function Login() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-bg-base px-4">
         <div className="max-w-md w-full">
-          <div className="bg-surface rounded-radius-md p-6 shadow-card border border-border-subtle">
+          <DarkCard className="p-6">
             <h2 className="text-lg font-semibold text-accent-red mb-2">
               Error de configuración
             </h2>
@@ -23,7 +26,7 @@ export default function Login() {
               Las variables de entorno de Firebase no están configuradas.
               Agregá las variables VITE_FIREBASE_* en Cloudflare Pages → Settings → Environment variables.
             </p>
-          </div>
+          </DarkCard>
         </div>
       </div>
     )
@@ -64,7 +67,7 @@ export default function Login() {
           <p className="text-sm text-text-secondary mt-1">Iniciá sesión para continuar</p>
         </div>
 
-        <div className="bg-surface rounded-radius-md shadow-card border border-border-subtle p-6">
+        <DarkCard className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="bg-accent-red/10 border border-accent-red/30 rounded-radius-sm px-3 py-2">
@@ -72,40 +75,34 @@ export default function Login() {
               </div>
             )}
 
-            <div>
-              <label htmlFor="email" className="sr-only">Email</label>
-              <input
-                id="email"
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-                className="w-full px-3 py-2.5 bg-[#252530] border border-border-subtle rounded-radius-sm text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-accent-green focus:ring-1 focus:ring-accent-green/30 transition-colors"
-              />
-            </div>
+            <DarkInput
+              label="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full"
+              required
+            />
 
-            <div>
-              <label htmlFor="password" className="sr-only">Contraseña</label>
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                className="w-full px-3 py-2.5 bg-[#252530] border border-border-subtle rounded-radius-sm text-text-primary placeholder-text-muted text-sm focus:outline-none focus:border-accent-green focus:ring-1 focus:ring-accent-green/30 transition-colors"
-              />
-            </div>
+            <DarkInput
+              label="Contraseña"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              className="w-full"
+              required
+            />
 
-            <button
+            <DarkButton
               type="submit"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-accent-green text-white text-sm font-medium rounded-radius-sm hover:brightness-110 active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
               {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
-            </button>
+            </DarkButton>
           </form>
 
           <div className="relative my-5">
@@ -117,15 +114,16 @@ export default function Login() {
             </div>
           </div>
 
-          <button
+          <DarkButton
+            variant="secondary"
             onClick={handleGoogleLogin}
             disabled={loading}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white text-gray-800 text-sm font-medium rounded-radius-sm hover:bg-gray-100 active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 bg-white text-gray-800 hover:bg-gray-100 border-0"
           >
             <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
             Continuar con Google
-          </button>
-        </div>
+          </DarkButton>
+        </DarkCard>
 
         <p className="mt-6 text-center text-sm text-text-secondary">
           ¿No tenés cuenta?{' '}
