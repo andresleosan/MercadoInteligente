@@ -25,7 +25,7 @@ export function DarkInput({
   return (
     <div className="flex flex-col">
       {label && (
-        <label className="text-sm text-text-secondary mb-1">{label}</label>
+        <label htmlFor={props.id as string | undefined} className="text-sm text-text-secondary mb-1">{label}</label>
       )}
       <div className="flex items-center">
         {prefix && (

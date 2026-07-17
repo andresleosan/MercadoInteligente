@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import type { ParsedItem } from '@/types'
 import { useVoice } from '@/hooks/useVoice'
+import { DarkButton } from '@/components/ui/DarkButton'
 
 interface Props {
   onDone: (items: ParsedItem[]) => void
@@ -22,21 +23,21 @@ export default function VoiceCapture({ onDone, onBack }: Props) {
   }, [startListening, reset])
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 text-center space-y-4">
+    <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-6 text-center space-y-4">
       {status === 'idle' && (
-        <p className="text-sm text-gray-600">Preparando microfono...</p>
+        <p className="text-sm text-text-secondary">Preparando microfono...</p>
       )}
 
       {status === 'listening' && (
         <>
           <div className="flex justify-center">
-            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center animate-pulse">
+            <div className="w-16 h-16 rounded-full bg-accent-red/20 flex items-center justify-center animate-pulse">
               <span className="text-3xl">🎤</span>
             </div>
           </div>
-          <p className="text-sm text-gray-600">Escuchando...</p>
+          <p className="text-sm text-text-secondary">Escuchando...</p>
           {transcript && (
-            <p className="text-base text-gray-900 italic border rounded p-3 bg-gray-50">
+            <p className="text-base text-text-primary italic border border-border-subtle rounded-radius-md p-3 bg-elevated">
               {transcript}
             </p>
           )}
@@ -44,31 +45,33 @@ export default function VoiceCapture({ onDone, onBack }: Props) {
       )}
 
       {status === 'parsing' && (
-        <p className="text-sm text-gray-600">Procesando productos...</p>
+        <p className="text-sm text-text-secondary">Procesando productos...</p>
       )}
 
       {status === 'done' && (
-        <p className="text-sm text-green-600">Productos reconocidos</p>
+        <p className="text-sm text-accent-green">Productos reconocidos</p>
       )}
 
       {status === 'error' && (
-        <div className="bg-red-50 border border-red-200 rounded-md p-4">
-          <p className="text-sm text-red-700">{error}</p>
+        <div className="bg-accent-red/10 border border-accent-red/30 rounded-radius-md p-4">
+          <p className="text-sm text-accent-red">{error}</p>
           <div className="flex gap-2 mt-3">
-            <button
-              type="button"
+            <DarkButton
+              variant="secondary"
+              size="sm"
               onClick={() => { reset(); startListening() }}
-              className="flex-1 py-1.5 px-3 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
+              className="flex-1"
             >
               Reintentar
-            </button>
-            <button
-              type="button"
+            </DarkButton>
+            <DarkButton
+              variant="primary"
+              size="sm"
               onClick={onBack}
-              className="flex-1 py-1.5 px-3 border border-transparent rounded-md text-sm text-white bg-green-600 hover:bg-green-700"
+              className="flex-1"
             >
               Cargar manualmente
-            </button>
+            </DarkButton>
           </div>
         </div>
       )}

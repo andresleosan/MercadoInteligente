@@ -3,6 +3,7 @@ import type { ParsedItem, PurchaseItem } from '@/types'
 import { isLowConfidence } from '@/services/ticketParser'
 import { addPurchase } from '@/services/purchases'
 import ProductEditor from './ProductEditor'
+import { DarkButton } from '@/components/ui/DarkButton'
 
 interface Props {
   items: ParsedItem[]
@@ -60,11 +61,11 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
 
   return (
     <div className="space-y-4">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Revisá los productos</h2>
+      <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Revisá los productos</h2>
 
         {items.length === 0 && !adding && (
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-text-secondary mb-4">
             No reconocimos productos. Podés cargarlos manualmente o reintentar.
           </p>
         )}
@@ -73,26 +74,28 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
           {items.map((item, index) => (
             <div
               key={index}
-              className={`flex items-center justify-between p-2 rounded ${
-                item.confidence !== undefined && isLowConfidence(item.confidence) ? 'bg-yellow-50 border border-yellow-200' : ''
+              className={`flex items-center justify-between p-2 rounded-radius-md ${
+                item.confidence !== undefined && isLowConfidence(item.confidence)
+                  ? 'bg-yellow border border-accent-amber/30'
+                  : ''
               }`}
             >
-              <p className="text-sm font-medium text-gray-900">{item.name}</p>
-              <p className="text-xs text-gray-500">
+              <p className="text-sm font-medium text-text-primary">{item.name}</p>
+              <p className="text-xs text-text-muted">
                 {item.quantity}x ${item.unitPrice.toLocaleString()} = ${item.totalPrice.toLocaleString()}
               </p>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setEditingIndex(index)}
-                  className="text-xs text-blue-600 hover:text-blue-800"
+                  className="text-xs text-accent-green hover:brightness-110 transition-fast"
                 >
                   Editar
                 </button>
                 <button
                   type="button"
                   onClick={() => removeItem(index)}
-                  className="text-xs text-red-600 hover:text-red-800"
+                  className="text-xs text-accent-red hover:brightness-110 transition-fast"
                 >
                   Eliminar
                 </button>
@@ -121,35 +124,37 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
           <button
             type="button"
             onClick={() => setAdding(true)}
-            className="mt-4 text-sm text-green-600 hover:text-green-800"
+            className="mt-4 text-sm text-accent-green hover:brightness-110 transition-fast"
           >
             + Agregar producto
           </button>
         )}
       </div>
 
-      <div className="bg-white rounded-lg shadow p-4">
-        <p className="text-lg font-semibold text-gray-900">Total: ${total.toLocaleString()}</p>
-        {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
+      <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-4">
+        <p className="text-lg font-semibold text-text-primary">Total: ${total.toLocaleString()}</p>
+        {error && <p className="text-sm text-accent-red mt-1">{error}</p>}
       </div>
 
       {!adding && !isEditing && (
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={handleSavePurchase}
+          <DarkButton
+            variant="primary"
+            size="md"
             disabled={saving || items.length === 0}
-            className="flex-1 py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+            onClick={handleSavePurchase}
+            className="flex-1"
           >
             {saving ? 'Guardando...' : 'Guardar compra'}
-          </button>
-          <button
-            type="button"
+          </DarkButton>
+          <DarkButton
+            variant="secondary"
+            size="md"
             onClick={onRetry}
-            className="flex-1 py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="flex-1"
           >
             Reintentar
-          </button>
+          </DarkButton>
         </div>
       )}
     </div>

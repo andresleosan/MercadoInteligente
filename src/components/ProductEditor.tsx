@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import type { ParsedItem, PurchaseItem } from '@/types'
+import { DarkInput } from '@/components/ui/DarkInput'
+import { DarkButton } from '@/components/ui/DarkButton'
 
 interface Props {
   initialItem?: ParsedItem | PurchaseItem
@@ -25,59 +27,39 @@ export default function ProductEditor({ initialItem, onSave, onCancel }: Props) 
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-4 space-y-3">
-      <div>
-        <label htmlFor="product-editor-name" className="block text-xs font-medium text-gray-700 mb-1">Producto</label>
-        <input
-          id="product-editor-name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-          placeholder="Ej: Leche"
+    <form onSubmit={handleSubmit} className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-4 space-y-3">
+      <DarkInput
+        id="product-editor-name"
+        label="Producto"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Ej: Leche"
+      />
+      <div className="grid grid-cols-2 gap-3">
+        <DarkInput
+          id="product-editor-quantity"
+          label="Cant."
+          type="number"
+          value={quantity || ''}
+          onChange={(e) => setQuantity(Number(e.target.value))}
+          placeholder="1"
+        />
+        <DarkInput
+          id="product-editor-unit-price"
+          label="Precio unit."
+          type="number"
+          value={unitPrice || ''}
+          onChange={(e) => setUnitPrice(Number(e.target.value))}
+          placeholder="Precio"
         />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label htmlFor="product-editor-quantity" className="block text-xs font-medium text-gray-700 mb-1">Cant.</label>
-          <input
-            id="product-editor-quantity"
-            type="number"
-            min="1"
-            value={quantity || ''}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-            placeholder="1"
-          />
-        </div>
-        <div>
-          <label htmlFor="product-editor-unit-price" className="block text-xs font-medium text-gray-700 mb-1">Precio unit.</label>
-          <input
-            id="product-editor-unit-price"
-            type="number"
-            min="0"
-            step="10"
-            value={unitPrice || ''}
-            onChange={(e) => setUnitPrice(Number(e.target.value))}
-            className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-            placeholder="Precio"
-          />
-        </div>
-      </div>
       <div className="flex gap-2 pt-2">
-        <button
-          type="submit"
-          className="flex-1 py-1.5 px-3 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-        >
+        <DarkButton type="submit" variant="primary" size="sm" className="flex-1">
           Guardar
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-1.5 px-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
+        </DarkButton>
+        <DarkButton type="button" variant="secondary" size="sm" onClick={onCancel} className="flex-1">
           Cancelar
-        </button>
+        </DarkButton>
       </div>
     </form>
   )

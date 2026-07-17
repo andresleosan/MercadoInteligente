@@ -13,9 +13,9 @@ export default function OCRCapture({ onImageSelected }: Props) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 text-center">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Registrar por foto</h2>
-      <p className="text-sm text-gray-600 mb-4">
+    <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-6 text-center">
+      <h2 className="text-xl font-semibold text-text-primary mb-4">Registrar por foto</h2>
+      <p className="text-sm text-text-secondary mb-4">
         Tomá una foto del ticket o subí una imagen de la galería.
       </p>
       <label htmlFor="ocr-capture-file" className="block">
@@ -26,12 +26,12 @@ export default function OCRCapture({ onImageSelected }: Props) {
           type="file"
           accept="image/*"
           onChange={handleChange}
-          className="block w-full text-sm text-gray-500
+          className="block w-full text-sm text-text-muted
             file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
+            file:rounded-radius-md file:border-0
             file:text-sm file:font-medium
-            file:bg-green-600 file:text-white
-            hover:file:bg-green-700 file:cursor-pointer"
+            file:bg-accent-green file:text-white
+            hover:file:brightness-110 file:cursor-pointer transition-fast"
         />
       </label>
     </div>
