@@ -1,28 +1,17 @@
-# Task 4: VoiceCapture Component — Report
+# Task 4 Report: DarkButton Component
 
-## Summary
-Created `VoiceCapture.tsx` and `VoiceCapture.test.tsx` via TDD (RED → GREEN → commit).
+**Status:** DONE
 
-## Files
-- `src/components/VoiceCapture.tsx` — visual component that consumes `useVoice` hook
-- `src/components/VoiceCapture.test.tsx` — 4 passing tests
+## Changes Made
+- Created `src/components/ui/DarkButton.tsx` — DarkButton component with primary/secondary/danger variants and sm/md/lg sizes
+- Created `src/components/ui/DarkButton.test.tsx` — 9 tests covering rendering, onClick, variants, sizes, and disabled state
 
 ## Test Results
 ```
-✓ src/components/VoiceCapture.test.tsx (4 tests)
-  ✓ renderiza estado idle
-  ✓ muestra transcripcion cuando cambia el texto
-  ✓ llama onDone cuando status es done
-  ✓ muestra mensaje de error
+✓ src/components/ui/DarkButton.test.tsx (9 tests) 92ms
+Test Files  1 passed (1)
+     Tests  9 passed (9)
 ```
 
-## Implementation Details
-- Displays microphone UI with states: idle → listening → parsing → done → error
-- Uses `useEffect` to auto-start listening on mount and call `onDone` when status turns `done`
-- Cleanup via `reset()` on unmount
-- Error state shows "Reintentar" and "Cargar manualmente" buttons
-
-## Dev Notes
-- Test had to use `vi.hoisted()` for the mock variable since `vi.mock` is hoisted
-- Replaced `require('@/hooks/useVoice')` (failed on `@/` alias at runtime) with `mockUseVoice` reference
-- Idle test checks for `<p>Preparando microfono...</p>` instead of a button (no button in idle per spec)
+## Concerns
+- The brief states "(10 tests)" in Step 4 but the provided test code contains only 9 test cases. All 9 tests pass successfully. The 10th test may have been omitted from the brief's code block.
