@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { getPurchases, deletePurchase } from '@/services/purchases'
 import type { Purchase } from '@/types'
+import { DarkCard } from '@/components/ui/DarkCard'
+import { DarkButton } from '@/components/ui/DarkButton'
+import { EmptyState } from '@/components/ui/EmptyState'
 
 interface Props {
   month?: string
@@ -65,64 +68,56 @@ export default function PurchaseHistory({ month, version }: Props) {
   if (loading) {
     return (
       <div className="flex justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-green"></div>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Historial de compras</h2>
-        <p className="text-sm text-red-600 mb-3">{error}</p>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
-        >
+      <DarkCard className="p-6">
+        <h2 className="text-xl font-semibold text-text-primary mb-4">Historial de compras</h2>
+        <p className="text-sm text-accent-red mb-3">{error}</p>
+        <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
           {refreshing ? 'Actualizando...' : 'Reintentar'}
-        </button>
-      </div>
+        </DarkButton>
+      </DarkCard>
     )
   }
 
   if (purchases.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <DarkCard className="p-6">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">Historial de compras</h2>
-          <button
-            onClick={handleRefresh}
-            disabled={refreshing}
-            className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
-          >
+          <h2 className="text-xl font-semibold text-text-primary">Historial de compras</h2>
+          <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
             {refreshing ? 'Actualizando...' : 'Actualizar historial'}
-          </button>
+          </DarkButton>
         </div>
-        <p className="text-gray-600">Sin compras en este mes.</p>
-      </div>
+        <EmptyState
+          icon="🛒"
+          title="Sin compras"
+          description="No hay compras registradas en este mes."
+        />
+      </DarkCard>
     )
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <DarkCard className="p-6">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">Historial de compras</h2>
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="text-sm text-green-600 hover:text-green-800 disabled:opacity-50"
-        >
+        <h2 className="text-xl font-semibold text-text-primary">Historial de compras</h2>
+        <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
           {refreshing ? 'Actualizando...' : 'Actualizar historial'}
-        </button>
+        </DarkButton>
       </div>
 
       <div className="space-y-4">
         {purchases.map((purchase) => (
-          <div key={purchase.id} className="border-b pb-4 last:border-0">
+          <DarkCard key={purchase.id} variant="secondary" className="p-4">
             <div className="flex justify-between items-start mb-2">
               <div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-text-secondary">
                   {purchase.createdAt.toLocaleDateString('es-AR', {
                     day: '2-digit',
                     month: '2-digit',
@@ -131,28 +126,25 @@ export default function PurchaseHistory({ month, version }: Props) {
                     minute: '2-digit',
                   })}
                 </p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-lg font-semibold text-text-primary">
                   ${purchase.total.toLocaleString()}
                 </p>
               </div>
-              <button
-                onClick={() => handleDelete(purchase.id)}
-                className="text-sm text-red-600 hover:text-red-800"
-              >
+              <DarkButton variant="danger" size="sm" onClick={() => handleDelete(purchase.id)}>
                 Eliminar
-              </button>
+              </DarkButton>
             </div>
 
-            <ul className="text-sm text-gray-600 space-y-1">
+            <ul className="text-sm text-text-secondary space-y-1">
               {purchase.items.map((item, index) => (
                 <li key={index}>
                   {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
                 </li>
               ))}
             </ul>
-          </div>
+          </DarkCard>
         ))}
       </div>
-    </div>
+    </DarkCard>
   )
 }
