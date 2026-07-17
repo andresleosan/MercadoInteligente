@@ -67,3 +67,10 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Transiciones utilitarias */
+@layer utilities {
+  .transition-fast { transition: all 150ms ease; }
+  .transition-normal { transition: all 200ms ease; }
+  .transition-slow { transition: all 300ms ease; }
+}
