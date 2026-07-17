@@ -7,11 +7,15 @@ import { useNavigate } from 'react-router-dom'
 import BudgetPage from '@/pages/Budget'
 import AddPurchase from '@/pages/AddPurchase'
 import PurchaseHistory from '@/pages/PurchaseHistory'
-import MonthNavigator from '@/components/MonthNavigator'
-import usePWAInstall from '@/hooks/usePWAInstall'
 import ChartsSection from '@/components/ChartsSection'
+import usePWAInstall from '@/hooks/usePWAInstall'
 import { getCurrentMonth } from '@/utils/date'
 import ExpandableCard from '@/components/ui/ExpandableCard'
+import { DarkCard } from '@/components/ui/DarkCard'
+import { MonthSelector } from '@/components/ui/MonthSelector'
+import { KpiCard } from '@/components/ui/KpiCard'
+import { ProgressBar } from '@/components/ui/ProgressBar'
+
 import {
   Wallet,
   TrendingUp,
@@ -24,6 +28,17 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react'
+
+function stringToDate(month: string): Date {
+  const [year, monthNum] = month.split('-').map(Number)
+  return new Date(year!, monthNum! - 1, 1)
+}
+
+function dateToString(date: Date): string {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  return `${y}-${m}`
+}
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -153,50 +168,37 @@ export default function Dashboard() {
               icon={<TrendingUp size={18} />}
               defaultExpanded
             >
-              <MonthNavigator month={selectedMonth} onChange={setSelectedMonth} />
+              <MonthSelector
+                currentMonth={stringToDate(selectedMonth)}
+                onMonthChange={(date) => setSelectedMonth(dateToString(date))}
+              />
 
               <div className="mt-4 grid grid-cols-3 gap-3">
-                <div>
-                  <p className="text-xs text-text-secondary">Gastado</p>
-                  <p className="text-2xl font-bold text-text-primary">
-                    ${totalSpent.toLocaleString()}
-                  </p>
-                </div>
+                <KpiCard icon="💰" value={`$${totalSpent.toLocaleString()}`} label="Gastado" color="green" />
                 {budget !== null ? (
                   <>
-                    <div>
-                      <p className="text-xs text-text-secondary">Presupuesto</p>
-                      <p className="text-2xl font-bold text-text-primary">
-                        ${budget.toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-text-secondary">
-                        {isOverBudget ? 'Pasado' : 'Restante'}
-                      </p>
-                      <p className={`text-2xl font-bold ${isOverBudget ? 'text-accent-red' : 'text-accent-green'}`}>
-                        ${Math.abs(remaining).toLocaleString()}
-                      </p>
-                    </div>
+                    <KpiCard icon="📊" value={`$${budget.toLocaleString()}`} label="Presupuesto" color="green" />
+                    <KpiCard
+                      icon={isOverBudget ? '⚠️' : '✅'}
+                      value={`$${Math.abs(remaining).toLocaleString()}`}
+                      label={isOverBudget ? 'Pasado' : 'Restante'}
+                      color={isOverBudget ? 'red' : 'green'}
+                    />
                   </>
                 ) : (
-                  <div className="col-span-2">
+                  <DarkCard className="col-span-2 p-4 text-center">
                     <p className="text-xs text-text-secondary">Presupuesto</p>
                     <p className="text-sm text-text-muted mt-1">Sin presupuesto</p>
-                  </div>
+                  </DarkCard>
                 )}
               </div>
 
               {budget !== null && budget > 0 && (
                 <div className="mt-4">
-                  <div className="w-full bg-border-subtle rounded-full h-2">
-                    <div
-                      className={`h-2 rounded-full transition-all ${
-                        percentage > 100 ? 'bg-accent-red' : percentage > 80 ? 'bg-accent-amber' : 'bg-accent-green'
-                      }`}
-                      style={{ width: `${Math.min(percentage, 100)}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    percentage={percentage}
+                    color={percentage > 100 ? 'red' : percentage > 80 ? 'amber' : 'green'}
+                  />
                   <p className="text-xs text-text-muted mt-2">
                     {percentage.toFixed(1)}% del presupuesto utilizado
                   </p>

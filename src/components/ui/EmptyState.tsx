@@ -1,4 +1,3 @@
-import React from 'react'
 import { DarkButton } from './DarkButton'
 
 interface EmptyStateProps {

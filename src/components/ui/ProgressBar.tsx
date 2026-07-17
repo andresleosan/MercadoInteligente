@@ -22,7 +22,7 @@ export function ProgressBar({
   }
 
   // Extract data-testid from props to apply to inner fill bar
-  const { 'data-testid': testId, ...restProps } = props
+  const { 'data-testid': testId, ...restProps } = props as React.HTMLAttributes<HTMLDivElement> & { 'data-testid'?: string }
 
   return (
     <div className="relative" {...restProps}>
