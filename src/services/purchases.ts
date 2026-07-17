@@ -12,12 +12,15 @@ import {
 } from 'firebase/firestore'
 import { db, isConfigValid } from '@/config/firebase'
 import type { Purchase, PurchaseItem } from '@/types'
-import { getCurrentMonth } from '@/utils/date'
+import { getCurrentMonth, getCurrentDate } from '@/utils/date'
 
 export async function addPurchase(
   userId: string,
   items: PurchaseItem[],
-  receiptImageUrl?: string
+  receiptImageUrl?: string,
+  storeId?: string,
+  storeName?: string,
+  purchaseDate?: string
 ): Promise<Purchase> {
   if (!db) throw new Error('Firebase no inicializado')
   
@@ -27,6 +30,9 @@ export async function addPurchase(
     userId,
     items,
     total,
+    storeId: storeId || '',
+    storeName: storeName || 'Sin establecimiento',
+    purchaseDate: purchaseDate || getCurrentDate(),
     createdAt: serverTimestamp(),
   }
   if (receiptImageUrl !== undefined) {
@@ -47,6 +53,9 @@ export async function addPurchase(
   return {
     id: docRef.id,
     userId,
+    storeId: storeId || '',
+    storeName: storeName || 'Sin establecimiento',
+    purchaseDate: purchaseDate || getCurrentDate(),
     items,
     total,
     receiptImageUrl,
@@ -87,6 +96,9 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
     return {
       id: doc.id,
       userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
@@ -129,10 +141,132 @@ export async function getPurchasesByDateRange(
     return {
       id: doc.id,
       userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
       createdAt: data.createdAt?.toDate() || new Date(),
     }
   })
+}
+
+export async function getTodayPurchases(userId: string, date?: string): Promise<Purchase[]> {
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
+
+  const targetDate = date || getCurrentDate()
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('purchaseDate', '==', targetDate),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+  })
+}
+
+export async function getPurchasesByStore(
+  userId: string,
+  storeId: string,
+  month?: string
+): Promise<Purchase[]> {
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
+
+  const targetMonth = month || getCurrentMonth()
+  const [year, monthNum] = targetMonth.split('-').map(Number)
+
+  const startDate = new Date(year!, monthNum! - 1, 1)
+  const endDate = new Date(year!, monthNum!, 0, 23, 59, 59)
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('storeId', '==', storeId),
+    where('createdAt', '>=', Timestamp.fromDate(startDate)),
+    where('createdAt', '<=', Timestamp.fromDate(endDate)),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  return querySnapshot.docs.map((doc) => {
+    const data = doc.data()
+    return {
+      id: doc.id,
+      userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+  })
+}
+
+export async function getPurchasesGroupedByDate(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<Map<string, Purchase[]>> {
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
+
+  const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
+  const [endYear, endMonth, endDay] = endDate.split('-').map(Number)
+
+  const start = new Date(startYear!, startMonth! - 1, startDay)
+  const end = new Date(endYear!, endMonth! - 1, endDay!, 23, 59, 59)
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('createdAt', '>=', Timestamp.fromDate(start)),
+    where('createdAt', '<=', Timestamp.fromDate(end)),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  const grouped = new Map<string, Purchase[]>()
+
+  querySnapshot.docs.forEach((doc) => {
+    const data = doc.data()
+    const purchase: Purchase = {
+      id: doc.id,
+      userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+
+    const dateKey = purchase.purchaseDate
+    if (!grouped.has(dateKey)) {
+      grouped.set(dateKey, [])
+    }
+    grouped.get(dateKey)!.push(purchase)
+  })
+
+  return grouped
 }

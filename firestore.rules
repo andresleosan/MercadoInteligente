@@ -14,11 +14,25 @@ service cloud.firestore {
     match /users/{userId} {
       allow read, write: if isAuthenticated() && isOwner(userId);
       
+      // DEPRECADA — mantener solo para histórico
       match /budgets/{budgetId} {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
       
       match /purchases/{purchaseId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      // NUEVAS — Fase 1 rearquitectura
+      match /stores/{storeId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      match /dailyBudgets/{date} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
+      match /storeBudgets/{dateStoreId} {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
     }
