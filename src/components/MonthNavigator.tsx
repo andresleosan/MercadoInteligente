@@ -26,21 +26,21 @@ function formatLabel(month: string): string {
 
 export default memo(function MonthNavigator({ month, onChange }: Props) {
   return (
-    <div className="flex items-center justify-between bg-white rounded-lg shadow p-4">
+    <div className="flex items-center justify-between bg-surface rounded-lg shadow p-4">
       <button
         type="button"
         aria-label="Mes anterior"
         onClick={() => onChange(shiftMonth(month, -1))}
-        className="p-2 rounded-md text-gray-600 hover:bg-gray-100 text-xl"
+        className="p-2 rounded-md text-text-secondary hover:bg-elevated hover:text-text-primary transition-all text-xl"
       >
         ←
       </button>
-      <span className="text-lg font-semibold text-gray-900">{formatLabel(month)}</span>
+      <span className="text-lg font-semibold text-text-primary">{formatLabel(month)}</span>
       <button
         type="button"
         aria-label="Mes siguiente"
         onClick={() => onChange(shiftMonth(month, 1))}
-        className="p-2 rounded-md text-gray-600 hover:bg-gray-100 text-xl"
+        className="p-2 rounded-md text-text-secondary hover:bg-elevated hover:text-text-primary transition-all text-xl"
       >
         →
       </button>
