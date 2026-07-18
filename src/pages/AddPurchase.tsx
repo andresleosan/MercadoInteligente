@@ -1,11 +1,14 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
+import { useStores } from '@/hooks/useStores'
 import { addPurchase } from '@/services/purchases'
-import type { PurchaseItem, ParsedItem } from '@/types'
+import { getCurrentDate } from '@/utils/date'
+import type { PurchaseItem, ParsedItem, Store } from '@/types'
 import OCRCapture from '@/components/OCRCapture'
 import OCRReview from '@/components/OCRReview'
 import VoiceCapture from '@/components/VoiceCapture'
+import StoreSelector from '@/components/StoreSelector'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkInput } from '@/components/ui/DarkInput'
 import { DarkButton } from '@/components/ui/DarkButton'
@@ -16,6 +19,9 @@ interface Props {
 
 export default function AddPurchase({ onSaved }: Props) {
   const { user } = useAuth()
+  const stores = useStores(user?.uid ?? null)
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null)
+  const [selectedDate, setSelectedDate] = useState(getCurrentDate())
   const [items, setItems] = useState<PurchaseItem[]>([
     { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }
   ])
@@ -78,7 +84,14 @@ export default function AddPurchase({ onSaved }: Props) {
 
     try {
       console.log('[AddPurchase:handleSubmit] UID SAVE:', user.uid, '| items:', JSON.stringify(validItems))
-      await addPurchase(user.uid, validItems)
+      await addPurchase(
+        user.uid,
+        validItems,
+        undefined,
+        selectedStore?.id || '',
+        selectedStore?.name || 'Sin establecimiento',
+        selectedDate
+      )
       setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
       setMessage('Compra registrada correctamente')
       handleSaved()
@@ -99,21 +112,43 @@ export default function AddPurchase({ onSaved }: Props) {
       </h2>
 
       {mode === 'manual' && (
-        <div className="mb-6 space-y-2">
-          <DarkButton
-            variant="secondary"
-            onClick={() => setMode('photo')}
-            className="w-full"
-          >
-            📷 Registrar por foto
-          </DarkButton>
-          <DarkButton
-            variant="secondary"
-            onClick={() => setMode('voice')}
-            className="w-full"
-          >
-            🎤 Registrar por voz
-          </DarkButton>
+        <div className="mb-6 space-y-4">
+          <StoreSelector
+            stores={stores.stores}
+            selectedStore={selectedStore}
+            onSelect={setSelectedStore}
+            onCreateInline={stores.create}
+            loading={stores.loading}
+          />
+
+          <div>
+            <label className="block text-xs font-medium text-text-secondary mb-1.5">
+              Fecha de compra
+            </label>
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="w-full h-10 px-3 bg-bg-input border border-border-subtle rounded-radius-sm text-sm text-text-primary focus:outline-none focus:border-accent-green transition-colors"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <DarkButton
+              variant="secondary"
+              onClick={() => setMode('photo')}
+              className="w-full"
+            >
+              📷 Registrar por foto
+            </DarkButton>
+            <DarkButton
+              variant="secondary"
+              onClick={() => setMode('voice')}
+              className="w-full"
+            >
+              🎤 Registrar por voz
+            </DarkButton>
+          </div>
         </div>
       )}
 
@@ -141,6 +176,9 @@ export default function AddPurchase({ onSaved }: Props) {
             items={ocr.items}
             imageUrl={ocr.imageUrl}
             userId={user!.uid}
+            storeId={selectedStore?.id}
+            storeName={selectedStore?.name}
+            purchaseDate={selectedDate}
             onSaved={() => {
               ocr.reset()
               setMode('manual')
@@ -201,6 +239,9 @@ export default function AddPurchase({ onSaved }: Props) {
             items={voiceItems}
             imageUrl={null}
             userId={user!.uid}
+            storeId={selectedStore?.id}
+            storeName={selectedStore?.name}
+            purchaseDate={selectedDate}
             onSaved={() => {
               setVoiceItems([])
               setMode('manual')

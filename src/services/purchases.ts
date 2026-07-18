@@ -270,3 +270,52 @@ export async function getPurchasesGroupedByDate(
 
   return grouped
 }
+
+export async function getPurchasesGroupedByStore(
+  userId: string,
+  startDate: string,
+  endDate: string
+): Promise<Map<string, Purchase[]>> {
+  if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
+
+  const [startYear, startMonth, startDay] = startDate.split('-').map(Number)
+  const [endYear, endMonth, endDay] = endDate.split('-').map(Number)
+
+  const start = new Date(startYear!, startMonth! - 1, startDay)
+  const end = new Date(endYear!, endMonth! - 1, endDay!, 23, 59, 59)
+
+  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const q = query(
+    purchasesRef,
+    where('createdAt', '>=', Timestamp.fromDate(start)),
+    where('createdAt', '<=', Timestamp.fromDate(end)),
+    orderBy('createdAt', 'desc')
+  )
+
+  const querySnapshot = await getDocs(q)
+
+  const grouped = new Map<string, Purchase[]>()
+
+  querySnapshot.docs.forEach((doc) => {
+    const data = doc.data()
+    const purchase: Purchase = {
+      id: doc.id,
+      userId: data.userId,
+      storeId: data.storeId || '',
+      storeName: data.storeName || 'Sin establecimiento',
+      purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
+      items: data.items,
+      total: data.total,
+      receiptImageUrl: data.receiptImageUrl,
+      createdAt: data.createdAt?.toDate() || new Date(),
+    }
+
+    const storeKey = purchase.storeId || '__no_store__'
+    if (!grouped.has(storeKey)) {
+      grouped.set(storeKey, [])
+    }
+    grouped.get(storeKey)!.push(purchase)
+  })
+
+  return grouped
+}

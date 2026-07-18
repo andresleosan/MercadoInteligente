@@ -51,3 +51,27 @@ export function daysBetween(date1: string, date2: string): number {
   const diffTime = Math.abs(d2Obj.getTime() - d1Obj.getTime())
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
+
+export function getDaysInMonth(month: string): number {
+  const [year, monthNum] = month.split('-').map(Number)
+  return new Date(year!, monthNum!, 0).getDate()
+}
+
+export function formatDateDisplay(dateStr: string): string {
+  const [year, month, day] = dateStr.split('-').map(Number)
+  const date = new Date(year!, month! - 1, day)
+  return date.toLocaleDateString('es-AR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  })
+}
+
+export function getMonthRange(month: string): { start: string; end: string } {
+  const [year, monthNum] = month.split('-').map(Number)
+  const days = getDaysInMonth(month)
+  return {
+    start: `${year}-${String(monthNum).padStart(2, '0')}-01`,
+    end: `${year}-${String(monthNum).padStart(2, '0')}-${String(days).padStart(2, '0')}`,
+  }
+}

@@ -6,6 +6,8 @@ import ProtectedRoute from '@/components/ProtectedRoute'
 const Login = lazy(() => import('@/pages/Login'))
 const Register = lazy(() => import('@/pages/Register'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
+const Analytics = lazy(() => import('@/pages/Analytics'))
+const StoreManager = lazy(() => import('@/pages/StoreManager'))
 
 function Loading() {
   return (
@@ -28,6 +30,22 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/stores"
+              element={
+                <ProtectedRoute>
+                  <StoreManager />
                 </ProtectedRoute>
               }
             />

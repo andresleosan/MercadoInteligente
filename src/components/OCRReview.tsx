@@ -9,11 +9,23 @@ interface Props {
   items: ParsedItem[]
   imageUrl: string | null
   userId: string
+  storeId?: string
+  storeName?: string
+  purchaseDate?: string
   onSaved: () => void
   onRetry: () => void
 }
 
-export default function OCRReview({ items: initialItems, imageUrl, userId, onSaved, onRetry }: Props) {
+export default function OCRReview({
+  items: initialItems,
+  imageUrl,
+  userId,
+  storeId,
+  storeName,
+  purchaseDate,
+  onSaved,
+  onRetry,
+}: Props) {
   const [items, setItems] = useState<PurchaseItem[]>(initialItems)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
   const [adding, setAdding] = useState(false)
@@ -46,7 +58,14 @@ export default function OCRReview({ items: initialItems, imageUrl, userId, onSav
     setError('')
     try {
       console.log('[OCRReview:handleSavePurchase] UID SAVE:', userId, '| imageUrl:', imageUrl, '| items count:', items.length)
-      await addPurchase(userId, items, imageUrl ?? undefined)
+      await addPurchase(
+        userId,
+        items,
+        imageUrl ?? undefined,
+        storeId || '',
+        storeName || 'Sin establecimiento',
+        purchaseDate
+      )
       onSaved()
     } catch (err) {
       console.error('Error al guardar compra desde OCR:', err)

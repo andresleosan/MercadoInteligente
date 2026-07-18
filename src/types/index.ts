@@ -75,3 +75,17 @@ export interface StoreBudget {
   createdAt: Date
   updatedAt: Date
 }
+
+export interface DailySpending {
+  date: string
+  total: number
+  byStore: Map<string, number>
+}
+
+export interface StoreSpending {
+  storeId: string
+  storeName: string
+  total: number
+  purchaseCount: number
+  lastPurchase: Date
+}

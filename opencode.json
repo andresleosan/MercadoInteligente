@@ -1,12 +1,14 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "model": "opencode-go/deepseek-v4-flash-free",
+  "model": "opencode/mimo-v2-5-free",
   "permission": {
     "bash": {
       "*": "allow",
       "rm -rf *": "deny",
       "git push --force*": "deny",
       "sudo *": "ask",
+      "*migrate*": "ask",
+      "*--prod*": "ask",
       "cat *.env*": "ask",
       "cat *secret*": "ask",
       "cat *credential*": "ask",
@@ -16,112 +18,14 @@
     }
   },
   "agent": {
-    "cronos": {
-      "description": "Orquestador principal de la Agencia Los Titanes",
+    "Cronos3.3": {
+      "description": "Cronos 3.3 — agente único: arquitectura, backend, frontend, datos, integraciones, seguridad, QA, rendimiento y despliegue",
       "mode": "primary",
-      "model": "opencode-go/deepseek-v4-flash-free",
+      "model": "opencode/mimo-v2-5-free",
       "tools": {
         "write": true,
         "edit": true,
         "bash": true
-      }
-    },
-    "tetis": {
-      "description": "Titán Tetis — bases de datos",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": true
-      },
-      "permission": {
-        "bash": {
-          "*": "allow",
-          "rm -rf *": "deny",
-          "git push --force*": "deny",
-          "sudo *": "ask",
-          "*migrate*": "ask",
-          "cat *.env*": "ask",
-          "cat *secret*": "ask",
-          "cat *credential*": "ask",
-          "env": "ask",
-          "printenv*": "ask",
-          "history": "ask"
-        }
-      }
-    },
-    "atlas": {
-      "description": "Arquitectura y análisis de stack",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
-    },
-    "prometeo": {
-      "description": "Backend y lógica de negocio",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
-    },
-    "hefesto": {
-      "description": "Frontend y experiencia visual",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      }
-    },
-    "temis": {
-      "description": "QA, pruebas y validación",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": false,
-        "bash": true
-      }
-    },
-    "coeus": {
-      "description": "Titán Ceo (Coeus) — CEO / Producto: define alcance y prioridades",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": false,
-        "bash": false
-      }
-    },
-    "crio": {
-      "description": "Seguridad y autenticación",
-      "mode": "subagent",
-      "model": "opencode-go/deepseek-v4-flash-free",
-      "tools": {
-        "write": true,
-        "edit": true,
-        "bash": true
-      },
-      "permission": {
-        "bash": {
-          "*": "allow",
-          "rm -rf *": "deny",
-          "git push --force*": "deny",
-          "sudo *": "ask",
-          "cat *.env*": "ask",
-          "cat *secret*": "ask",
-          "cat *credential*": "ask",
-          "env": "ask",
-          "printenv*": "ask",
-          "history": "ask"
-        }
       }
     }
   },

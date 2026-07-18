@@ -1,20 +1,18 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { logout } from '@/services/auth'
-import { getBudget } from '@/services/budget'
 import { getTotalSpent } from '@/services/purchases'
 import { useNavigate } from 'react-router-dom'
 import BudgetPage from '@/pages/Budget'
 import AddPurchase from '@/pages/AddPurchase'
 import PurchaseHistory from '@/pages/PurchaseHistory'
 import ChartsSection from '@/components/ChartsSection'
+import TodayPurchases from '@/components/TodayPurchases'
 import usePWAInstall from '@/hooks/usePWAInstall'
-import { getCurrentMonth } from '@/utils/date'
+import { getCurrentMonth, getCurrentDate } from '@/utils/date'
 import ExpandableCard from '@/components/ui/ExpandableCard'
-import { DarkCard } from '@/components/ui/DarkCard'
 import { MonthSelector } from '@/components/ui/MonthSelector'
 import { KpiCard } from '@/components/ui/KpiCard'
-import { ProgressBar } from '@/components/ui/ProgressBar'
 
 import {
   Wallet,
@@ -27,6 +25,8 @@ import {
   User,
   AlertCircle,
   Loader2,
+  ShoppingBag,
+  Calendar,
 } from 'lucide-react'
 
 function stringToDate(month: string): Date {
@@ -44,11 +44,11 @@ export default function Dashboard() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth)
-  const [budget, setBudget] = useState<number | null>(null)
+  const [selectedDate] = useState(getCurrentDate)
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [budgetVersion, setBudgetVersion] = useState(0)
+  const [, setBudgetVersion] = useState(0)
   const [purchaseVersion, setPurchaseVersion] = useState(0)
   const { isInstallable, promptInstall } = usePWAInstall()
 
@@ -61,14 +61,8 @@ export default function Dashboard() {
       setError('')
 
       try {
-        const [budgetData, spent] = await Promise.all([
-          getBudget(user.uid, selectedMonth),
-          getTotalSpent(user.uid, selectedMonth),
-        ])
-
+        const spent = await getTotalSpent(user.uid, selectedMonth)
         if (!isMounted) return
-
-        setBudget(budgetData ? budgetData.amount : null)
         setTotalSpent(spent)
       } catch {
         if (isMounted) {
@@ -82,11 +76,8 @@ export default function Dashboard() {
     }
 
     loadData()
-
-    return () => {
-      isMounted = false
-    }
-  }, [user, selectedMonth, budgetVersion, purchaseVersion])
+    return () => { isMounted = false }
+  }, [user, selectedMonth, purchaseVersion])
 
   async function handleLogout() {
     try {
@@ -96,10 +87,6 @@ export default function Dashboard() {
       setError('Error al cerrar sesión.')
     }
   }
-
-  const remaining = budget !== null ? budget - totalSpent : 0
-  const isOverBudget = budget !== null && totalSpent > budget
-  const percentage = budget !== null && budget > 0 ? (totalSpent / budget) * 100 : 0
 
   return (
     <div className="min-h-screen bg-bg-base">
@@ -150,23 +137,47 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {/* 1. Presupuesto */}
+            {/* 1. Compras de hoy */}
             <ExpandableCard
-              title="Presupuesto"
-              icon={<Wallet size={18} />}
+              title="Compras de hoy"
+              icon={<ShoppingBag size={18} />}
               defaultExpanded
             >
+              <TodayPurchases date={selectedDate} refreshKey={purchaseVersion} />
+            </ExpandableCard>
+
+            {/* 2. Registrar compra */}
+            <ExpandableCard
+              title="Registrar compra"
+              icon={<PlusCircle size={18} />}
+              defaultExpanded
+            >
+              <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
+            </ExpandableCard>
+
+            {/* 3. Presupuesto diario */}
+            <ExpandableCard
+              title="Presupuesto diario"
+              icon={<Calendar size={18} />}
+            >
               <BudgetPage
-                month={selectedMonth}
+                date={selectedDate}
                 onSaved={() => setBudgetVersion(v => v + 1)}
               />
             </ExpandableCard>
 
-            {/* 2. Resumen del mes */}
+            {/* 4. Historial */}
             <ExpandableCard
-              title="Resumen del mes"
+              title="Historial"
+              icon={<History size={18} />}
+            >
+              <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
+            </ExpandableCard>
+
+            {/* 5. Resumen mensual */}
+            <ExpandableCard
+              title="Resumen mensual"
               icon={<TrendingUp size={18} />}
-              defaultExpanded
             >
               <MonthSelector
                 currentMonth={stringToDate(selectedMonth)}
@@ -175,54 +186,12 @@ export default function Dashboard() {
 
               <div className="mt-4 grid grid-cols-3 gap-3">
                 <KpiCard icon="💰" value={`$${totalSpent.toLocaleString()}`} label="Gastado" color="green" />
-                {budget !== null ? (
-                  <>
-                    <KpiCard icon="📊" value={`$${budget.toLocaleString()}`} label="Presupuesto" color="green" />
-                    <KpiCard
-                      icon={isOverBudget ? '⚠️' : '✅'}
-                      value={`$${Math.abs(remaining).toLocaleString()}`}
-                      label={isOverBudget ? 'Pasado' : 'Restante'}
-                      color={isOverBudget ? 'red' : 'green'}
-                    />
-                  </>
-                ) : (
-                  <DarkCard className="col-span-2 p-4 text-center">
-                    <p className="text-xs text-text-secondary">Presupuesto</p>
-                    <p className="text-sm text-text-muted mt-1">Sin presupuesto</p>
-                  </DarkCard>
-                )}
+                <KpiCard icon="📊" value={selectedMonth} label="Mes" color="green" />
+                <KpiCard icon="🛒" value={`${purchaseVersion}`} label="Compras" color="green" />
               </div>
-
-              {budget !== null && budget > 0 && (
-                <div className="mt-4">
-                  <ProgressBar
-                    percentage={percentage}
-                    color={percentage > 100 ? 'red' : percentage > 80 ? 'amber' : 'green'}
-                  />
-                  <p className="text-xs text-text-muted mt-2">
-                    {percentage.toFixed(1)}% del presupuesto utilizado
-                  </p>
-                </div>
-              )}
             </ExpandableCard>
 
-            {/* 3. Historial de compras */}
-            <ExpandableCard
-              title="Historial de compras"
-              icon={<History size={18} />}
-            >
-              <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
-            </ExpandableCard>
-
-            {/* 4. Registrar compra */}
-            <ExpandableCard
-              title="Registrar compra"
-              icon={<PlusCircle size={18} />}
-            >
-              <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
-            </ExpandableCard>
-
-            {/* 5. Gráficos */}
+            {/* 6. Gráficos */}
             <ExpandableCard
               title="Gráficos"
               icon={<BarChart3 size={18} />}

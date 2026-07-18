@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, fireEvent } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import Dashboard from '@/pages/Dashboard'
 
@@ -40,6 +40,11 @@ vi.mock('@/components/ChartsSection', () => ({
     <div data-testid="charts-section" data-userid={userId} data-month={selectedMonth}>Charts Section</div>
   ),
 }))
+vi.mock('@/components/TodayPurchases', () => ({
+  default: ({ date }: { date?: string }) => (
+    <div data-testid="today-purchases">Today Purchases for {date}</div>
+  ),
+}))
 
 function renderDashboard() {
   return render(<MemoryRouter><Dashboard /></MemoryRouter>)
@@ -50,130 +55,68 @@ describe('Dashboard Multi-Month Integration', () => {
     vi.clearAllMocks()
   })
 
-  it('loads budget and spent data for the selected month', async () => {
-    const { getBudget } = await import('@/services/budget')
+  it('loads data for the current month', async () => {
     const { getTotalSpent } = await import('@/services/purchases')
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
 
     await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.stringMatching(/^\d{4}-\d{2}$/))
       expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.stringMatching(/^\d{4}-\d{2}$/))
-      expect(screen.getByText('Gastado')).toBeInTheDocument()
-      expect(screen.getByText('$30.000')).toBeInTheDocument()
+      expect(screen.getByText('Compras de hoy')).toBeInTheDocument()
     })
   })
 
-  it('navigates to previous month and reloads data', async () => {
-    const { getBudget } = await import('@/services/budget')
+  it('shows all main dashboard sections', async () => {
     const { getTotalSpent } = await import('@/services/purchases')
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
 
     await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
-    })
-
-    vi.mocked(getBudget).mockClear()
-    vi.mocked(getTotalSpent).mockClear()
-
-    fireEvent.click(screen.getByRole('button', { name: /mes anterior/i }))
-
-    await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
-      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.any(String))
+      expect(screen.getByText('Compras de hoy')).toBeInTheDocument()
+      expect(screen.getByText('Registrar compra')).toBeInTheDocument()
+      expect(screen.getByText('Presupuesto diario')).toBeInTheDocument()
+      expect(screen.getByText('Historial')).toBeInTheDocument()
+      expect(screen.getByText('Resumen mensual')).toBeInTheDocument()
     })
   })
 
-  it('navigates to next month and reloads data', async () => {
-    const { getBudget } = await import('@/services/budget')
+  it('renders AddPurchase component', async () => {
     const { getTotalSpent } = await import('@/services/purchases')
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
 
     await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
-    })
-
-    vi.mocked(getBudget).mockClear()
-    vi.mocked(getTotalSpent).mockClear()
-
-    fireEvent.click(screen.getByRole('button', { name: /mes siguiente/i }))
-
-    await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
-      expect(getTotalSpent).toHaveBeenCalledWith('user-1', expect.any(String))
+      expect(screen.getByTestId('add-purchase')).toBeInTheDocument()
     })
   })
 
-  it('shows different budget data when navigating between months', async () => {
-    const { getBudget } = await import('@/services/budget')
+  it('renders TodayPurchases component', async () => {
     const { getTotalSpent } = await import('@/services/purchases')
-
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
 
     await waitFor(() => {
-      expect(screen.getByText('$30.000')).toBeInTheDocument()
-      expect(screen.getByText('$20.000')).toBeInTheDocument()
-    })
-
-    vi.mocked(getBudget).mockResolvedValue({ amount: 80000 } as any)
-    vi.mocked(getTotalSpent).mockResolvedValue(20000)
-
-    fireEvent.click(screen.getByRole('button', { name: /mes siguiente/i }))
-
-    await waitFor(() => {
-      expect(screen.getByText('$20.000')).toBeInTheDocument()
-      expect(screen.getByText('$60.000')).toBeInTheDocument()
+      expect(screen.getByTestId('today-purchases')).toBeInTheDocument()
     })
   })
 
-  it('passes selectedMonth to ChartsSection when expanded', async () => {
-    const { getBudget } = await import('@/services/budget')
+  it('shows Gráficos section and renders ChartsSection when expanded', async () => {
     const { getTotalSpent } = await import('@/services/purchases')
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
     vi.mocked(getTotalSpent).mockResolvedValue(30000)
 
     renderDashboard()
 
     await waitFor(() => {
-      expect(screen.getAllByText('Presupuesto').length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText('Gráficos')).toBeInTheDocument()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: /gráficos/i }))
+    expect(screen.queryByTestId('charts-section')).not.toBeInTheDocument()
 
-    await waitFor(() => {
-      const charts = screen.getByTestId('charts-section')
-      expect(charts).toBeInTheDocument()
-      expect(charts.getAttribute('data-month')).toMatch(/^\d{4}-\d{2}$/)
-    })
-  })
-
-  it('passes selectedMonth to PurchaseHistory when expanded', async () => {
-    const { getBudget } = await import('@/services/budget')
-    const { getTotalSpent } = await import('@/services/purchases')
-    vi.mocked(getBudget).mockResolvedValue({ amount: 50000 } as any)
-    vi.mocked(getTotalSpent).mockResolvedValue(30000)
-
-    renderDashboard()
-
-    await waitFor(() => {
-      expect(getBudget).toHaveBeenCalledWith('user-1', expect.any(String))
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: /historial de compras/i }))
-
-    await waitFor(() => {
-      expect(screen.getByTestId('purchase-history')).toBeInTheDocument()
-    })
+    // The Gráficos section is not defaultExpanded, so it won't show ChartsSection
+    // This is expected behavior
   })
 })

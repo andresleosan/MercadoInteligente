@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { getPurchases, deletePurchase } from '@/services/purchases'
+import { getPurchases, deletePurchase, getPurchasesGroupedByDate, getPurchasesGroupedByStore } from '@/services/purchases'
+import { getMonthRange, formatDateDisplay } from '@/utils/date'
 import type { Purchase } from '@/types'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkButton } from '@/components/ui/DarkButton'
@@ -11,32 +12,45 @@ interface Props {
   version?: number
 }
 
+type ViewMode = 'date' | 'store'
+
 export default function PurchaseHistory({ month, version }: Props) {
   const { user } = useAuth()
   const [purchases, setPurchases] = useState<Purchase[]>([])
+  const [groupedByDate, setGroupedByDate] = useState<Map<string, Purchase[]>>(new Map())
+  const [groupedByStore, setGroupedByStore] = useState<Map<string, Purchase[]>>(new Map())
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const [viewMode, setViewMode] = useState<ViewMode>('date')
 
-  async function loadPurchases() {
+  const loadData = useCallback(async () => {
     if (!user) return
     try {
       setError('')
-      console.log('[PurchaseHistory] UID READ:', user.uid, '| month:', month)
-      const data = await getPurchases(user.uid, month)
-      console.log('[PurchaseHistory] purchases loaded:', data.length)
-      setPurchases(data)
+      const targetMonth = month || new Date().toISOString().slice(0, 7)
+      const { start, end } = getMonthRange(targetMonth)
+
+      const [flat, byDate, byStore] = await Promise.all([
+        getPurchases(user.uid, month),
+        getPurchasesGroupedByDate(user.uid, start, end),
+        getPurchasesGroupedByStore(user.uid, start, end),
+      ])
+
+      setPurchases(flat)
+      setGroupedByDate(byDate)
+      setGroupedByStore(byStore)
     } catch (err) {
       console.error('Error al cargar compras:', err)
       setError('Error al cargar las compras. Reintentar.')
     }
-  }
+  }, [user, month])
 
   useEffect(() => {
     let isMounted = true
 
     async function initialLoad() {
-      await loadPurchases()
+      await loadData()
       if (isMounted) setLoading(false)
     }
     initialLoad()
@@ -44,11 +58,11 @@ export default function PurchaseHistory({ month, version }: Props) {
     return () => {
       isMounted = false
     }
-  }, [user, month, version])
+  }, [loadData, version])
 
   async function handleRefresh() {
     setRefreshing(true)
-    await loadPurchases()
+    await loadData()
     setRefreshing(false)
   }
 
@@ -58,7 +72,7 @@ export default function PurchaseHistory({ month, version }: Props) {
 
     try {
       await deletePurchase(user.uid, purchaseId)
-      setPurchases(purchases.filter((p) => p.id !== purchaseId))
+      await loadData()
     } catch (err) {
       console.error('Error al eliminar compra:', err)
       alert('Error al eliminar la compra. Intentá de nuevo.')
@@ -103,48 +117,140 @@ export default function PurchaseHistory({ month, version }: Props) {
     )
   }
 
+  const sortedDates = Array.from(groupedByDate.keys()).sort().reverse()
+  const sortedStores = Array.from(groupedByStore.keys()).sort()
+
   return (
     <DarkCard className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-text-primary">Historial de compras</h2>
-        <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
-          {refreshing ? 'Actualizando...' : 'Actualizar historial'}
-        </DarkButton>
+        <div className="flex gap-2">
+          <DarkButton
+            variant={viewMode === 'date' ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setViewMode('date')}
+          >
+            Por fecha
+          </DarkButton>
+          <DarkButton
+            variant={viewMode === 'store' ? 'primary' : 'secondary'}
+            size="sm"
+            onClick={() => setViewMode('store')}
+          >
+            Por tienda
+          </DarkButton>
+          <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
+            {refreshing ? '...' : '↻'}
+          </DarkButton>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        {purchases.map((purchase) => (
-          <DarkCard key={purchase.id} variant="secondary" className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <p className="text-sm text-text-secondary">
-                  {purchase.createdAt.toLocaleDateString('es-AR', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </p>
-                <p className="text-lg font-semibold text-text-primary">
-                  ${purchase.total.toLocaleString()}
-                </p>
+      {viewMode === 'date' && (
+        <div className="space-y-4">
+          {sortedDates.map(date => {
+            const dayPurchases = groupedByDate.get(date) || []
+            const dayTotal = dayPurchases.reduce((sum, p) => sum + p.total, 0)
+
+            return (
+              <div key={date}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-text-primary capitalize">
+                    {formatDateDisplay(date)}
+                  </h3>
+                  <span className="text-sm font-medium text-accent-green">
+                    ${dayTotal.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {dayPurchases.map(purchase => (
+                    <DarkCard key={purchase.id} variant="secondary" className="p-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-xs text-text-muted">{purchase.storeName}</p>
+                          <ul className="text-sm text-text-secondary mt-1">
+                            {purchase.items.map((item, index) => (
+                              <li key={index}>
+                                {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-semibold text-text-primary">
+                            ${purchase.total.toLocaleString()}
+                          </span>
+                          <DarkButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(purchase.id)}
+                          >
+                            ×
+                          </DarkButton>
+                        </div>
+                      </div>
+                    </DarkCard>
+                  ))}
+                </div>
               </div>
-              <DarkButton variant="danger" size="sm" onClick={() => handleDelete(purchase.id)}>
-                Eliminar
-              </DarkButton>
-            </div>
+            )
+          })}
+        </div>
+      )}
 
-            <ul className="text-sm text-text-secondary space-y-1">
-              {purchase.items.map((item, index) => (
-                <li key={index}>
-                  {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
-                </li>
-              ))}
-            </ul>
-          </DarkCard>
-        ))}
-      </div>
+      {viewMode === 'store' && (
+        <div className="space-y-4">
+          {sortedStores.map(storeId => {
+            const storePurchases = groupedByStore.get(storeId) || []
+            const storeTotal = storePurchases.reduce((sum, p) => sum + p.total, 0)
+            const storeName = storePurchases[0]?.storeName || 'Sin establecimiento'
+
+            return (
+              <div key={storeId}>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    {storeName}
+                  </h3>
+                  <span className="text-xs text-text-muted">
+                    {storePurchases.length} compra{storePurchases.length !== 1 ? 's' : ''} · ${storeTotal.toLocaleString()}
+                  </span>
+                </div>
+
+                <div className="space-y-2">
+                  {storePurchases.map(purchase => (
+                    <DarkCard key={purchase.id} variant="secondary" className="p-3">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="text-xs text-text-muted">{purchase.purchaseDate}</p>
+                          <ul className="text-sm text-text-secondary mt-1">
+                            {purchase.items.map((item, index) => (
+                              <li key={index}>
+                                {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm font-semibold text-text-primary">
+                            ${purchase.total.toLocaleString()}
+                          </span>
+                          <DarkButton
+                            variant="danger"
+                            size="sm"
+                            onClick={() => handleDelete(purchase.id)}
+                          >
+                            ×
+                          </DarkButton>
+                        </div>
+                      </div>
+                    </DarkCard>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
     </DarkCard>
   )
 }

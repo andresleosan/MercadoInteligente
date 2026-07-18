@@ -95,7 +95,10 @@ describe('Voice → Purchase Integration', () => {
           { name: 'Leche', unitPrice: 1200, quantity: 1, totalPrice: 1200, confidence: 100 },
           { name: 'Pan', unitPrice: 500, quantity: 2, totalPrice: 1000, confidence: 90 },
         ],
-        undefined
+        undefined,
+        '',
+        'Sin establecimiento',
+        expect.any(String)
       )
       expect(screen.getByText('Compra registrada correctamente')).toBeInTheDocument()
     })

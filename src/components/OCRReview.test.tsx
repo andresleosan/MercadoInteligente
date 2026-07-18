@@ -100,7 +100,10 @@ describe('OCRReview', () => {
     expect(addPurchase).toHaveBeenCalledWith(
       'user-1',
       [{ name: 'Leche', quantity: 1, unitPrice: 450, totalPrice: 450, confidence: 90 }],
-      'https://example.com/ticket.jpg'
+      'https://example.com/ticket.jpg',
+      '',
+      'Sin establecimiento',
+      undefined
     )
     expect(onSaved).toHaveBeenCalled()
   })

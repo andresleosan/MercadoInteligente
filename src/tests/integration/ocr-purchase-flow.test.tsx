@@ -127,7 +127,10 @@ describe('OCR → Purchase Integration', () => {
           { name: 'Leche', unitPrice: 450, quantity: 1, totalPrice: 450, confidence: 90 },
           { name: 'Pan', unitPrice: 100, quantity: 2, totalPrice: 200, confidence: 60 },
         ],
-        'https://example.com/ticket.jpg'
+        'https://example.com/ticket.jpg',
+        '',
+        'Sin establecimiento',
+        expect.any(String)
       )
       expect(mockReset).toHaveBeenCalled()
       expect(screen.getByText('Compra registrada correctamente')).toBeInTheDocument()
