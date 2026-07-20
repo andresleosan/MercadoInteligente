@@ -111,7 +111,7 @@ src/
 **Impacto:** La referencia en el JSX (línea 74) puede llamar a la definición incorrecta
 
 #### [BAJO] Sección hosting en firebase.json no usada
-**Evidencia:** `firebase.json:6-19` + `STACK.md:46`
+**Evidencia:** `firebase.json:6-19` + `../architecture/STACK.md:46`
 
 ### 3.5 Componentes huérfanos
 - ✅ Todos los componentes en `src/components/` son importados por al menos una página

@@ -153,7 +153,7 @@ service cloud.firestore {
 **Evidencia:** `firebase.json:3` → `"rules": "firestore.rules"`
 - Las reglas están definidas localmente
 - `firebase.json` tiene sección `hosting` para deploy a Firebase Hosting
-- Pero según `STACK.md:46`: "la sección hosting ya no se usa para deploy" (migrado a Cloudflare Pages)
+- Pero según `../architecture/STACK.md:46`: "la sección hosting ya no se usa para deploy" (migrado a Cloudflare Pages)
 - **Riesgo:** Si las reglas no se deployaron a Firestore, las reglas por defecto DENY ALL bloquean todo
 - **Las reglas deben deployarse explícitamente:** `firebase deploy --only firestore:rules`
 
@@ -221,7 +221,7 @@ try {
 - Si se activa el emulador, la conexión fallaría porque el código intenta conectar al puerto 8080 pero el emulador corre en 8085
 
 #### [BAJO] Sección hosting obsoleta
-- `STACK.md:46`: hosting migrado a Cloudflare Pages
+- `../architecture/STACK.md:46`: hosting migrado a Cloudflare Pages
 - `firebase.json` aún tiene sección `hosting` que ya no se usa
 - No causa problemas, pero es código muerto
 
@@ -234,11 +234,11 @@ try {
 | 1 | Proyecto Firebase no verificable | Auth | CRÍTICO | `.env:3` |
 | 2 | Validación insuficiente de config | Config | ALTO | `firebase.ts:16-20` |
 | 3 | auth/db/storage pueden ser null | Config | ALTO | `firebase.ts:22-26` |
-| 4 | Reglas Firestore posiblemente no deployadas | Firestore | ALTO | `firebase.json:3` + `STACK.md:46` |
+| 4 | Reglas Firestore posiblemente no deployadas | Firestore | ALTO | `firebase.json:3` + `../architecture/STACK.md:46` |
 | 5 | Sin índices compuestos (no crítico hoy) | Firestore | MEDIO | `firestore.indexes.json:2` |
 | 6 | Puerto emulador inconsistente (8080 vs 8085) | Emuladores | MEDIO | `firebase.json:27` vs `firebase.ts:39` |
 | 7 | Storage falla silenciosamente en OCR | Storage | BAJO | `useOCR.ts:35-40` |
-| 8 | Sección hosting obsoleta en firebase.json | Config | BAJO | `firebase.json:6-19` + `STACK.md:46` |
+| 8 | Sección hosting obsoleta en firebase.json | Config | BAJO | `firebase.json:6-19` + `../architecture/STACK.md:46` |
 
 ---
 

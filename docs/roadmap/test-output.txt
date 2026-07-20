@@ -1,0 +1,200 @@
+﻿
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mS:/Respaldo/Proyectos/mercado-inteligente[39m
+
+ [32mÔ£ô[39m src/services/analytics.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+node.exe : [90mstderr[2m | src/pages/Dashboard.test.tsx[2m > [22m[2mDashboard[2m > [22m[2mshould show current 
+month label on load
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([90mstderr[2m...h label on load:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+[22m[39mÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in 
+`React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, 
+see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use 
+the `v7_relativeSplatPath` future flag to opt-in early. For more information, see 
+https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32mÔ£ô[39m src/pages/Dashboard.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[33m 964[2mms[22m[39m
+[90mstderr[2m | src/tests/integration/dashboard-multi-month.test.tsx[2m > [22m[2mDashboard Multi-Month 
+Integration[2m > [22m[2mloads budget and spent data for the selected month
+[22m[39mÔÜá´©Å React Router Future Flag Warning: React Router will begin wrapping state updates in 
+`React.startTransition` in v7. You can use the `v7_startTransition` future flag to opt-in early. For more information, 
+see https://reactrouter.com/v6/upgrading/future#v7_starttransition.
+ÔÜá´©Å React Router Future Flag Warning: Relative route resolution within Splat routes is changing in v7. You can use 
+the `v7_relativeSplatPath` future flag to opt-in early. For more information, see 
+https://reactrouter.com/v6/upgrading/future#v7_relativesplatpath.
+
+ [32mÔ£ô[39m src/tests/integration/dashboard-multi-month.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 867[2mms[22m[39m
+ [32mÔ£ô[39m src/services/ticketParser.test.ts [2m([22m[2m10 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+[90mstdout[2m | src/tests/integration/ocr-purchase-flow.test.tsx[2m > [22m[2mOCR ÔåÆ Purchase Integration[2m > [22m[2msaves purchase from OCR review and shows success message
+[22m[39m[OCRReview:handleSavePurchase] UID SAVE: test-uid | imageUrl: https://example.com/ticket.jpg | items count: [33m2[39m
+
+ [32mÔ£ô[39m src/tests/integration/ocr-purchase-flow.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 379[2mms[22m[39m
+[90mstdout[2m | src/tests/integration/voice-purchase-flow.test.tsx[2m > [22m[2mVoice ÔåÆ Purchase Integration[2m > [22m[2msaves voice-parsed items as purchase and shows success
+[22m[39m[OCRReview:handleSavePurchase] UID SAVE: test-uid | imageUrl: [1mnull[22m | items count: [33m2[39m
+
+ [32mÔ£ô[39m src/tests/integration/voice-purchase-flow.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 458[2mms[22m[39m
+[90mstdout[2m | src/components/OCRReview.test.tsx[2m > [22m[2mOCRReview[2m > [22m[2mshould call addPurchase and onSaved when guardar compra clicked
+[22m[39m[OCRReview:handleSavePurchase] UID SAVE: user-1 | imageUrl: https://example.com/ticket.jpg | items count: [33m1[39m
+
+[90mstderr[2m | src/components/OCRReview.test.tsx[2m > [22m[2mOCRReview[2m > [22m[2mshould call addPurchase 
+and onSaved when guardar compra clicked
+[22m[39mWarning: An update to OCRReview inside a test was not wrapped in act(...).
+
+When testing, code that causes React state updates should be wrapped into act(...):
+
+act(() => {
+  /* fire events that update state */
+});
+/* assert on the output */
+
+This ensures that you're testing the behavior the user would see in the browser. Learn more at 
+https://reactjs.org/link/wrap-tests-with-act
+    at OCRReview (S:\Respaldo\Proyectos\mercado-inteligente\src\components\OCRReview.tsx:11:29)
+
+ [32mÔ£ô[39m src/components/OCRReview.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 491[2mms[22m[39m
+ [32mÔ£ô[39m src/services/auth.test.ts [2m([22m[2m7 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+[90mstderr[2m | src/hooks/useOCR.test.ts[2m > [22m[2museOCR[2m > [22m[2mshould set error state if OCR fails
+[22m[39mOCR failed: Error: OCR timeout
+    at [90mS:\Respaldo\Proyectos\mercado-inteligente\[39msrc\hooks\useOCR.test.ts:55:45
+    at 
+[90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:146:14
+    at 
+[90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:533:11
+    at runWithTimeout [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m
+/dist/index.js:39:7[90m)[39m
+    at runTest [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/i
+ndex.js:1056:17[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runFiles [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1262:5[90m)[39m
+    at startTests [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dis
+t/index.js:1271:3[90m)[39m
+    at [90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/runBaseTest
+s.3qpJUEJM.js:126:11
+
+ [32mÔ£ô[39m src/hooks/useOCR.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 100[2mms[22m[39m
+ [32mÔ£ô[39m src/services/budget.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 11[2mms[22m[39m
+[90mstdout[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2maddPurchase[2m > [22m[2mshould add purchase and return it
+[22m[39m[purchases] purchaseData: {"userId":"user-id","items":[{"name":"Leche","quantity":2,"unitPrice":1000,"totalPrice":2000},{"name":"Pan","quantity":1,"unitPrice":500,"totalPrice":500}],"total":2500,"createdAt":"__undefined__"}
+
+[90mstderr[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2maddPurchase[2m > 
+[22m[2mshould add purchase and return it
+[22m[39m[purchases] Campo(s) undefined en purchaseData: [ [32m'createdAt'[39m ] {
+  userId: [32m'user-id'[39m,
+  items: [
+    { name: [32m'Leche'[39m, quantity: [33m2[39m, unitPrice: [33m1000[39m, totalPrice: [33m2000[39m },
+    { name: [32m'Pan'[39m, quantity: [33m1[39m, unitPrice: [33m500[39m, totalPrice: [33m500[39m }
+  ],
+  total: [33m2500[39m,
+  createdAt: [90mundefined[39m
+}
+
+[90mstdout[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2mgetPurchases[2m > [22m[2mshould return purchases for current month
+[22m[39m[purchases:getPurchases] UID READ: user-id | month: 2026-07
+[purchases:getPurchases] QUERY PATH: users/user-id/purchases
+[purchases:getPurchases] startDate: 2026-07-01T05:00:00.000Z endDate: 2026-08-01T04:59:59.000Z
+[purchases:getPurchases] docs found: [33m1[39m
+[purchases:getPurchases] doc id: purchase-1 createdAt: { toDate: [36m[Function: toDate][39m }
+
+[90mstdout[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2mgetPurchases[2m > [22m[2mshould use Timestamp for date queries
+[22m[39m[purchases:getPurchases] UID READ: user-id | month: 2026-07
+[purchases:getPurchases] QUERY PATH: users/user-id/purchases
+[purchases:getPurchases] startDate: 2026-07-01T05:00:00.000Z endDate: 2026-08-01T04:59:59.000Z
+[purchases:getPurchases] docs found: [33m0[39m
+
+[90mstdout[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2mgetTotalSpent[2m > [22m[2mshould return sum of all purchases
+[22m[39m[purchases:getPurchases] UID READ: user-id | month: 2026-07
+[purchases:getPurchases] QUERY PATH: users/user-id/purchases
+[purchases:getPurchases] startDate: 2026-07-01T05:00:00.000Z endDate: 2026-08-01T04:59:59.000Z
+[purchases:getPurchases] docs found: [33m2[39m
+[purchases:getPurchases] doc id: [90mundefined[39m createdAt: { toDate: [36m[Function: toDate][39m }
+[purchases:getPurchases] doc id: [90mundefined[39m createdAt: { toDate: [36m[Function: toDate][39m }
+
+[90mstdout[2m | src/services/purchases.test.ts[2m > [22m[2mPurchases Service[2m > [22m[2mgetTotalSpent[2m > [22m[2mshould return 0 if no purchases
+[22m[39m[purchases:getPurchases] UID READ: user-id | month: 2026-07
+[purchases:getPurchases] QUERY PATH: users/user-id/purchases
+[purchases:getPurchases] startDate: 2026-07-01T05:00:00.000Z endDate: 2026-08-01T04:59:59.000Z
+[purchases:getPurchases] docs found: [33m0[39m
+
+ [32mÔ£ô[39m src/services/purchases.test.ts [2m([22m[2m6 tests[22m[2m)[22m[90m 15[2mms[22m[39m
+ [32mÔ£ô[39m src/services/ocr.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 82[2mms[22m[39m
+[90mstderr[2m | src/components/ChartsContent.test.tsx[2m > [22m[2mChartsContent[2m > [22m[2mshould show error 
+message when analytics fail
+[22m[39mError cargando gr├íficos: Error: Firestore fail
+    at [90mS:\Respaldo\Proyectos\mercado-inteligente\[39msrc\components\ChartsContent.test.tsx:51:55
+    at 
+[90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:533:5
+    at runTest [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/i
+ndex.js:1056:11[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runFiles [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1262:5[90m)[39m
+    at startTests [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dis
+t/index.js:1271:3[90m)[39m
+    at [90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/runBaseTest
+s.3qpJUEJM.js:126:11
+    at withEnv [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/ru
+nBaseTests.3qpJUEJM.js:90:5[90m)[39m
+    at run [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/runBas
+eTests.3qpJUEJM.js:112:3[90m)[39m
+
+[90mstderr[2m | src/components/ChartsContent.test.tsx[2m > [22m[2mChartsContent[2m > [22m[2mshould show retry 
+button on error
+[22m[39mError cargando gr├íficos: Error: fail
+    at [90mS:\Respaldo\Proyectos\mercado-inteligente\[39msrc\components\ChartsContent.test.tsx:78:55
+    at 
+[90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/index.js:533:5
+    at runTest [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/i
+ndex.js:1056:11[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runSuite [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1205:15[90m)[39m
+    at runFiles [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dist/
+index.js:1262:5[90m)[39m
+    at startTests [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4m@vitest/runner[24m/dis
+t/index.js:1271:3[90m)[39m
+    at [90mfile:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/runBaseTest
+s.3qpJUEJM.js:126:11
+    at withEnv [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/ru
+nBaseTests.3qpJUEJM.js:90:5[90m)[39m
+    at run [90m(file:///S:/Respaldo/Proyectos/mercado-inteligente/[39mnode_modules/[4mvitest[24m/dist/chunks/runBas
+eTests.3qpJUEJM.js:112:3[90m)[39m
+
+ [32mÔ£ô[39m src/components/ChartsContent.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 243[2mms[22m[39m
+ [32mÔ£ô[39m src/services/storage.test.ts [2m([22m[2m3 tests[22m[2m)[22m[90m 18[2mms[22m[39m
+ [32mÔ£ô[39m src/hooks/useVoice.test.ts [2m([22m[2m5 tests[22m[2m)[22m[90m 37[2mms[22m[39m
+ [32mÔ£ô[39m src/tests/integration/pwa-install.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 45[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/DarkButton.test.tsx [2m([22m[2m9 tests[22m[2m)[22m[90m 99[2mms[22m[39m
+ [32mÔ£ô[39m src/components/MonthNavigator.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 330[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/ExpandableCard.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[90m 263[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ProductEditor.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[33m 329[2mms[22m[39m
+ [32mÔ£ô[39m src/services/voice.test.ts [2m([22m[2m4 tests[22m[2m)[22m[90m 13[2mms[22m[39m
+ [32mÔ£ô[39m src/components/VoiceCapture.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 80[2mms[22m[39m
+ [32mÔ£ô[39m src/pages/AddPurchase.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 535[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/DarkInput.test.tsx [2m([22m[2m8 tests[22m[2m)[22m[90m 237[2mms[22m[39m
+ [32mÔ£ô[39m src/services/voiceParser.test.ts [2m([22m[2m8 tests[22m[2m)[22m[90m 10[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/ProgressBar.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[90m 103[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/KpiCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 101[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/DarkCard.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 61[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/MonthSelector.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 91[2mms[22m[39m
+ [32mÔ£ô[39m src/components/OCRCapture.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[90m 109[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ui/EmptyState.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[90m 92[2mms[22m[39m
+ [32mÔ£ô[39m src/components/ChartsSection.test.tsx [2m([22m[2m1 test[22m[2m)[22m[90m 80[2mms[22m[39m
+ [32mÔ£ô[39m src/pwa.test.ts [2m([22m[2m2 tests[22m[2m)[22m[90m 5[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m33 passed[39m[22m[90m (33)[39m
+[2m      Tests [22m [1m[32m172 passed[39m[22m[90m (172)[39m
+[2m   Start at [22m 21:52:43
+[2m   Duration [22m 113.48s[2m (transform 2.90s, setup 37.96s, collect 29.42s, tests 6.29s, environment 198.78s, prepare 16.76s)[22m
+

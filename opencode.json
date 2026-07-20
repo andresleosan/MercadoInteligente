@@ -18,8 +18,8 @@
     }
   },
   "agent": {
-    "Cronos3.3": {
-      "description": "Cronos 3.3 — agente único: arquitectura, backend, frontend, datos, integraciones, seguridad, QA, rendimiento y despliegue",
+    "Cronos V3": {
+      "description": "Cronos 3.3.3 — agente único: arquitectura, backend, frontend, datos, integraciones, seguridad, QA, rendimiento y despliegue",
       "mode": "primary",
       "model": "opencode/mimo-v2-5-free",
       "tools": {

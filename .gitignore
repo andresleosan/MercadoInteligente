@@ -38,11 +38,17 @@ qa/reports/
 playwright-report/
 test-results/
 
+# Knowledge graph generado (se regenera con graphify update .)
+graphify-out/
+
 # Editor / sistema operativo
 .DS_Store
 .vscode/
 .idea/
 Thumbs.db
+
+# Superpowers local cache
+.superpowers/
 
 # Bases de datos locales
 *.sqlite3

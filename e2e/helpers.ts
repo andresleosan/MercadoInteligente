@@ -1,0 +1,89 @@
+import { type Page, expect } from '@playwright/test'
+
+const FIREBASE_API_KEY = 'test-api-key'
+const AUTH_EMULATOR = 'http://localhost:9099'
+const PROJECT_ID = 'demo-mercado-inteligente'
+
+export async function createEmulatorUser(email: string, password: string): Promise<string> {
+  const res = await fetch(
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts?key=${FIREBASE_API_KEY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, returnSecureToken: true }),
+    }
+  )
+  const data = await res.json()
+  return data.localId
+}
+
+export async function deleteEmulatorUser(uid: string): Promise<void> {
+  await fetch(
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts?key=${FIREBASE_API_KEY}`,
+    {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ idToken: uid }),
+    }
+  )
+}
+
+export async function clearFirestore(): Promise<void> {
+  await fetch(
+    `http://localhost:8085/emulator/v1/projects/${PROJECT_ID}/databases/(default)/documents`,
+    { method: 'DELETE' }
+  )
+}
+
+export async function loginWithEmail(page: Page, email: string, password: string) {
+  await page.goto('/login')
+  await page.waitForLoadState('networkidle')
+
+  await page.getByLabel('Email').fill(email)
+  await page.getByLabel('Contraseña').fill(password)
+  await page.getByRole('button', { name: 'Iniciar sesión' }).click()
+
+  await page.waitForURL('/', { timeout: 10000 })
+}
+
+export async function registerUser(page: Page, email: string, password: string) {
+  await page.goto('/register')
+  await page.waitForLoadState('networkidle')
+
+  await page.getByLabel('Email').fill(email)
+  await page.getByLabel('Contraseña').fill(password)
+  await page.getByLabel('Confirmar contraseña').fill(password)
+  await page.getByRole('button', { name: 'Crear cuenta' }).click()
+
+  await page.waitForURL('/', { timeout: 10000 })
+}
+
+export async function expectDashboardLoaded(page: Page) {
+  await expect(page.getByText('Mercado Inteligente')).toBeVisible()
+  await expect(page.getByText('Presupuesto mensual')).toBeVisible()
+}
+
+export async function setBudget(page: Page, amount: string) {
+  const budgetInput = page.getByLabel('Monto mensual')
+  await budgetInput.fill(amount)
+  await page.getByRole('button', { name: /Crear presupuesto|Actualizar presupuesto/ }).click()
+  await expect(page.getByText('Presupuesto guardado correctamente')).toBeVisible()
+}
+
+export async function addManualPurchase(
+  page: Page,
+  productName: string,
+  quantity: string,
+  unitPrice: string
+) {
+  await page.getByLabel('Producto').fill(productName)
+  await page.getByLabel('Cant.').fill(quantity)
+  await page.getByLabel('Precio unit.').fill(unitPrice)
+  await page.getByRole('button', { name: 'Registrar compra' }).click()
+  await expect(page.getByText('Compra registrada correctamente')).toBeVisible()
+}
+
+export function generateTestEmail(): string {
+  const timestamp = Date.now()
+  return `test-${timestamp}@example.com`
+}

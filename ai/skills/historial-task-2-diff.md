@@ -1,0 +1,11 @@
+﻿## Commits
+
+e438d7a feat(historial): Budget.tsx acepta props month y onSaved
+
+## Stat
+
+ src/pages/Budget.tsx | 17 +++++++++++++----  1 file changed, 13 insertions(+), 4 deletions(-)
+
+## Diff
+
+diff --git a/src/pages/Budget.tsx b/src/pages/Budget.tsx index c20a025..ccd1534 100644 --- a/src/pages/Budget.tsx +++ b/src/pages/Budget.tsx @@ -1,53 +1,62 @@  import { useState, useEffect, type FormEvent } from 'react'  import { useAuth } from '@/hooks/useAuth'  import { getBudget, setBudget } from '@/services/budget'  import type { Budget } from '@/types'   -export default function BudgetPage() { +interface Props { +  month?: string +  onSaved?: () => void +} + +export default function BudgetPage({ month, onSaved }: Props) {    const { user } = useAuth()    const [budget, setBudgetState] = useState<Budget | null>(null)    const [amount, setAmount] = useState('')    const [loading, setLoading] = useState(true)    const [saving, setSaving] = useState(false)    const [message, setMessage] = useState('')      useEffect(() => {      async function loadBudget() {        if (!user) return        try { -        const currentBudget = await getBudget(user.uid) +        const currentBudget = await getBudget(user.uid, month)          if (currentBudget) {            setBudgetState(currentBudget)            setAmount(String(currentBudget.amount)) +        } else { +          setBudgetState(null) +          setAmount('')          }        } catch (err) {          console.error('Error al cargar presupuesto:', err)          setMessage('Error al cargar el presupuesto')        } finally {          setLoading(false)        }      }      loadBudget() -  }, [user]) +  }, [user, month])      async function handleSubmit(e: FormEvent) {      e.preventDefault()      if (!user) return        setSaving(true)      setMessage('')        try { -      const newBudget = await setBudget(user.uid, Number(amount)) +      const newBudget = await setBudget(user.uid, Number(amount), month)        setBudgetState(newBudget)        setMessage('Presupuesto guardado correctamente') +      if (onSaved) onSaved()      } catch (err) {        setMessage('Error al guardar el presupuesto')      } finally {        setSaving(false)      }    }      if (loading) {      return (        <div className="flex justify-center py-8">

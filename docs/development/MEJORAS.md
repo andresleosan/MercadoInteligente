@@ -1,8 +1,8 @@
 # MEJORAS — Mercado Inteligente
 
 **Fecha:** 2026-07-16
-**Origen:** Auditoría AUDITORIA.md (2026-07-13)
-**Estado:** COMPLETADA
+**Origen:** Auditoría ../audits/AUDITORIA.md (2026-07-13)
+**Estado:** COMPLETADA — Verificada 2026-07-20
 
 ---
 
@@ -40,7 +40,7 @@
    - Google Sign-In está habilitado
    - `localhost` está en Authorized Domains
    - OAuth Client ID está configurado en Google Cloud Console
-2. Documentar la configuración requerida en `STACK.md`
+2. Documentar la configuración requerida en `../architecture/STACK.md`
 3. Agregar validación de variables de entorno al iniciar la app
 
 **Dependiente de:** Ninguna
@@ -177,3 +177,23 @@
 - La verificación de M-02 requiere acceso al Firebase Console (no es automatizable desde código).
 
 **Esperando confirmación del usuario sobre qué se ataca primero.**
+
+---
+
+## Estado de Implementación (Verificado 2026-07-20)
+
+| Mejora | Estado | Notas |
+|--------|--------|-------|
+| M-01 | ✅ COMPLETADA | `AuthContext.tsx` existe y se usa en `App.tsx` |
+| M-02 | ✅ COMPLETADA | Código correcto. Verificación manual requerida en Firebase Console |
+| M-03 | ✅ COMPLETADA | Login.tsx y Register.tsx manejan errores correctamente |
+| M-04 | ✅ COMPLETADA | `purchaseVersion` refresca Dashboard al guardar compra |
+| M-05 | ✅ COMPLETADA | Intencional — modo manual no tiene imagen de recibo |
+| M-06 | ✅ COMPLETADA | No hay función duplicada en PurchaseHistory |
+| M-07 | ✅ COMPLETADA | Índices Firestore actualizados (faltaba `userId+storeId+createdAt`) |
+| M-08 | ✅ COMPLETADA | Directorio `MercadoInteligente/` no existe |
+
+**Nota:** M-02 requiere verificación manual en Firebase Console:
+- Google Sign-In habilitado
+- `localhost` en Authorized Domains
+- OAuth Client ID configurado

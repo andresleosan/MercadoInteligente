@@ -160,7 +160,7 @@ Si cualquiera falla, el usuario nunca vuelve autenticado.
 - .env, .env.local, .env.example
 - firestore.rules, storage.rules, firebase.json, firestore.indexes.json
 - vite.config.ts, vitest.config.ts, tsconfig.json, package.json, .gitignore
-- STACK.md, tasks.md
+- ../architecture/STACK.md, ../../roadmap/tasks.md
 
 ---
 
