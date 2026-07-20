@@ -6,6 +6,7 @@ import {
   doc,
   query,
   where,
+  serverTimestamp,
 } from 'firebase/firestore'
 import { db } from '@/config/firebase'
 import type { CategoryMapping } from '@/types'
@@ -47,8 +48,7 @@ export async function saveCategoryMapping(
     await addDoc(mappingsRef, {
       productName: normalized,
       categoryId,
-      userId,
-      createdAt: new Date(),
+      createdAt: serverTimestamp(),
     })
   } else {
     const existingDoc = snapshot.docs[0]

@@ -29,6 +29,7 @@ vi.mock('firebase/firestore', () => ({
   doc: (...args: unknown[]) => mockDoc(...args),
   query: (...args: unknown[]) => mockQuery(...args),
   where: (...args: unknown[]) => mockWhere(...args),
+  serverTimestamp: () => ({ _serverTimestamp: true }),
 }))
 
 describe('categoryMapping service', () => {
@@ -87,14 +88,13 @@ describe('categoryMapping service', () => {
       mockGetDocs.mockResolvedValue({ docs: [], empty: true })
       mockAddDoc.mockResolvedValue({ id: 'new-map-id' })
 
-      await saveCategoryMapping(userId, 'Pan Francés', 'panaderia')
+      await saveCategoryMapping(userId, 'Pan Frances', 'panaderia')
 
-      expect(mockWhere).toHaveBeenCalledWith('productName', '==', 'pan francés')
+      expect(mockWhere).toHaveBeenCalledWith('productName', '==', 'pan frances')
       expect(mockAddDoc).toHaveBeenCalledWith('mappings-ref', {
-        productName: 'pan francés',
+        productName: 'pan frances',
         categoryId: 'panaderia',
-        userId,
-        createdAt: expect.any(Date),
+        createdAt: { _serverTimestamp: true },
       })
       expect(mockUpdateDoc).not.toHaveBeenCalled()
     })

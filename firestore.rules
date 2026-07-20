@@ -28,6 +28,10 @@ service cloud.firestore {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
       
+      match /categoryMappings/{mappingId} {
+        allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+      
       match /dailyBudgets/{date} {
         allow read, write: if isAuthenticated() && isOwner(userId);
       }
