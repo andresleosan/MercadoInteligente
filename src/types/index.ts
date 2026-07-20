@@ -24,6 +24,7 @@ export interface PurchaseItem {
   unitPrice: number
   totalPrice: number
   confidence?: number
+  category?: string
 }
 
 export interface Purchase {
@@ -53,6 +54,25 @@ export interface Store {
   category?: 'supermercado' | 'tienda' | 'barrio' | 'otro'
   color?: string   // hex: #10B981
   icon?: string    // emoji: 🛒
+  createdAt: Date
+}
+
+export type DefaultCategoryId =
+  | 'lacteos' | 'panaderia' | 'carnes' | 'frutas-verduras'
+  | 'bebidas' | 'limpieza' | 'higiene' | 'snacks' | 'otro'
+
+export interface Category {
+  id: string
+  name: string
+  icon: string
+  isDefault: boolean
+}
+
+export interface CategoryMapping {
+  id: string
+  productName: string
+  categoryId: string
+  userId: string
   createdAt: Date
 }
 
