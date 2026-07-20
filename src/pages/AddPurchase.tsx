@@ -259,20 +259,29 @@ export default function AddPurchase({ onSaved }: Props) {
       {mode === 'manual' && (
         <form onSubmit={handleSubmit} className="space-y-4">
           {items.map((item, index) => (
-            <div key={index} className="grid grid-cols-12 gap-2 items-end">
-              <div className="col-span-5">
-                <DarkInput
-                  label="Producto"
-                  type="text"
-                  required
-                  value={item.name}
-                  onChange={(e) => updateItem(index, 'name', e.target.value)}
-                  placeholder="Ej: Leche"
-                />
+            <div key={index} className="bg-bg-surface p-3 rounded-radius-md space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-text-muted">Item {index + 1}</span>
+                <DarkButton
+                  variant="danger"
+                  size="sm"
+                  onClick={() => removeItem(index)}
+                  disabled={items.length === 1}
+                >
+                  ×
+                </DarkButton>
               </div>
-              <div className="col-span-2">
+              <DarkInput
+                label="Producto"
+                type="text"
+                required
+                value={item.name}
+                onChange={(e) => updateItem(index, 'name', e.target.value)}
+                placeholder="Ej: Leche"
+              />
+              <div className="grid grid-cols-2 gap-3">
                 <DarkInput
-                  label="Cant."
+                  label="Cantidad"
                   type="number"
                   min="1"
                   required
@@ -280,10 +289,8 @@ export default function AddPurchase({ onSaved }: Props) {
                   onChange={(e) => updateItem(index, 'quantity', e.target.value)}
                   placeholder="1"
                 />
-              </div>
-              <div className="col-span-3">
                 <DarkInput
-                  label="Precio unit."
+                  label="Precio unitario"
                   type="number"
                   min="0"
                   step="10"
@@ -293,16 +300,10 @@ export default function AddPurchase({ onSaved }: Props) {
                   placeholder="Precio"
                 />
               </div>
-              <div className="col-span-2">
-                <DarkButton
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeItem(index)}
-                  disabled={items.length === 1}
-                  className="w-full"
-                >
-                  ×
-                </DarkButton>
+              <div className="text-right">
+                <span className="text-sm text-text-secondary">
+                  Subtotal: ${(item.quantity * item.unitPrice).toLocaleString()}
+                </span>
               </div>
             </div>
           ))}

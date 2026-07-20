@@ -10,6 +10,7 @@ export default {
         'bg-base':       '#0B1120',
         'bg-surface':    '#111827',
         'bg-elevated':   '#1F2937',
+        'bg-input':      '#1F2937',
         'bg-header':     '#0B1120',
         'border-subtle': 'rgba(255,255,255,0.08)',
         'text-primary':  '#F9FAFB',

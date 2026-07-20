@@ -137,13 +137,15 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
-            {/* 1. Compras de hoy */}
+            {/* 1. Presupuesto diario */}
             <ExpandableCard
-              title="Compras de hoy"
-              icon={<ShoppingBag size={18} />}
-              defaultExpanded
+              title="Presupuesto diario"
+              icon={<Calendar size={18} />}
             >
-              <TodayPurchases date={selectedDate} refreshKey={purchaseVersion} />
+              <BudgetPage
+                date={selectedDate}
+                onSaved={() => setBudgetVersion(v => v + 1)}
+              />
             </ExpandableCard>
 
             {/* 2. Registrar compra */}
@@ -155,15 +157,13 @@ export default function Dashboard() {
               <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
             </ExpandableCard>
 
-            {/* 3. Presupuesto diario */}
+            {/* 3. Compras de hoy */}
             <ExpandableCard
-              title="Presupuesto diario"
-              icon={<Calendar size={18} />}
+              title="Compras de hoy"
+              icon={<ShoppingBag size={18} />}
+              defaultExpanded
             >
-              <BudgetPage
-                date={selectedDate}
-                onSaved={() => setBudgetVersion(v => v + 1)}
-              />
+              <TodayPurchases date={selectedDate} refreshKey={purchaseVersion} />
             </ExpandableCard>
 
             {/* 4. Historial */}
