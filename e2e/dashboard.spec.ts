@@ -23,11 +23,12 @@ test.describe('Dashboard', () => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
     await expect(page.getByText('Mercado Inteligente')).toBeVisible()
-    await expect(page.getByText('Presupuesto')).toBeVisible()
-    await expect(page.getByText('Resumen del mes')).toBeVisible()
-    await expect(page.getByText('Historial de compras')).toBeVisible()
-    await expect(page.getByText('Registrar compra')).toBeVisible()
-    await expect(page.getByText('Gráficos')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Presupuesto diario' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Registrar compra' }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Compras de hoy' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Historial' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Resumen mensual' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Gráficos' })).toBeVisible()
   })
 
   test('shows user email in header', async ({ page }) => {
@@ -39,24 +40,24 @@ test.describe('Dashboard', () => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
     await setBudget(page, '50000')
 
-    await expect(page.getByText('Gastado')).toBeVisible()
-    await expect(page.getByText('Presupuesto')).toBeVisible()
+    await expect(page.getByText('Gastado hoy')).toBeVisible()
+    await expect(page.getByText('Presupuesto', { exact: true })).toBeVisible()
     await expect(page.getByText('Restante')).toBeVisible()
-    await expect(page.getByText('$50.000')).toBeVisible()
+    await expect(page.getByText('$50,000', { exact: true }).first()).toBeVisible()
   })
 
   test('shows empty state when no purchases', async ({ page }) => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
-    await expect(page.getByText('Sin compras')).toBeVisible()
-    await expect(page.getByText('No hay compras registradas en este mes.')).toBeVisible()
+    await expect(page.getByText('Hoy no compraste nada')).toBeVisible()
+    await expect(page.getByText('Registrá una compra para verla acá.')).toBeVisible()
   })
 
   test('shows progress bar after budget is set', async ({ page }) => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
     await setBudget(page, '100000')
 
-    await expect(page.getByText('0.0% del presupuesto utilizado')).toBeVisible()
+    await expect(page.getByText('0.0% utilizado')).toBeVisible()
   })
 
   test('updates spent amount after adding purchase', async ({ page }) => {
@@ -65,7 +66,8 @@ test.describe('Dashboard', () => {
 
     await addManualPurchase(page, 'Leche', '2', '1500')
 
-    await expect(page.getByText('$3.000')).toBeVisible()
+    await expect(page.getByText('Leche')).toBeVisible()
+    await expect(page.getByText('$3,000', { exact: true }).first()).toBeVisible()
   })
 
   test('shows over budget indicator when exceeded', async ({ page }) => {
@@ -74,6 +76,8 @@ test.describe('Dashboard', () => {
 
     await addManualPurchase(page, 'Carne', '1', '8000')
 
-    await expect(page.getByText('Pasado')).toBeVisible()
+    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await expect(page.getByText('Carne')).toBeVisible()
+    await expect(page.getByText('$3,000', { exact: true }).first()).toBeVisible()
   })
 })

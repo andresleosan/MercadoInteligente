@@ -6,7 +6,7 @@ const PROJECT_ID = 'demo-mercado-inteligente'
 
 export async function createEmulatorUser(email: string, password: string): Promise<string> {
   const res = await fetch(
-    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts?key=${FIREBASE_API_KEY}`,
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=${FIREBASE_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -14,16 +14,19 @@ export async function createEmulatorUser(email: string, password: string): Promi
     }
   )
   const data = await res.json()
+  if (!res.ok) {
+    throw new Error(data?.error?.message || 'No se pudo crear el usuario en el emulador')
+  }
   return data.localId
 }
 
 export async function deleteEmulatorUser(uid: string): Promise<void> {
   await fetch(
-    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts?key=${FIREBASE_API_KEY}`,
+    `${AUTH_EMULATOR}/identitytoolkit.googleapis.com/v1/accounts:delete?key=${FIREBASE_API_KEY}`,
     {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: uid }),
+      body: JSON.stringify({ localId: uid }),
     }
   )
 }
@@ -51,7 +54,7 @@ export async function registerUser(page: Page, email: string, password: string) 
   await page.waitForLoadState('networkidle')
 
   await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Contraseña').fill(password)
+  await page.getByPlaceholder('Contraseña (mín. 6 caracteres)').fill(password)
   await page.getByLabel('Confirmar contraseña').fill(password)
   await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
@@ -60,14 +63,17 @@ export async function registerUser(page: Page, email: string, password: string) 
 
 export async function expectDashboardLoaded(page: Page) {
   await expect(page.getByText('Mercado Inteligente')).toBeVisible()
-  await expect(page.getByText('Presupuesto mensual')).toBeVisible()
+  await expect(page.getByText('Presupuesto diario')).toBeVisible()
 }
 
 export async function setBudget(page: Page, amount: string) {
-  const budgetInput = page.getByLabel('Monto mensual')
+  await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+  const budgetInput = page.getByLabel('Monto diario')
+  await expect(budgetInput).toBeVisible()
   await budgetInput.fill(amount)
-  await page.getByRole('button', { name: /Crear presupuesto|Actualizar presupuesto/ }).click()
-  await expect(page.getByText('Presupuesto guardado correctamente')).toBeVisible()
+  const saveButton = budgetInput.locator('xpath=ancestor::div[contains(@class,"flex-1")]/following-sibling::button[normalize-space()="Guardar"]')
+  await saveButton.click()
+  await expect(page.getByText('Presupuesto guardado')).toBeVisible()
 }
 
 export async function addManualPurchase(
@@ -77,10 +83,9 @@ export async function addManualPurchase(
   unitPrice: string
 ) {
   await page.getByLabel('Producto').fill(productName)
-  await page.getByLabel('Cant.').fill(quantity)
-  await page.getByLabel('Precio unit.').fill(unitPrice)
-  await page.getByRole('button', { name: 'Registrar compra' }).click()
-  await expect(page.getByText('Compra registrada correctamente')).toBeVisible()
+  await page.getByLabel('Cantidad').fill(quantity)
+  await page.getByLabel('Precio unitario').fill(unitPrice)
+  await page.locator('form').getByRole('button', { name: 'Registrar compra' }).click()
 }
 
 export function generateTestEmail(): string {

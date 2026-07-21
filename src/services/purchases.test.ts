@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { addPurchase, getPurchases, deletePurchase, getTotalSpent } from './purchases'
-import { collection, doc, addDoc, getDocs, deleteDoc, query, where, orderBy, Timestamp } from 'firebase/firestore'
+import { collection, doc, addDoc, getDocs, deleteDoc, query, where, orderBy } from 'firebase/firestore'
 
 vi.mock('firebase/firestore')
 vi.mock('@/config/firebase', () => ({
@@ -57,14 +57,16 @@ describe('Purchases Service', () => {
       expect(result[0].total).toBe(2000)
     })
 
-    it('should use Timestamp for date queries', async () => {
+    it('should use purchaseDate for date queries', async () => {
       vi.mocked(getDocs).mockResolvedValue({
         docs: [],
       } as any)
 
       await getPurchases('user-id', '2026-07')
 
-      expect(Timestamp.fromDate).toHaveBeenCalled()
+      expect(where).toHaveBeenCalledWith('purchaseDate', '>=', '2026-07-01')
+      expect(where).toHaveBeenCalledWith('purchaseDate', '<', '2026-08-01')
+      expect(orderBy).toHaveBeenCalledWith('purchaseDate', 'desc')
     })
   })
 

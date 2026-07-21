@@ -28,7 +28,7 @@ describe('OCRReview', () => {
     expect(screen.getByText('Pan')).toBeInTheDocument()
   })
 
-  it('should highlight low confidence items in yellow', () => {
+  it('should highlight low confidence items in amber', () => {
     render(
       <OCRReview
         items={[
@@ -41,10 +41,10 @@ describe('OCRReview', () => {
         onRetry={vi.fn()}
       />
     )
-    const lecheRow = screen.getByText('Leche').closest('div')
-    const panRow = screen.getByText('Pan').closest('div')
-    expect(lecheRow?.className).not.toContain('bg-yellow')
-    expect(panRow?.className).toContain('bg-yellow')
+    const lecheRow = screen.getByTestId('ocr-review-row-0')
+    const panRow = screen.getByTestId('ocr-review-row-1')
+    expect(lecheRow?.className).not.toContain('bg-accent-amber/10')
+    expect(panRow?.className).toContain('bg-accent-amber/10')
   })
 
   it('should remove item when eliminar clicked', () => {

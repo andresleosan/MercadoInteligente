@@ -140,9 +140,10 @@ export default function OCRReview({
           {items.map((item, index) => (
             <div
               key={index}
+              data-testid={`ocr-review-row-${index}`}
               className={`p-2 rounded-radius-md ${
                 item.confidence !== undefined && isLowConfidence(item.confidence)
-                  ? 'bg-yellow border border-accent-amber/30'
+                  ? 'bg-accent-amber/10 border border-accent-amber/30'
                   : ''
               }`}
             >

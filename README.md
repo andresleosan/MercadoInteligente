@@ -16,7 +16,7 @@ PWA para registro de compras de mercado con control de presupuesto, OCR y análi
 
 - React 18 + TypeScript + Vite
 - Tailwind CSS + vite-plugin-pwa
-- Firebase (Auth, Firestore, Storage)
+- Firebase (Auth, Firestore) + Supabase Storage para tickets
 - Recharts (gráficos)
 - Tesseract.js (OCR)
 - Vitest + @testing-library/react (tests)

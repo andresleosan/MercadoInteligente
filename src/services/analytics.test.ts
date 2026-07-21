@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { getTotalSpentByMonth, getTopProducts } from './analytics'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { getTotalSpentByMonth, getTopProducts, getDailySpend } from './analytics'
 import type { Purchase } from '@/types'
 
 vi.mock('@/services/purchases', () => ({
@@ -13,6 +13,10 @@ vi.mock('@/services/budget', () => ({
 describe('analytics', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('getTotalSpentByMonth', () => {
@@ -148,6 +152,21 @@ describe('analytics', () => {
       const result = await getTopProducts('u1', '2026-07', 5)
 
       expect(result).toHaveLength(0)
+    })
+  })
+
+  describe('getDailySpend', () => {
+    it('should return exactly the requested number of days', async () => {
+      const { getPurchasesByDateRange } = await import('@/services/purchases')
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date(2026, 6, 21, 12, 0, 0))
+      vi.mocked(getPurchasesByDateRange).mockResolvedValue([])
+
+      const result = await getDailySpend('u1', 3)
+
+      expect(result).toHaveLength(3)
+      expect(result.map((day) => day.date)).toEqual(['2026-07-19', '2026-07-20', '2026-07-21'])
+      expect(result.every((day) => day.total === 0)).toBe(true)
     })
   })
 })

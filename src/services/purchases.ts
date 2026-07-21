@@ -14,6 +14,10 @@ import { db, isConfigValid } from '@/config/firebase'
 import type { Purchase, PurchaseItem } from '@/types'
 import { getCurrentMonth, getCurrentDate } from '@/utils/date'
 
+function formatDateKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+}
+
 export async function addPurchase(
   userId: string,
   items: PurchaseItem[],
@@ -70,19 +74,21 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   const [year, monthNum] = targetMonth.split('-').map(Number)
 
   const startDate = new Date(year!, monthNum! - 1, 1)
-  const endDate = new Date(year!, monthNum!, 0, 23, 59, 59)
+  const endDate = new Date(year!, monthNum!, 1)
+  const startDateString = formatDateKey(startDate)
+  const endDateString = formatDateKey(endDate)
 
   const path = `users/${userId}/purchases`
   console.log('[purchases:getPurchases] UID READ:', userId, '| month:', targetMonth)
   console.log('[purchases:getPurchases] QUERY PATH:', path)
-  console.log('[purchases:getPurchases] startDate:', startDate.toISOString(), 'endDate:', endDate.toISOString())
+  console.log('[purchases:getPurchases] startDate:', startDateString, 'endDate:', endDateString)
 
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
-    where('createdAt', '>=', Timestamp.fromDate(startDate)),
-    where('createdAt', '<=', Timestamp.fromDate(endDate)),
-    orderBy('createdAt', 'desc')
+    where('purchaseDate', '>=', startDateString),
+    where('purchaseDate', '<', endDateString),
+    orderBy('purchaseDate', 'desc')
   )
 
   const querySnapshot = await getDocs(q)
@@ -126,12 +132,15 @@ export async function getPurchasesByDateRange(
 ): Promise<Purchase[]> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
+  const startDateString = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
+  const endDateString = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`
+
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
-    where('createdAt', '>=', Timestamp.fromDate(startDate)),
-    where('createdAt', '<=', Timestamp.fromDate(endDate)),
-    orderBy('createdAt', 'desc')
+    where('purchaseDate', '>=', startDateString),
+    where('purchaseDate', '<=', endDateString),
+    orderBy('purchaseDate', 'desc')
   )
 
   const querySnapshot = await getDocs(q)
@@ -161,7 +170,7 @@ export async function getTodayPurchases(userId: string, date?: string): Promise<
   const q = query(
     purchasesRef,
     where('purchaseDate', '==', targetDate),
-    orderBy('createdAt', 'desc')
+    orderBy('purchaseDate', 'desc')
   )
 
   const querySnapshot = await getDocs(q)
@@ -193,15 +202,17 @@ export async function getPurchasesByStore(
   const [year, monthNum] = targetMonth.split('-').map(Number)
 
   const startDate = new Date(year!, monthNum! - 1, 1)
-  const endDate = new Date(year!, monthNum!, 0, 23, 59, 59)
+  const endDate = new Date(year!, monthNum!, 1)
+  const startDateString = formatDateKey(startDate)
+  const endDateString = formatDateKey(endDate)
 
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('storeId', '==', storeId),
-    where('createdAt', '>=', Timestamp.fromDate(startDate)),
-    where('createdAt', '<=', Timestamp.fromDate(endDate)),
-    orderBy('createdAt', 'desc')
+    where('purchaseDate', '>=', startDateString),
+    where('purchaseDate', '<', endDateString),
+    orderBy('purchaseDate', 'desc')
   )
 
   const querySnapshot = await getDocs(q)

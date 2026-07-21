@@ -13,8 +13,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:report": "playwright show-report",
-    "emulators": "firebase emulators:start",
-    "test:e2e:full": "firebase emulators:start & cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev & playwright test"
+    "emulators": "firebase emulators:start --only auth,firestore",
+    "test:e2e:full": "node scripts/run-e2e-full.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.5",

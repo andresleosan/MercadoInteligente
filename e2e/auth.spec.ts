@@ -31,10 +31,10 @@ test.describe('Auth Flows', () => {
     await page.goto('/register')
     await page.waitForLoadState('networkidle')
 
-    await expect(page.getByText('Crear cuenta')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Crear cuenta' })).toBeVisible()
     await expect(page.getByText('Empezá a controlar tu presupuesto')).toBeVisible()
     await expect(page.getByLabel('Email')).toBeVisible()
-    await expect(page.getByLabel('Contraseña')).toBeVisible()
+    await expect(page.getByPlaceholder('Contraseña (mín. 6 caracteres)')).toBeVisible()
     await expect(page.getByLabel('Confirmar contraseña')).toBeVisible()
     await expect(page.getByRole('button', { name: 'Crear cuenta' })).toBeVisible()
     await expect(page.getByText('¿Ya tenés cuenta?')).toBeVisible()
@@ -62,7 +62,7 @@ test.describe('Auth Flows', () => {
 
     const email = generateTestEmail()
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Contraseña').fill('password123')
+    await page.getByPlaceholder('Contraseña (mín. 6 caracteres)').fill('password123')
     await page.getByLabel('Confirmar contraseña').fill('different123')
     await page.getByRole('button', { name: 'Crear cuenta' }).click()
 
@@ -75,9 +75,11 @@ test.describe('Auth Flows', () => {
 
     const email = generateTestEmail()
     await page.getByLabel('Email').fill(email)
-    await page.getByLabel('Contraseña').fill('12345')
+    await page.getByPlaceholder('Contraseña (mín. 6 caracteres)').fill('12345')
     await page.getByLabel('Confirmar contraseña').fill('12345')
-    await page.getByRole('button', { name: 'Crear cuenta' }).click()
+    await page.locator('form').evaluate((form) => {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    })
 
     await expect(page.getByText('La contraseña debe tener al menos 6 caracteres')).toBeVisible()
   })

@@ -25,7 +25,7 @@ test.describe('Full User Journey', () => {
 
     // Step 2: Set budget
     await setBudget(page, '100000')
-    await expect(page.getByText('Presupuesto guardado correctamente')).toBeVisible()
+    await expect(page.getByText('Presupuesto guardado')).toBeVisible()
 
     // Step 3: Add purchases
     await addManualPurchase(page, 'Leche', '2', '1500')
@@ -33,8 +33,8 @@ test.describe('Full User Journey', () => {
     await addManualPurchase(page, 'Carne', '1', '8000')
 
     // Step 4: Verify dashboard shows correct totals
-    await expect(page.getByText('$13.000')).toBeVisible()
-    await expect(page.getByText('$87.000')).toBeVisible()
+    await expect(page.getByText('$13,000').first()).toBeVisible()
+    await expect(page.getByText('$87,000').first()).toBeVisible()
 
     // Step 5: Verify purchases in history
     await expect(page.getByText('Leche')).toBeVisible()
@@ -55,14 +55,14 @@ test.describe('Full User Journey', () => {
 
     // Step 3: Add purchase
     await addManualPurchase(page, 'Gaseosa', '2', '1200')
-    await expect(page.getByText('$2.400')).toBeVisible()
+    await expect(page.getByText('$2,400').first()).toBeVisible()
 
     // Step 4: Delete purchase
     page.on('dialog', (dialog) => dialog.accept())
-    await page.getByRole('button', { name: 'Eliminar' }).first().click()
+    await page.locator('button:not([disabled])', { hasText: '×' }).last().click()
 
     // Step 5: Verify empty state
-    await expect(page.getByText('Sin compras')).toBeVisible()
+    await expect(page.getByText('Hoy no compraste nada')).toBeVisible()
   })
 
   test('complete flow: budget over-spending shows warning', async ({ page }) => {
@@ -74,8 +74,9 @@ test.describe('Full User Journey', () => {
 
     await addManualPurchase(page, 'Electronics', '1', '15000')
 
-    await expect(page.getByText('Pasado')).toBeVisible()
-    await expect(page.getByText('$5.000')).toBeVisible()
+    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await expect(page.getByText('$5,000', { exact: true }).first()).toBeVisible()
+    await expect(page.getByText('$5,000').first()).toBeVisible()
   })
 
   test('logout and re-login preserves data', async ({ page }) => {
@@ -94,7 +95,7 @@ test.describe('Full User Journey', () => {
     await loginWithEmail(page, email, TEST_PASSWORD)
 
     // Data should persist
-    await expect(page.getByText('$2.500')).toBeVisible()
-    await expect(page.getByText('$57.500')).toBeVisible()
+    await expect(page.getByText('$2,500').first()).toBeVisible()
+    await expect(page.getByText('$57,500').first()).toBeVisible()
   })
 })

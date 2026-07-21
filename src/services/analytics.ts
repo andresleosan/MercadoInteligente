@@ -159,7 +159,7 @@ export async function getDailySpend(
 ): Promise<DailySpending[]> {
   const end = new Date()
   const start = new Date()
-  start.setDate(start.getDate() - daysBack)
+  start.setDate(start.getDate() - (daysBack - 1))
 
   const purchases = await getPurchasesByDateRange(userId, start, end)
 
@@ -178,7 +178,7 @@ export async function getDailySpend(
   }
 
   const result: DailySpending[] = []
-  for (let i = 0; i <= daysBack; i++) {
+  for (let i = 0; i < daysBack; i++) {
     const date = new Date()
     date.setDate(date.getDate() - i)
     const dateKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`

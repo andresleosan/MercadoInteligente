@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useId } from 'react'
 
 interface DarkInputProps {
   label?: string
@@ -22,16 +22,20 @@ export function DarkInput({
   className = '',
   ...props
 }: DarkInputProps & React.InputHTMLAttributes<HTMLInputElement>) {
+  const generatedId = useId()
+  const inputId = props.id ?? generatedId
+
   return (
     <div className="flex flex-col">
       {label && (
-        <label htmlFor={props.id as string | undefined} className="text-sm text-text-secondary mb-1">{label}</label>
+        <label htmlFor={inputId} className="text-sm text-text-secondary mb-1">{label}</label>
       )}
       <div className="flex items-center">
         {prefix && (
           <span className="text-text-muted mr-2">{prefix}</span>
         )}
         <input
+          id={inputId}
           type={type}
           value={value}
           onChange={onChange}

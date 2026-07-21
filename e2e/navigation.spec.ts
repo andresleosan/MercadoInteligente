@@ -22,17 +22,16 @@ test.describe('Navigation & UI', () => {
   test('month selector is visible', async ({ page }) => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
-    await expect(page.getByText('Resumen del mes')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Resumen mensual' })).toBeVisible()
   })
 
   test('expandable cards toggle content', async ({ page }) => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
-    const historialCard = page.getByText('Historial de compras').first()
-    await expect(historialCard).toBeVisible()
+    await page.getByRole('button', { name: 'Historial' }).click()
+    await expect(page.getByText('Historial de compras')).toBeVisible()
 
-    const registrarCard = page.getByText('Registrar compra').first()
-    await expect(registrarCard).toBeVisible()
+    await expect(page.locator('form').getByRole('button', { name: 'Registrar compra' })).toBeVisible()
   })
 
   test('shows loading spinner while data loads', async ({ page }) => {
@@ -51,7 +50,7 @@ test.describe('Navigation & UI', () => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
     await expect(page.getByText('Mercado Inteligente')).toBeVisible()
-    await expect(page.getByText('Presupuesto mensual')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Presupuesto diario' })).toBeVisible()
   })
 
   test('shows chart section', async ({ page }) => {
@@ -63,6 +62,7 @@ test.describe('Navigation & UI', () => {
   test('error state shows retry button in purchase history', async ({ page }) => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
+    await page.getByRole('button', { name: 'Historial' }).click()
     await expect(page.getByText('Actualizar historial')).toBeVisible()
   })
 })
