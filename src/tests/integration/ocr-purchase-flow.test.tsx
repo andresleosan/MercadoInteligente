@@ -24,6 +24,28 @@ vi.mock('@/services/purchases', () => ({
   addPurchase: vi.fn().mockResolvedValue({ id: 'new-id' }),
 }))
 
+vi.mock('@/services/categorizer', () => ({
+  suggestCategory: vi.fn().mockResolvedValue(null),
+  normalizeProductName: (name: string) => name.toLowerCase().trim(),
+}))
+
+vi.mock('@/services/categoryMapping', () => ({
+  getCategoryForProduct: vi.fn().mockResolvedValue(null),
+  saveCategoryMapping: vi.fn().mockResolvedValue(undefined),
+}))
+
+vi.mock('@/hooks/useCategories', () => ({
+  useCategories: () => ({
+    categories: [],
+    loading: false,
+    error: null,
+    create: vi.fn(),
+    update: vi.fn(),
+    remove: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}))
+
 describe('OCR → Purchase Integration', () => {
   beforeEach(() => {
     vi.clearAllMocks()

@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { ParsedItem, PurchaseItem } from '@/types'
 import { isLowConfidence } from '@/services/ticketParser'
 import { addPurchase } from '@/services/purchases'
+import { suggestCategory } from '@/services/categorizer'
+import { saveCategoryMapping } from '@/services/categoryMapping'
+import { CategorySelector } from '@/components/CategorySelector'
 import ProductEditor from './ProductEditor'
 import { DarkButton } from '@/components/ui/DarkButton'
 
@@ -31,9 +34,35 @@ export default function OCRReview({
   const [adding, setAdding] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [itemCategories, setItemCategories] = useState<Record<number, string>>({})
+
+  useEffect(() => {
+    if (!userId || items.length === 0) return
+    items.forEach((item, index) => {
+      if (item.name.trim().length < 3) return
+      suggestCategory(userId, item.name)
+        .then((cat) => {
+          if (cat === null) return
+          setItemCategories((prev) => {
+            if (prev[index] === cat) return prev
+            return { ...prev, [index]: cat }
+          })
+        })
+        .catch((err) => console.error('Error sugiriendo categoría:', err))
+    })
+  }, [items, userId])
 
   function removeItem(index: number) {
     setItems(items.filter((_, i) => i !== index))
+    setItemCategories((prev) => {
+      const next: Record<number, string> = {}
+      Object.entries(prev).forEach(([k, v]) => {
+        const i = Number(k)
+        if (i < index) next[i] = v
+        else if (i > index) next[i - 1] = v
+      })
+      return next
+    })
   }
 
   function saveEdit(updated: PurchaseItem) {
@@ -57,15 +86,33 @@ export default function OCRReview({
     setSaving(true)
     setError('')
     try {
+      const itemsWithCategory: PurchaseItem[] = items.map((item, index) => {
+        const categoryId = itemCategories[index]
+        if (categoryId && categoryId !== '') {
+          return { ...item, category: categoryId }
+        }
+        if (!('category' in item)) return item
+        const rest: PurchaseItem = { ...item }
+        delete (rest as { category?: string }).category
+        return rest
+      })
+
       console.log('[OCRReview:handleSavePurchase] UID SAVE:', userId, '| imageUrl:', imageUrl, '| items count:', items.length)
       await addPurchase(
         userId,
-        items,
+        itemsWithCategory,
         imageUrl ?? undefined,
         storeId || '',
         storeName || 'Sin establecimiento',
         purchaseDate
       )
+
+      await Promise.all(
+        itemsWithCategory
+          .filter((it) => it.name.trim() && it.category)
+          .map((it) => saveCategoryMapping(userId, it.name, it.category!))
+      ).catch((err) => console.error('Error guardando mappings de categoría:', err))
+
       onSaved()
     } catch (err) {
       console.error('Error al guardar compra desde OCR:', err)
@@ -93,32 +140,47 @@ export default function OCRReview({
           {items.map((item, index) => (
             <div
               key={index}
-              className={`flex items-center justify-between p-2 rounded-radius-md ${
+              className={`p-2 rounded-radius-md ${
                 item.confidence !== undefined && isLowConfidence(item.confidence)
                   ? 'bg-yellow border border-accent-amber/30'
                   : ''
               }`}
             >
-              <p className="text-sm font-medium text-text-primary">{item.name}</p>
-              <p className="text-xs text-text-muted">
-                {item.quantity}x ${item.unitPrice.toLocaleString()} = ${item.totalPrice.toLocaleString()}
-              </p>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setEditingIndex(index)}
-                  className="text-xs text-accent-green hover:brightness-110 transition-fast"
-                >
-                  Editar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => removeItem(index)}
-                  className="text-xs text-accent-red hover:brightness-110 transition-fast"
-                >
-                  Eliminar
-                </button>
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium text-text-primary">{item.name}</p>
+                <p className="text-xs text-text-muted">
+                  {item.quantity}x ${item.unitPrice.toLocaleString()} = ${item.totalPrice.toLocaleString()}
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingIndex(index)}
+                    className="text-xs text-accent-green hover:brightness-110 transition-fast"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="text-xs text-accent-red hover:brightness-110 transition-fast"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
+              {editingIndex !== index && !adding && (
+                <div className="mt-1.5">
+                  <CategorySelector
+                    userId={userId}
+                    selectedCategoryId={itemCategories[index] || undefined}
+                    onSelect={(catId) => {
+                      const next = catId ?? ''
+                      setItemCategories((prev) => ({ ...prev, [index]: next }))
+                    }}
+                    compact
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
