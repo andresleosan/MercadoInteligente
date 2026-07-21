@@ -1,10 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useAuth } from '@/hooks/useAuth'
+import { useCategories } from '@/hooks/useCategories'
 import { getTodayPurchases, deletePurchase } from '@/services/purchases'
 import { getCurrentDate } from '@/utils/date'
 import type { Purchase } from '@/types'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { CategoryBadge } from '@/components/CategoryBadge'
 
 interface Props {
   date?: string
@@ -13,6 +15,7 @@ interface Props {
 
 export default function TodayPurchases({ date, refreshKey }: Props) {
   const { user } = useAuth()
+  const { categories } = useCategories(user?.uid ?? null)
   const targetDate = date || getCurrentDate()
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
@@ -97,11 +100,21 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
               {storePurchases.map(purchase => (
                 <div key={purchase.id} className="flex justify-between items-center py-1">
                   <ul className="text-sm text-text-secondary flex-1">
-                    {purchase.items.map((item, index) => (
-                      <li key={index} className="text-xs">
-                        {item.quantity}x {item.name}
-                      </li>
-                    ))}
+                    {purchase.items.map((item, index) => {
+                      const matchedCategory = item.category
+                        ? categories.find(c => c.id === item.category)
+                        : undefined
+                      return (
+                        <li key={index} className="text-xs">
+                          <div className="flex items-center gap-2">
+                            <span>{item.quantity}x {item.name}</span>
+                            {matchedCategory && (
+                              <CategoryBadge category={matchedCategory} />
+                            )}
+                          </div>
+                        </li>
+                      )
+                    })}
                   </ul>
                   <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-text-primary">
