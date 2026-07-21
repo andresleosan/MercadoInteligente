@@ -1,178 +1,102 @@
-﻿## Task 6: `ProductEditor.tsx` â€” form de un producto
+﻿### Task 6: Create useCategories Hook
 
 **Files:**
-- Create: `src/components/ProductEditor.tsx`
-- Test: `src/components/ProductEditor.test.tsx`
+- Create: `src/hooks/useCategories.ts`
 
 **Interfaces:**
-- Consumes: `ParsedItem` y `PurchaseItem` de `@/types`.
-- Produces: componente `<ProductEditor initialItem?: ParsedItem | PurchaseItem; onSave: (item: PurchaseItem) => void; onCancel: () => void />`.
+- Consumes: `getCategories`, `createCategory`, `updateCategory`, `deleteCategory` from `categories.ts`
+- Produces: `useCategories` hook returning categories, loading, CRUD functions
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Create useCategories hook**
 
-Crear `src/components/ProductEditor.test.tsx`:
+```typescript
+import { useState, useEffect, useCallback } from 'react'
+import type { Category } from '@/types'
+import {
+  getCategories,
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from '@/services/categories'
 
-```tsx
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import ProductEditor from './ProductEditor'
+interface UseCategoriesReturn {
+  categories: Category[]
+  loading: boolean
+  error: string | null
+  create: (name: string, icon: string) => Promise<Category>
+  update: (id: string, data: Partial<Pick<Category, 'name' | 'icon'>>) => Promise<void>
+  remove: (id: string) => Promise<void>
+  refresh: () => Promise<void>
+}
 
-describe('ProductEditor', () => {
-  it('should render empty form when no initialItem', () => {
-    render(<ProductEditor onSave={vi.fn()} onCancel={vi.fn()} />)
-    expect(screen.getByLabelText(/producto/i)).toHaveValue('')
-    expect(screen.getByLabelText(/cant/i)).toHaveValue(1)
-    expect(screen.getByLabelText(/precio unit/i)).toHaveValue(0)
-  })
+export function useCategories(userId: string | null): UseCategoriesReturn {
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  it('should render pre-filled form when initialItem provided', () => {
-    render(
-      <ProductEditor
-        initialItem={{ name: 'Leche', quantity: 2, unitPrice: 450, totalPrice: 900, confidence: 85 }}
-        onSave={vi.fn()}
-        onCancel={vi.fn()}
-      />
+  const fetchCategories = useCallback(async () => {
+    if (!userId) return
+    setLoading(true)
+    setError(null)
+    try {
+      const data = await getCategories(userId)
+      setCategories(data)
+    } catch (err) {
+      setError('Error al cargar categorías')
+    } finally {
+      setLoading(false)
+    }
+  }, [userId])
+
+  useEffect(() => {
+    fetchCategories()
+  }, [fetchCategories])
+
+  const create = useCallback(async (name: string, icon: string) => {
+    if (!userId) throw new Error('User not authenticated')
+    const newCategory = await createCategory(userId, name, icon)
+    setCategories(prev => [...prev, newCategory])
+    return newCategory
+  }, [userId])
+
+  const update = useCallback(async (id: string, data: Partial<Pick<Category, 'name' | 'icon'>>) => {
+    if (!userId) throw new Error('User not authenticated')
+    await updateCategory(userId, id, data)
+    setCategories(prev =>
+      prev.map(cat => (cat.id === id ? { ...cat, ...data } : cat))
     )
-    expect(screen.getByLabelText(/producto/i)).toHaveValue('Leche')
-    expect(screen.getByLabelText(/cant/i)).toHaveValue(2)
-    expect(screen.getByLabelText(/precio unit/i)).toHaveValue(450)
-  })
+  }, [userId])
 
-  it('should calculate totalPrice on save', () => {
-    const onSave = vi.fn()
-    render(<ProductEditor onSave={onSave} onCancel={vi.fn()} />)
+  const remove = useCallback(async (id: string) => {
+    if (!userId) throw new Error('User not authenticated')
+    await deleteCategory(userId, id)
+    setCategories(prev => prev.filter(cat => cat.id !== id))
+  }, [userId])
 
-    fireEvent.change(screen.getByLabelText(/producto/i), { target: { value: 'Fideos' } })
-    fireEvent.change(screen.getByLabelText(/cant/i), { target: { value: '3' } })
-    fireEvent.change(screen.getByLabelText(/precio unit/i), { target: { value: '200' } })
-    fireEvent.click(screen.getByRole('button', { name: /guardar/i }))
-
-    expect(onSave).toHaveBeenCalledWith({
-      name: 'Fideos',
-      quantity: 3,
-      unitPrice: 200,
-      totalPrice: 600,
-      confidence: undefined,
-    })
-  })
-
-  it('should not save if name is empty', () => {
-    const onSave = vi.fn()
-    render(<ProductEditor onSave={onSave} onCancel={vi.fn()} />)
-    fireEvent.change(screen.getByLabelText(/cant/i), { target: { value: '2' } })
-    fireEvent.change(screen.getByLabelText(/precio unit/i), { target: { value: '100' } })
-    fireEvent.click(screen.getByRole('button', { name: /guardar/i }))
-    expect(onSave).not.toHaveBeenCalled()
-  })
-
-  it('should call onCancel when cancel button clicked', () => {
-    const onCancel = vi.fn()
-    render(<ProductEditor onSave={vi.fn()} onCancel={onCancel} />)
-    fireEvent.click(screen.getByRole('button', { name: /cancelar/i }))
-    expect(onCancel).toHaveBeenCalled()
-  })
-})
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `npx vitest run src/components/ProductEditor.test.tsx`
-Expected: FAIL con `Cannot find module './ProductEditor'`.
-
-- [ ] **Step 3: Write minimal implementation**
-
-Crear `src/components/ProductEditor.tsx`:
-
-```tsx
-import { useState, type FormEvent } from 'react'
-import type { ParsedItem, PurchaseItem } from '@/types'
-
-interface Props {
-  initialItem?: ParsedItem | PurchaseItem
-  onSave: (item: PurchaseItem) => void
-  onCancel: () => void
-}
-
-export default function ProductEditor({ initialItem, onSave, onCancel }: Props) {
-  const [name, setName] = useState(initialItem?.name ?? '')
-  const [quantity, setQuantity] = useState(initialItem?.quantity ?? 1)
-  const [unitPrice, setUnitPrice] = useState(initialItem?.unitPrice ?? 0)
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault()
-    if (!name.trim() || quantity <= 0 || unitPrice <= 0) return
-    onSave({
-      name: name.trim(),
-      quantity,
-      unitPrice,
-      totalPrice: quantity * unitPrice,
-      confidence: initialItem?.confidence,
-    })
+  return {
+    categories,
+    loading,
+    error,
+    create,
+    update,
+    remove,
+    refresh: fetchCategories,
   }
-
-  return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-4 space-y-3">
-      <div>
-        <label className="block text-xs font-medium text-gray-700 mb-1">Producto</label>
-        <input
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-          placeholder="Ej: Leche"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Cant.</label>
-          <input
-            type="number"
-            min="1"
-            value={quantity}
-            onChange={(e) => setQuantity(Number(e.target.value))}
-            className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-700 mb-1">Precio unit.</label>
-          <input
-            type="number"
-            min="0"
-            step="10"
-            value={unitPrice}
-            onChange={(e) => setUnitPrice(Number(e.target.value))}
-            className="block w-full px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-          />
-        </div>
-      </div>
-      <div className="flex gap-2 pt-2">
-        <button
-          type="submit"
-          className="flex-1 py-1.5 px-3 border border-transparent rounded-md text-sm font-medium text-white bg-green-600 hover:bg-green-700"
-        >
-          Guardar
-        </button>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="flex-1 py-1.5 px-3 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
-        >
-          Cancelar
-        </button>
-      </div>
-    </form>
-  )
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 2: Verify TypeScript compiles**
 
-Run: `npx vitest run src/components/ProductEditor.test.tsx`
-Expected: PASS.
+Run: `npx tsc --noEmit`
+Expected: No errors
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 3: Commit**
 
 ```bash
-git add src/components/ProductEditor.tsx src/components/ProductEditor.test.tsx
-git commit -m "feat(ocr): componente ProductEditor reutilizable (creacion y edicion)"
+git add src/hooks/useCategories.ts
+git commit -m "feat: add useCategories hook for category management"
 ```
+
+Notas:
+- Mira `src/hooks/useStores.ts` para ver el patrón de hooks en este codebase
+- No requiere tests para esta tarea (el hook es un wrapper simple de serviços ya testeados)

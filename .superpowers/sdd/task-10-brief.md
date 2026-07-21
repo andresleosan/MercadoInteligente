@@ -1,63 +1,49 @@
-﻿## Task 10: Smoke test manual + build final + deploy
+﻿### Task 10: Integrate CategorySelector in AddPurchase
 
-**Files:** ninguno (verificaciÃ³n manual)
+**Files:**
+- Modify: `src/pages/AddPurchase.tsx`
 
-- [ ] **Step 1: Correr todos los tests**
+**Objetivo:** Integrar el componente CategorySelector en el formulario de registro de compras para que:
+1. Al escribir el nombre del producto, se sugiera automáticamente la categoría
+2. El usuario pueda cambiar la categoría antes de guardar
+3. Se guarde la categoría con el PurchaseItem
+4. Se guarde el mapping para learning del usuario
 
-Run: `npx vitest run`
-Expected: PASS â€” todos los archivos de test.
+## Cambios necesarios
 
-- [ ] **Step 2: Build de producciÃ³n**
-
-Run: `npm run build`
-Expected: PASS. Verificar que `dist/tessdata/*.traineddata.gz` exista.
-
-- [ ] **Step 3: Smoke test local**
-
-Run: `npm run dev`
-Verificar manualmente en el navegador:
-1. Login.
-2. Ir a "Registrar compra".
-3. Click "Registrar por foto".
-4. Subir una foto de un ticket real.
-5. Esperar OCR (2-5s).
-6. Ver productos parseados en pantalla de revisiÃ³n.
-7. Editar uno, eliminar otro, agregar uno manual.
-8. Guardar compra.
-9. Verificar que aparece en Dashboard y PurchaseHistory.
-
-- [ ] **Step 4: Deploy a Cloudflare Pages**
-
-Push a `master`:
-```bash
-git push origin master
-```
-Cloudflare Pages auto-deploya. Verificar en el dashboard de Cloudflare que el build pasa y el deploy queda en producciÃ³n.
-
-- [ ] **Step 5: Verificar en producciÃ³n**
-
-Abrir la URL de Cloudflare Pages. Repetir el smoke test del Step 3 en producciÃ³n. Reportar cualquier diferencia.
-
-- [ ] **Step 6: Actualizar `tasks-v2.md`**
-
-Marcar las tareas 2.1-2.6 de la Fase 2 como `aprobada`:
-
-```md
-### Fase 2 â€” OCR por Foto
-| # | Tarea | TitÃ¡n | Estado |
-|---|---|---|---|
-| 2.1 | Instalar y configurar Tesseract.js | Atlas | aprobada |
-| 2.2 | Crear servicio de OCR (`src/services/ocr.ts`) | Prometeo | aprobada |
-| 2.3 | Crear componente de captura de foto (cÃ¡mara o galerÃ­a) | Hefesto | aprobada |
-| 2.4 | Procesar imagen y extraer productos/precios | Prometeo | aprobada |
-| 2.5 | Mostrar resultados y permitir ediciÃ³n antes de guardar | Hefesto | aprobada |
-| 2.6 | Tests de OCR | Temis | aprobada |
+1. **Imports:** Añadir al inicio del archivo
+```typescript
+import { CategorySelector } from '@/components/CategorySelector'
+import { suggestCategory } from '@/services/categorizer'
+import { saveCategoryMapping } from '@/services/categoryMapping'
 ```
 
-- [ ] **Step 7: Commit final**
+2. **Estado:** Añadir state para categorías por item
+```typescript
+const [itemCategories, setItemCategories] = useState<Record<number, string>>({})
+```
+
+3. **En el map de items:** Después del input "Producto", añadir CategorySelector. Modificar el onChange del input "Producto" para llamar suggestCategory con debounce.
+
+4. **En handleSubmit:** Mapear validItems para incluir category y guardar mappings
+
+## Notas importantes
+
+- Mira `src/pages/AddPurchase.tsx` actual. Ya tiene importaciones de useAuth, useOCR, useStores, etc.
+- El campo `category` ya está soportado en `PurchaseItem` (Tarea 1)
+- Usa `user?.uid` para obtener el userId
+- El suggestCategory debe llamarse solo si el nombre tiene al menos 3 caracteres
+- Para evitar llamadas excesivas, usa un debounce simple o solo llama cuando el usuario deja de escribir
+
+## Commit
 
 ```bash
-git add tasks-v2.md
-git commit -m "docs: Fase 2 OCR aprobada y desplegada"
-git push origin master
+git add src/pages/AddPurchase.tsx
+git commit -m "feat: integrate CategorySelector in AddPurchase with auto-suggest"
 ```
+
+## Importante
+
+- No rompas la funcionalidad existente (modos photo, voice, review)
+- El formulario ya tiene un layout de tarjetas apiladas (de refactor anterior) — añade CategorySelector dentro de cada tarjeta de item
+- Después del input "Producto" y antes de la grilla "Cantidad/Precio unitario"

@@ -1,110 +1,102 @@
-﻿## Task 7: `OCRCapture.tsx` â€” UI de captura de imagen
+﻿### Task 7: Create CategoryBadge Component
 
 **Files:**
-- Create: `src/components/OCRCapture.tsx`
-- Test: `src/components/OCRCapture.test.tsx`
+- Create: `src/components/CategoryBadge.tsx`
+- Create: `src/tests/components/CategoryBadge.test.tsx`
 
 **Interfaces:**
-- Produces: `<OCRCapture onImageSelected: (file: File) => void />`.
+- Consumes: `Category` type
+- Produces: `CategoryBadge` component
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Write failing tests**
 
-Crear `src/components/OCRCapture.test.tsx`:
+Create `src/tests/components/CategoryBadge.test.tsx`:
 
-```tsx
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
-import OCRCapture from './OCRCapture'
+```typescript
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { CategoryBadge } from '@/components/CategoryBadge'
+import type { Category } from '@/types'
 
-describe('OCRCapture', () => {
-  it('should render a file input accepting images', () => {
-    render(<OCRCapture onImageSelected={vi.fn()} />)
-    const input = screen.getByLabelText(/foto del ticket/i) as HTMLInputElement
-    expect(input.type).toBe('file')
-    expect(input.accept).toBe('image/*')
+describe('CategoryBadge', () => {
+  const mockCategory: Category = {
+    id: 'lacteos',
+    name: 'Lácteos',
+    icon: '🥛',
+    isDefault: true,
+  }
+
+  it('renders category icon and name', () => {
+    render(<CategoryBadge category={mockCategory} />)
+    expect(screen.getByText('🥛')).toBeInTheDocument()
+    expect(screen.getByText('Lácteos')).toBeInTheDocument()
   })
 
-  it('should call onImageSelected when a file is selected', () => {
-    const onImageSelected = vi.fn()
-    render(<OCRCapture onImageSelected={onImageSelected} />)
-
-    const file = new File(['dummy'], 'ticket.jpg', { type: 'image/jpeg' })
-    const input = screen.getByLabelText(/foto del ticket/i)
-    fireEvent.change(input, { target: { files: [file] } })
-
-    expect(onImageSelected).toHaveBeenCalledWith(file)
-  })
-
-  it('should not call onImageSelected if no file selected', () => {
-    const onImageSelected = vi.fn()
-    render(<OCRCapture onImageSelected={onImageSelected} />)
-
-    const input = screen.getByLabelText(/foto del ticket/i)
-    fireEvent.change(input, { target: { files: [] } })
-
-    expect(onImageSelected).not.toHaveBeenCalled()
+  it('applies correct color classes for lacteos', () => {
+    render(<CategoryBadge category={mockCategory} />)
+    const badge = screen.getByText('Lácteos').closest('span')
+    expect(badge?.className).toContain('blue')
   })
 })
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 2: Run tests to verify they fail**
 
-Run: `npx vitest run src/components/OCRCapture.test.tsx`
-Expected: FAIL.
+Run: `npx vitest run src/tests/components/CategoryBadge.test.tsx`
+Expected: FAIL
 
-- [ ] **Step 3: Write minimal implementation**
+- [ ] **Step 3: Implement CategoryBadge component**
 
-Crear `src/components/OCRCapture.tsx`:
+Create `src/components/CategoryBadge.tsx`:
 
-```tsx
-import { useRef, type ChangeEvent } from 'react'
+```typescript
+import type { Category } from '@/types'
 
-interface Props {
-  onImageSelected: (file: File) => void
+interface CategoryBadgeProps {
+  category: Category
+  editable?: boolean
+  onEdit?: () => void
 }
 
-export default function OCRCapture({ onImageSelected }: Props) {
-  const inputRef = useRef<HTMLInputElement>(null)
+const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
+  'lacteos': { bg: 'bg-blue-500/20', text: 'text-blue-300' },
+  'panaderia': { bg: 'bg-amber-500/20', text: 'text-amber-300' },
+  'carnes': { bg: 'bg-red-500/20', text: 'text-red-300' },
+  'frutas-verduras': { bg: 'bg-green-500/20', text: 'text-green-300' },
+  'bebidas': { bg: 'bg-cyan-500/20', text: 'text-cyan-300' },
+  'limpieza': { bg: 'bg-purple-500/20', text: 'text-purple-300' },
+  'higiene': { bg: 'bg-pink-500/20', text: 'text-pink-300' },
+  'snacks': { bg: 'bg-orange-500/20', text: 'text-orange-300' },
+  'otro': { bg: 'bg-gray-500/20', text: 'text-gray-300' },
+}
 
-  function handleChange(e: ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0]
-    if (file) onImageSelected(file)
-  }
+export function CategoryBadge({ category, editable, onEdit }: CategoryBadgeProps) {
+  const colors = CATEGORY_COLORS[category.id] ?? CATEGORY_COLORS['otro']
 
   return (
-    <div className="bg-white rounded-lg shadow p-6 text-center">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Registrar por foto</h2>
-      <p className="text-sm text-gray-600 mb-4">
-        TomÃ¡ una foto del ticket o subÃ­ una imagen de la galerÃ­a.
-      </p>
-      <label className="block">
-        <span className="sr-only">Foto del ticket</span>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleChange}
-          className="block w-full text-sm text-gray-500
-            file:mr-4 file:py-2 file:px-4
-            file:rounded-md file:border-0
-            file:text-sm file:font-medium
-            file:bg-green-600 file:text-white
-            hover:file:bg-green-700 file:cursor-pointer"
-        />
-      </label>
-    </div>
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${colors.bg} ${colors.text} ${editable ? 'cursor-pointer hover:opacity-80' : ''}`}
+      onClick={editable ? onEdit : undefined}
+    >
+      <span>{category.icon}</span>
+      <span>{category.name}</span>
+    </span>
   )
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [ ] **Step 4: Run tests to verify they pass**
 
-Run: `npx vitest run src/components/OCRCapture.test.tsx`
-Expected: PASS.
+Run: `npx vitest run src/tests/components/CategoryBadge.test.tsx`
+Expected: PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add src/components/OCRCapture.tsx src/components/OCRCapture.test.tsx
-git commit -m "feat(ocr): componente OCRCapture (camara o galeria)"
+git add src/components/CategoryBadge.tsx src/tests/components/CategoryBadge.test.tsx
+git commit -m "feat: add CategoryBadge component with color coding"
 ```
+
+Notas:
+- Mira otros componentes en `src/components/` (como `StoreBadge.tsx` si existe) para ver el patrón de badges en este codebase
+- El código del brief es completo, solo transcríbelo

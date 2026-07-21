@@ -1,21 +1,64 @@
-# Task 5 Report: Dashboard refactor — dark layout with ExpandableCards
+# Task 5 Report — Categorizer Service
 
-**Status:** DONE
+## Qué implementé
 
-**Commits:**
-- (pending)
+Servicio de sugerencia de categorías con dos capas:
+1. **Learning-first**: consulta `getCategoryForProduct` (Tarea 4) para resolver categorías que el usuario ya mapeó.
+2. **Keyword fallback**: si no hay learning, busca palabras normalizadas en un `KEYWORD_MAP` estático con ~50 keywords cubriendo 8 categorías default (lacteos, panaderia, carnes, frutas-verduras, bebidas, limpieza, higiene, snacks).
 
-**Changes:**
+Funciones exportadas:
+- `normalizeProductName(name: string): string` — lowercase + trim.
+- `suggestCategory(userId: string, productName: string): Promise<string | null>` — orquesta learning → keyword → null.
 
-- `src/pages/Dashboard.tsx` — full rewrite: dark layout, 5 ExpandableCards (Presupuesto, Resumen del mes, Historial de compras, Registrar compra, Gráficos), MonthNavigator inside Resumen card, compact header with PWA install + email + logout, `showBudgetForm` state removed, budget form inline inside Presupuesto card
-- `src/pages/Dashboard.test.tsx` — full rewrite: 9 tests all passing (month label, resumen with budget, over budget warning, sin presupuesto, budget form inline, month navigation, PurchaseHistory expand, reload budget on save, ChartsSection expand)
-- `src/tests/integration/dashboard-multi-month.test.tsx` — removed (race condition in vitest environment; multi-month scenarios covered by Dashboard.test.tsx month navigation test)
+## Evidencia TDD
 
-**Test results:**
-- `src/pages/Dashboard.test.tsx` — 9/9 passed (956ms)
-- `src/tests/integration/dashboard-multi-month.test.tsx` — removed (vitest race condition prevented reliable testing)
+### RED (antes de implementar)
+```
+FAIL  src/tests/services/categorizer.test.ts
+Error: Failed to resolve import "@/services/categorizer" from "src/tests/services/categorizer.test.ts". Does the file exist?
+Test Files  1 failed (1)
+Tests      no tests
+```
+Falla por la razón correcta: módulo inexistente (no typo, no error de configuración).
 
-**Build:** `npx vite build` — succeeded (no errors)
+### GREEN (después de implementar)
+```
+✓ src/tests/services/categorizer.test.ts (5 tests) 7ms
+Test Files  1 passed (1)
+Tests      5 passed (5)
+```
 
-**Concerns:**
-- Multi-month file removed due to persistent vitest race condition (component re-enters loading state after mock resolution in test 2+). All multi-month scenarios covered by Dashboard.test.tsx's month navigation test.
+### Regresión (suite services completa)
+```
+✓ src/tests/services/categorizer.test.ts (5 tests)
+✓ src/tests/services/categoryMapping.test.ts (9 tests)
+✓ src/tests/services/categories.test.ts (10 tests)
+Test Files  3 passed (3)
+Tests      24 passed (24)
+```
+
+### Verificaciones adicionales
+- `npx tsc -b --noEmit` → salida limpia (sin errores de tipos).
+- `npx eslint src/services/categorizer.ts src/tests/services/categorizer.test.ts` → exit 0 (sin warnings).
+
+## Archivos cambiados
+
+- `src/services/categorizer.ts` (creado, 63 líneas) — implementación del servicio.
+- `src/tests/services/categorizer.test.ts` (creado, 52 líneas) — 5 tests con mock de `categoryMapping`.
+
+## Decisión de diseño
+
+El brief advertía que el test `matches partial words` (`'leches enteras'` → `'lacteos'`) podría fallar porque el `KEYWORD_MAP` del spec solo incluía `'leche'` (singular). El brief ofrecía dos opciones:
+- (a) ajustar el test
+- (b) añadir `'leches'` al KEYWORD_MAP
+
+**Elegí (b)** y añadí solo `'leches'` (mantuve YAGNI: no construí un sistema de pluralización speculativo, no añadí plurales de otros sustantivos que ningún test pide). Razón: el comportamiento del test refleja un caso real (usuarios escriben "leches") y el mapa de keywords está diseñado precisamente para crecer conforme se identifican variantes comunes, sin acoplar el test a un hack de normalización.
+
+## Hallazgos de auto-revisión
+
+- **Completitud:** ✓ todo lo del spec implementado; 5 tests del brief reproducción exacta.
+- **Calidad:** nombres claros (`normalizeProductName`, `suggestCategory`, `learned`), estilo idéntico a `categoryMapping.ts` (imports relativos, sin comentarios, sin tipado redundante).
+- **Disciplina (YAGNI):** sin sistema de pluralización genérico, sin DI, sin caché de mapa, sin funciones de normalización adicionales (acentos, plurales). Solo lo que los tests exigen.
+- **Testing:** los 5 tests verifican comportamiento observable, no detalles de implementación. El mock es solo de `getCategoryForProduct` (dependencia externa legitima — Firestore), no de código propio.
+
+Sin inquietudes. Listo para revisión.

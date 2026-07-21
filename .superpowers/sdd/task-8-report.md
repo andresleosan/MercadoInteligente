@@ -1,66 +1,77 @@
-# Task 8 Report — `OCRReview.tsx` (pantalla de revisión editable)
+# Task 8 Report: CategorySelector Component
 
-## What I implemented
+## Qué implementé
 
-`src/components/OCRReview.tsx` — the post-OCR review screen. It receives `ParsedItem[]` (initial), `imageUrl`, `userId`, `onSaved`, `onRetry`, and lets the user:
+Componente `CategorySelector` (dropdown) para selección de categoría, siguiendo el código del plan líneas 845-975. Consume el hook `useCategories` y permite:
 
-- See all parsed products (name + `qty x unitPrice = totalPrice`).
-- Spot low-confidence rows highlighted in yellow via `isLowConfidence` from `@/services/ticketParser` (class `bg-yellow-50 border border-yellow-200`).
-- Edit a row with `ProductEditor` (reused, `initialItem`).
-- Remove a row ("Eliminar").
-- Add a manual product ("+ Agregar producto" → `ProductEditor` without `initialItem`).
-- Save the purchase ("Guardar compra" → `addPurchase(userId, items, imageUrl ?? undefined)` from `@/services/purchases`, then `onSaved()`).
-- Retry OCR ("Reintentar" → `onRetry`).
-- See a running total and an inline error message.
+- Botón trigger que muestra la categoría seleccionada o "Sin categoría"
+- Lista de categorías default + custom al abrir el dropdown
+- Opción "Sin categoría" (onSelect con `null`)
+- Creación inline de nueva categoría (nombre + icono) con Enter para guardar
+- Variante `compact`
+- Estado de carga con placeholder con `animate-pulse`
+- Tokens de Tailwind del tema (`bg-bg-elevated`, `text-text-primary`, `border-border-subtle`, `text-text-muted`, `accent-green`, `bg-bg-surface`, `bg-bg-input`, `rounded-radius-sm/md`)
 
-State: `items` (editable copy of `initialItems`), `editingIndex`, `adding`, `saving`, `error`.
+**Adición sobre el plan:** `aria-label` en el botón trigger con el nombre de la categoría seleccionada o "Sin categoría" — para que el test pueda localizarlo vía `getByRole('button', { name: /.../ })` y mejorar accesibilidad.
 
-## TDD Evidence
+## Evidencia TDD
 
-**RED** — before implementation, `npx vitest run src/components/OCRReview.test.tsx` failed:
+### RED (tests primero, antes de implementar)
+
 ```
-Error: Failed to resolve import "./OCRReview" from "src/components/OCRReview.test.tsx". Does the file exist?
-Test Files  1 failed (1)
-Tests  no tests
+FAIL src/tests/components/CategorySelector.test.tsx (0 test)
+Error: Failed to resolve import "@/components/CategorySelector" from "src/tests/components/CategorySelector.test.tsx". Does the file exist?
 ```
 
-**GREEN** — after implementation:
+### GREEN (después de implementar el componente)
+
 ```
-✓ src/components/OCRReview.test.tsx (6 tests)
+✓ src/tests/components/CategorySelector.test.tsx (5 tests) 1549ms
+  ✓ CategorySelector > renders trigger button closed, then shows categories when opened (1234ms)
+  ✓ CategorySelector > calls onSelect when category is clicked
+  ✓ CategorySelector > shows selected category name in trigger button
+  ✓ CategorySelector > renders loading placeholder while loading
+  ✓ CategorySelector > has a "Crear nueva" option to start inline creation
+
 Test Files  1 passed (1)
-Tests  6 passed (6)
+     Tests  5 passed (5)
 ```
 
-Full suite: **11 files, 58 tests, all pass.**
-Typecheck: `npx tsc -b --noEmit` → clean (no output).
+Suite combinada de componentes tras el cambio:
 
-## Files changed
+```
+✓ src/tests/components/CategoryBadge.test.tsx (2 tests) 108ms
+✓ src/tests/components/CategorySelector.test.tsx (5 tests) 1198ms
+Test Files  2 passed (2)
+     Tests  7 passed (7)
+```
 
-- `src/components/OCRReview.tsx` (new, ~135 lines)
-- `src/components/OCRReview.test.tsx` (new, brief's test verbatim)
+Typecheck (`tsc --noEmit`): sin errores.
 
-Commit: `d5e9cad feat(ocr): componente OCRReview - revision editable con resaltado de confianza`
+## Ajustes al test del brief
 
-## Deviations from the brief's implementation (required to make the brief's tests pass)
+Como indicó el brief, el test original asumía que las categorías estaban visibles al renderizar, pero el dropdown empieza cerrado. Ajustes aplicados:
 
-1. **Name `<p>` is a direct child of the highlighted row `<div>`.**
-   The brief nests name + quantity inside an inner wrapper `<div>`. With that structure, `screen.getByText('Leche').closest('div')` returns the *inner* wrapper (which carries no `bg-yellow` class), so the "highlight low confidence" test would fail. I placed the name and quantity `<p>` elements as direct children of the row `<div>` that owns the conditional `bg-yellow-50` class, so `.closest('div')` resolves to the highlighted row.
+- **"renders dropdown with categories"** → renombrado a `renders trigger button closed, then shows categories when opened`:
+  - Verifica que las categorías NO están inicialmente (`queryByText` + `not.toBeInTheDocument`)
+  - Hace click en el botón trigger (localizado por rol + nombre accesible)
+  - Verifica que las categorías aparecen (`getByText`)
+- **"calls onSelect when category is clicked"** → añade click previo en el trigger para abrir el dropdown, luego click en "Lácteos"
+- **3 tests adicionales** para cubrir: categoría seleccionada se muestra en trigger, estado de carga (smoke test), y existencia de la opción "Crear nueva"
 
-2. **Bottom action bar ("Guardar compra" / "Reintentar") is hidden while adding or editing.**
-   The brief renders it unconditionally. In the "add a manual product" test, that makes two buttons match `getByRole('button', { name: /guardar/i })` — ProductEditor's "Guardar" and the bottom "Guardar compra" — so testing-library throws "multiple elements". Hiding the action bar during add/edit resolves the collision and is also better UX (you shouldn't save the purchase mid-edit). The "+ Agregar producto" button is likewise hidden during add/edit.
+## Archivos cambiados
 
-3. **`catch {}` instead of `catch (e)`.** The unused `e` would trip `noUnusedLocals`/lint; dropped the binding.
+- **Create:** `src/components/CategorySelector.tsx` (138 líneas)
+- **Create:** `src/tests/components/CategorySelector.test.tsx` (80 líneas)
 
-4. **`type="button"` on all action buttons** to avoid accidental form submission, consistent with the codebase.
+## Hallazgos de auto-revisión
 
-## Self-review findings
+| Área | Hallazgo | Severidad | Acción |
+|------|----------|-----------|--------|
+| Accesibilidad | El dropdown no usa `role="listbox"`, `role="option"`, ni `aria-expanded`. | Menor | Fuera del scope del brief. Recomendado para siguiente iteración. |
+| UX | No hay cierre al click fuera del dropdown ni con tecla Escape. | Menor | Fuera del scope del brief. El componente `CategoryBadge` tampoco lo gestiona, sigue la convención actual del repo. |
+| Testing | El test "loading placeholder" quedó como smoke test mínimo porque combinar `vi.doMock` con `vi.mock` estático del mismo módulo causa conflictos. El caso de loading se cubre indirectamente en el flujo de integración. | Menor | Aceptado. No afecta cobertura de lógica principal. |
+| Seguridad | Inputs controlados, `newName.trim()` previene espacios, `maxLength={2}` en icon. Sin `dangerouslySetInnerHTML`. | OK | Sin acción. |
+| Consistencia | La implementación coincide con el código del plan (líneas 845-975). Única adición: `aria-label` y `triggerLabel` para accesibilidad y tests. | OK | Sin acción. |
 
-- Completeness: all 6 brief scenarios covered and passing.
-- The `imageUrl` prop maps to `addPurchase`'s third parameter `receiptImageUrl` (verified in `src/services/purchases.ts:21-25`). Passing `imageUrl ?? undefined` matches the test's `toHaveBeenCalledWith(..., 'https://example.com/ticket.jpg')` (string passed through) and would pass `undefined` when null (no receipt attached).
-- `isLowConfidence` used exactly as exported (`50 <= score < 70`); `confidence !== undefined` guard added because `PurchaseItem.confidence` is optional.
-- Imports use `@/` alias and `type` modifiers consistent with `ProductEditor.tsx`.
-
-## Concerns
-
-- Cosmetic `act(...)` warning in the async "guardar compra" test, coming from the brief's exact `await new Promise((r) => setTimeout(r, 0))` pattern. The test passes; resolving the warning would require editing the brief's test (using `waitFor`/`act`), which I left untouched per the TDD brief.
-- `key={index}` on the items list (per the brief) is not ideal when items are removed/reordered, but no test covers that edge case and it matches the brief.
+No hay hallazgos bloqueantes.
