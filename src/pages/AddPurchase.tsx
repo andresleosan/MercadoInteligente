@@ -1,14 +1,17 @@
-import { useState, useEffect, type FormEvent } from 'react'
+import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
 import { useStores } from '@/hooks/useStores'
 import { addPurchase } from '@/services/purchases'
+import { suggestCategory } from '@/services/categorizer'
+import { saveCategoryMapping } from '@/services/categoryMapping'
 import { getCurrentDate } from '@/utils/date'
 import type { PurchaseItem, ParsedItem, Store } from '@/types'
 import OCRCapture from '@/components/OCRCapture'
 import OCRReview from '@/components/OCRReview'
 import VoiceCapture from '@/components/VoiceCapture'
 import StoreSelector from '@/components/StoreSelector'
+import { CategorySelector } from '@/components/CategorySelector'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkInput } from '@/components/ui/DarkInput'
 import { DarkButton } from '@/components/ui/DarkButton'
@@ -29,6 +32,8 @@ export default function AddPurchase({ onSaved }: Props) {
   const [message, setMessage] = useState('')
   const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
   const [voiceItems, setVoiceItems] = useState<ParsedItem[]>([])
+  const [itemCategories, setItemCategories] = useState<Record<number, string>>({})
+  const debounceTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
   const ocr = useOCR(user?.uid ?? null)
 
   useEffect(() => {
@@ -36,22 +41,51 @@ export default function AddPurchase({ onSaved }: Props) {
     else if (ocr.status === 'error') setMode('error')
   }, [ocr.status])
 
+  useEffect(() => {
+    return () => {
+      Object.values(debounceTimersRef.current).forEach((t) => clearTimeout(t))
+    }
+  }, [])
+
   function handleImageSelected(file: File) {
     ocr.processTicket(file)
   }
 
+  const suggestCategoryForItem = useCallback(
+    async (index: number, name: string, userId: string) => {
+      if (name.trim().length < 3) return
+      try {
+        const suggested = await suggestCategory(userId, name)
+        setItemCategories((prev) => {
+          if (prev[index] === suggested) return prev
+          return { ...prev, [index]: suggested ?? '' }
+        })
+      } catch (err) {
+        console.error('Error sugiriendo categoría:', err)
+      }
+    },
+    []
+  )
+
   function updateItem(index: number, field: keyof PurchaseItem, value: string | number) {
     const newItems = [...items]
     const item = newItems[index]!
-    
+
     if (field === 'name') {
       item.name = value as string
+      if (user) {
+        const existing = debounceTimersRef.current[index]
+        if (existing) clearTimeout(existing)
+        debounceTimersRef.current[index] = setTimeout(() => {
+          suggestCategoryForItem(index, item.name, user.uid)
+        }, 400)
+      }
     } else if (field === 'quantity') {
       item.quantity = Number(value)
     } else if (field === 'unitPrice') {
       item.unitPrice = Number(value)
     }
-    
+
     item.totalPrice = item.quantity * item.unitPrice
     setItems(newItems)
   }
@@ -67,6 +101,23 @@ export default function AddPurchase({ onSaved }: Props) {
   function removeItem(index: number) {
     if (items.length === 1) return
     setItems(items.filter((_, i) => i !== index))
+    setItemCategories((prev) => {
+      const next: Record<number, string> = {}
+      Object.entries(prev).forEach(([k, v]) => {
+        const i = Number(k)
+        if (i < index) next[i] = v
+        else if (i > index) next[i - 1] = v
+      })
+      return next
+    })
+    if (debounceTimersRef.current[index]) {
+      clearTimeout(debounceTimersRef.current[index]!)
+      delete debounceTimersRef.current[index]
+    }
+  }
+
+  function handleCategorySelect(index: number, categoryId: string | null) {
+    setItemCategories((prev) => ({ ...prev, [index]: categoryId ?? '' }))
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -83,16 +134,30 @@ export default function AddPurchase({ onSaved }: Props) {
     setMessage('')
 
     try {
-      console.log('[AddPurchase:handleSubmit] UID SAVE:', user.uid, '| items:', JSON.stringify(validItems))
+      const itemsWithCategory: PurchaseItem[] = validItems.map((item) => {
+        const originalIndex = items.indexOf(item)
+        const categoryId = itemCategories[originalIndex]
+        return { ...item, category: categoryId && categoryId !== '' ? categoryId : undefined }
+      })
+
+      console.log('[AddPurchase:handleSubmit] UID SAVE:', user.uid, '| items:', JSON.stringify(itemsWithCategory))
       await addPurchase(
         user.uid,
-        validItems,
+        itemsWithCategory,
         undefined,
         selectedStore?.id || '',
         selectedStore?.name || 'Sin establecimiento',
         selectedDate
       )
+
+      await Promise.all(
+        itemsWithCategory
+          .filter((it) => it.name.trim() && it.category)
+          .map((it) => saveCategoryMapping(user.uid, it.name, it.category!))
+      ).catch((err) => console.error('Error guardando mappings de categoría:', err))
+
       setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
+      setItemCategories({})
       setMessage('Compra registrada correctamente')
       handleSaved()
     } catch (err) {
@@ -279,6 +344,19 @@ export default function AddPurchase({ onSaved }: Props) {
                 onChange={(e) => updateItem(index, 'name', e.target.value)}
                 placeholder="Ej: Leche"
               />
+              {user && (
+                <div>
+                  <label className="block text-xs font-medium text-text-secondary mb-1.5">
+                    Categoría
+                  </label>
+                  <CategorySelector
+                    userId={user.uid}
+                    selectedCategoryId={itemCategories[index] || undefined}
+                    onSelect={(catId) => handleCategorySelect(index, catId)}
+                    compact
+                  />
+                </div>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <DarkInput
                   label="Cantidad"
