@@ -6,6 +6,9 @@ import type { Purchase } from '@/types'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkButton } from '@/components/ui/DarkButton'
 import { EmptyState } from '@/components/ui/EmptyState'
+import { CategoryBadge } from '@/components/CategoryBadge'
+import { CategorySelector } from '@/components/CategorySelector'
+import { useCategories } from '@/hooks/useCategories'
 
 interface Props {
   month?: string
@@ -16,6 +19,7 @@ type ViewMode = 'date' | 'store'
 
 export default function PurchaseHistory({ month, version }: Props) {
   const { user } = useAuth()
+  const { categories } = useCategories(user?.uid ?? null)
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [groupedByDate, setGroupedByDate] = useState<Map<string, Purchase[]>>(new Map())
   const [groupedByStore, setGroupedByStore] = useState<Map<string, Purchase[]>>(new Map())
@@ -23,6 +27,7 @@ export default function PurchaseHistory({ month, version }: Props) {
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
   const [viewMode, setViewMode] = useState<ViewMode>('date')
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const loadData = useCallback(async () => {
     if (!user) return
@@ -117,8 +122,39 @@ export default function PurchaseHistory({ month, version }: Props) {
     )
   }
 
-  const sortedDates = Array.from(groupedByDate.keys()).sort().reverse()
-  const sortedStores = Array.from(groupedByStore.keys()).sort()
+  const filteredGroupedByDate = new Map<string, Purchase[]>()
+  for (const [date, dayPurchases] of groupedByDate) {
+    const filtered = selectedCategory
+      ? dayPurchases.filter(p => p.items.some(item => item.category === selectedCategory))
+      : dayPurchases
+    if (filtered.length > 0) filteredGroupedByDate.set(date, filtered)
+  }
+
+  const filteredGroupedByStore = new Map<string, Purchase[]>()
+  for (const [storeId, storePurchases] of groupedByStore) {
+    const filtered = selectedCategory
+      ? storePurchases.filter(p => p.items.some(item => item.category === selectedCategory))
+      : storePurchases
+    if (filtered.length > 0) filteredGroupedByStore.set(storeId, filtered)
+  }
+
+  const hasFilteredResults =
+    filteredGroupedByDate.size > 0 || filteredGroupedByStore.size > 0
+
+  const renderItems = (purchase: Purchase) =>
+    purchase.items.map((item, index) => {
+      const itemCategory = item.category
+        ? categories.find(c => c.id === item.category)
+        : undefined
+      return (
+        <li key={index}>
+          <div className="flex items-center gap-2">
+            <span>{item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}</span>
+            {itemCategory && <CategoryBadge category={itemCategory} />}
+          </div>
+        </li>
+      )
+    })
 
   return (
     <DarkCard className="p-6">
@@ -145,10 +181,24 @@ export default function PurchaseHistory({ month, version }: Props) {
         </div>
       </div>
 
+      <div className="mb-4">
+        <CategorySelector
+          userId={user?.uid ?? ''}
+          selectedCategoryId={selectedCategory ?? undefined}
+          onSelect={setSelectedCategory}
+        />
+      </div>
+
+      {!hasFilteredResults && selectedCategory && (
+        <p className="text-sm text-text-muted py-4 text-center">
+          No hay compras en esta categoría para este mes.
+        </p>
+      )}
+
       {viewMode === 'date' && (
         <div className="space-y-4">
-          {sortedDates.map(date => {
-            const dayPurchases = groupedByDate.get(date) || []
+          {Array.from(filteredGroupedByDate.keys()).sort().reverse().map(date => {
+            const dayPurchases = filteredGroupedByDate.get(date) || []
             const dayTotal = dayPurchases.reduce((sum, p) => sum + p.total, 0)
 
             return (
@@ -169,11 +219,7 @@ export default function PurchaseHistory({ month, version }: Props) {
                         <div>
                           <p className="text-xs text-text-muted">{purchase.storeName}</p>
                           <ul className="text-sm text-text-secondary mt-1">
-                            {purchase.items.map((item, index) => (
-                              <li key={index}>
-                                {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
-                              </li>
-                            ))}
+                            {renderItems(purchase)}
                           </ul>
                         </div>
                         <div className="flex items-center gap-3">
@@ -200,8 +246,8 @@ export default function PurchaseHistory({ month, version }: Props) {
 
       {viewMode === 'store' && (
         <div className="space-y-4">
-          {sortedStores.map(storeId => {
-            const storePurchases = groupedByStore.get(storeId) || []
+          {Array.from(filteredGroupedByStore.keys()).sort().map(storeId => {
+            const storePurchases = filteredGroupedByStore.get(storeId) || []
             const storeTotal = storePurchases.reduce((sum, p) => sum + p.total, 0)
             const storeName = storePurchases[0]?.storeName || 'Sin establecimiento'
 
@@ -223,11 +269,7 @@ export default function PurchaseHistory({ month, version }: Props) {
                         <div>
                           <p className="text-xs text-text-muted">{purchase.purchaseDate}</p>
                           <ul className="text-sm text-text-secondary mt-1">
-                            {purchase.items.map((item, index) => (
-                              <li key={index}>
-                                {item.quantity}x {item.name} — ${item.totalPrice.toLocaleString()}
-                              </li>
-                            ))}
+                            {renderItems(purchase)}
                           </ul>
                         </div>
                         <div className="flex items-center gap-3">
