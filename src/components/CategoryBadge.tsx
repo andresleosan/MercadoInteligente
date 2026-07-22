@@ -1,4 +1,5 @@
 import type { Category } from '@/types'
+import { CategoryIcon } from '@/config/categoryIcons'
 
 interface CategoryBadgeProps {
   category: Category
@@ -25,10 +26,16 @@ export function CategoryBadge({ category, editable, onEdit }: CategoryBadgeProps
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs ${colors.bg} ${colors.text} ${editable ? 'cursor-pointer hover:opacity-80' : ''}`}
+      title={category.name}
+      className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium border ${colors.bg} ${colors.text} ${editable ? 'cursor-pointer hover:opacity-80' : ''}`}
       onClick={editable ? onEdit : undefined}
     >
-      <span>{category.icon}</span>
+      <span
+        data-testid={`category-icon-${category.id}`}
+        className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-bg-surface/60"
+      >
+        <CategoryIcon icon={category.icon} size={12} />
+      </span>
       <span>{category.name}</span>
     </span>
   )

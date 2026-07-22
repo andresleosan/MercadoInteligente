@@ -114,14 +114,19 @@ describe('AddPurchase', () => {
     expect(screen.getByDisplayValue('Leche')).toBeTruthy()
   })
 
-  it('crea y asocia el establecimiento pendiente al guardar', async () => {
+  it('selecciona un establecimiento existente y lo asocia al guardar', async () => {
     render(<AddPurchase />)
     const user = userEvent.setup()
 
+    mocks.storesList.push({
+      id: 'store-1',
+      userId: 'test-uid',
+      name: 'Éxito',
+      createdAt: new Date(),
+    })
+
     await user.click(screen.getByRole('button', { name: /sin establecimiento/i }))
-    await user.click(screen.getByRole('button', { name: /crear nuevo/i }))
-    await user.type(screen.getByPlaceholderText('Nombre del establecimiento'), 'Éxito')
-    await user.click(screen.getByRole('button', { name: 'Crear' }))
+    await user.click(screen.getByRole('button', { name: /éxito/i }))
 
     await waitFor(() => {
       expect(screen.getByRole('button', { name: /éxito/i })).toBeInTheDocument()
@@ -133,7 +138,7 @@ describe('AddPurchase', () => {
     await user.type(screen.getByPlaceholderText('Precio'), '15000')
     await user.click(screen.getByRole('button', { name: /registrar compra/i }))
 
-    expect(mocks.createStoreMock).toHaveBeenCalledWith({ name: 'Éxito' })
+    expect(mocks.createStoreMock).not.toHaveBeenCalled()
     expect(mocks.addPurchaseMock).toHaveBeenCalledWith(
       'test-uid',
       expect.arrayContaining([
@@ -142,10 +147,46 @@ describe('AddPurchase', () => {
       undefined,
       'store-1',
       'Éxito',
-      '2026-07-21',
+      expect.any(String),
       0,
       0
     )
 
+  })
+
+  it('restaura el último establecimiento guardado y lo reutiliza al registrar', async () => {
+    localStorage.setItem('mercado-inteligente:last-store:test-uid', 'store-1')
+    mocks.storesList.push({
+      id: 'store-1',
+      userId: 'test-uid',
+      name: 'Éxito',
+      createdAt: new Date(),
+    })
+
+    render(<AddPurchase />)
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /éxito/i })).toBeInTheDocument()
+    })
+
+    const user = userEvent.setup()
+    await user.type(screen.getByPlaceholderText('Ej: Leche'), 'Arroz')
+    await user.clear(screen.getByPlaceholderText('1'))
+    await user.type(screen.getByPlaceholderText('1'), '2')
+    await user.type(screen.getByPlaceholderText('Precio'), '5000')
+    await user.click(screen.getByRole('button', { name: /registrar compra/i }))
+
+    expect(mocks.addPurchaseMock).toHaveBeenCalledWith(
+      'test-uid',
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Arroz', quantity: 2, unitPrice: 5000, totalPrice: 10000 }),
+      ]),
+      undefined,
+      'store-1',
+      'Éxito',
+      expect.any(String),
+      0,
+      0
+    )
   })
 })

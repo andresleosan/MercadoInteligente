@@ -7,13 +7,13 @@ describe('CategoryBadge', () => {
   const mockCategory: Category = {
     id: 'lacteos',
     name: 'Lácteos',
-    icon: '🥛',
+    icon: 'milk',
     isDefault: true,
   }
 
   it('renders category icon and name', () => {
     render(<CategoryBadge category={mockCategory} />)
-    expect(screen.getByText('🥛')).toBeInTheDocument()
+    expect(screen.getByTestId('category-icon-lacteos')).toBeInTheDocument()
     expect(screen.getByText('Lácteos')).toBeInTheDocument()
   })
 

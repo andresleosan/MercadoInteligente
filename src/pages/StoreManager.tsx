@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Home } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useStores } from '@/hooks/useStores'
 import type { Store } from '@/types'
@@ -27,6 +29,7 @@ const ICONS = ['🛒', '🏪', '🏬', '🏗️', '🛍️', '📦', '🏠', '�
 
 export default function StoreManager({ onBack }: Props) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const stores = useStores(user?.uid ?? null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [name, setName] = useState('')
@@ -103,11 +106,17 @@ export default function StoreManager({ onBack }: Props) {
     <DarkCard className="p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-xl font-semibold text-text-primary">Establecimientos</h2>
-        {onBack && (
-          <DarkButton variant="secondary" size="sm" onClick={onBack}>
-            ← Volver
-          </DarkButton>
-        )}
+        <DarkButton
+          variant="secondary"
+          size="sm"
+          onClick={onBack ?? (() => navigate('/'))}
+          aria-label="Volver al menú principal"
+          title="Volver al menú principal"
+          className="inline-flex items-center gap-2"
+        >
+          <Home size={16} aria-hidden="true" />
+          <span>Menú principal</span>
+        </DarkButton>
       </div>
 
       {/* Formulario */}

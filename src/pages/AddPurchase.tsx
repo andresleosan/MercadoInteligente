@@ -23,7 +23,6 @@ export default function AddPurchase({ onSaved }: Props) {
   const navigate = useNavigate()
   const stores = useStores(user?.uid ?? null)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
-  const [pendingStoreName, setPendingStoreName] = useState('')
   const [selectedDate, setSelectedDate] = useState(getCurrentDate())
   const [items, setItems] = useState<PurchaseItem[]>([
     { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }
@@ -36,6 +35,16 @@ export default function AddPurchase({ onSaved }: Props) {
   const debounceTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
   const ocr = useOCR(user?.uid ?? null)
   const lastStoreKey = user ? `mercado-inteligente:last-store:${user.uid}` : null
+
+  function persistLastStore(store: Store | null) {
+    if (!lastStoreKey) return
+
+    if (store) {
+      localStorage.setItem(lastStoreKey, store.id)
+    } else {
+      localStorage.removeItem(lastStoreKey)
+    }
+  }
 
   useEffect(() => {
     if (!lastStoreKey || stores.loading || selectedStore) return
@@ -55,18 +64,13 @@ export default function AddPurchase({ onSaved }: Props) {
     const stillExists = stores.stores.some((store) => store.id === selectedStore.id)
     if (!stillExists) {
       setSelectedStore(null)
-      setPendingStoreName('')
     }
   }, [selectedStore, stores.loading, stores.stores])
 
   useEffect(() => {
     if (!lastStoreKey) return
 
-    if (selectedStore) {
-      localStorage.setItem(lastStoreKey, selectedStore.id)
-    } else {
-      localStorage.removeItem(lastStoreKey)
-    }
+    persistLastStore(selectedStore)
   }, [lastStoreKey, selectedStore])
 
   useEffect(() => {
@@ -158,17 +162,27 @@ export default function AddPurchase({ onSaved }: Props) {
   async function resolvePurchaseStore(): Promise<Store | null> {
     if (selectedStore) return selectedStore
 
-    const storeName = pendingStoreName.trim()
-    if (!storeName) return null
+    if (!lastStoreKey) return null
 
-    const createdStore = await stores.create({ name: storeName })
-    setSelectedStore(createdStore)
-    setPendingStoreName('')
-    return createdStore
+    const storedStoreId = localStorage.getItem(lastStoreKey)
+    if (!storedStoreId) return null
+
+    const storedStore = stores.stores.find((store) => store.id === storedStoreId) || null
+    if (storedStore) {
+      setSelectedStore(storedStore)
+      return storedStore
+    }
+
+    return null
   }
 
   function openStoreManager() {
     navigate('/stores')
+  }
+
+  function handleSelectStore(store: Store | null) {
+    setSelectedStore(store)
+    persistLastStore(store)
   }
 
   function addVoiceItem() {
@@ -230,11 +244,7 @@ export default function AddPurchase({ onSaved }: Props) {
           <StoreSelector
             stores={stores.stores}
             selectedStore={selectedStore}
-            onSelect={setSelectedStore}
-            onCreateInline={stores.create}
-            onUpdateStore={stores.update}
-            onDeleteStore={stores.remove}
-            onDraftStoreNameChange={setPendingStoreName}
+            onSelect={handleSelectStore}
             loading={stores.loading}
           />
 

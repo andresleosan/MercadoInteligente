@@ -5,8 +5,8 @@ import { CategorySelector } from '@/components/CategorySelector'
 vi.mock('@/hooks/useCategories', () => ({
   useCategories: () => ({
     categories: [
-      { id: 'lacteos', name: 'Lácteos', icon: '🥛', isDefault: true },
-      { id: 'panaderia', name: 'Panadería', icon: '🍞', isDefault: true },
+      { id: 'lacteos', name: 'Lácteos', icon: 'milk', isDefault: true },
+      { id: 'panaderia', name: 'Panadería', icon: 'croissant', isDefault: true },
     ],
     loading: false,
     error: null,
@@ -75,6 +75,6 @@ describe('CategorySelector', () => {
   it('has a "Crear nueva" option to start inline creation', () => {
     render(<CategorySelector userId="test-user" onSelect={vi.fn()} />)
     fireEvent.click(screen.getByRole('button', { name: /sin categoría/i }))
-    expect(screen.getByText('+ Crear nueva')).toBeInTheDocument()
+    expect(screen.getByText('Crear nueva categoría')).toBeInTheDocument()
   })
 })

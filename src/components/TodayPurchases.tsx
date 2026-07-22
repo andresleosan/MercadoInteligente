@@ -7,6 +7,7 @@ import type { Purchase } from '@/types'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { CategoryBadge } from '@/components/CategoryBadge'
+import { Store } from 'lucide-react'
 
 interface Props {
   date?: string
@@ -69,6 +70,8 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
     byStore.set(key, existing)
   }
 
+  const storeGroups = Array.from(byStore.entries())
+
   if (purchases.length === 0) {
     return (
       <DarkCard className="p-6">
@@ -90,15 +93,39 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
       </div>
 
       <div className="space-y-3">
-        {Array.from(byStore.entries()).map(([storeId, { storeName, total, purchases: storePurchases }]) => (
-          <div key={storeId}>
-            <div className="flex justify-between items-center mb-1">
-              <p className="text-xs font-medium text-text-secondary">{storeName}</p>
-              <p className="text-xs text-text-muted">${total.toLocaleString()}</p>
+        {storeGroups.map(([storeId, { storeName, total, purchases: storePurchases }]) => {
+          const purchaseCount = storePurchases.length
+
+          return (
+          <div
+            key={storeId}
+            className="rounded-radius-lg border border-border-subtle bg-bg-surface/70 p-3 shadow-[0_1px_0_rgba(255,255,255,0.03)]"
+          >
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border-subtle bg-bg-elevated text-accent-green shadow-sm">
+                  <Store size={14} aria-hidden="true" />
+                </span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-semibold text-text-primary">{storeName}</p>
+                    <span className="inline-flex items-center rounded-full border border-border-subtle bg-bg-elevated px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-text-muted">
+                      {storeId === '__no_store__' ? 'Sin tienda' : 'Tienda'}
+                    </span>
+                  </div>
+                  <p className="text-xs text-text-muted">
+                    {purchaseCount === 1 ? '1 compra registrada' : `${purchaseCount} compras registradas`}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-bold text-accent-green">${total.toLocaleString()}</p>
+                <p className="text-[11px] text-text-muted">Subtotal del grupo</p>
+              </div>
             </div>
             <div className="space-y-1">
               {storePurchases.map(purchase => (
-                <div key={purchase.id} className="flex justify-between items-center py-1">
+                <div key={purchase.id} className="flex justify-between items-start gap-3 rounded-radius-md border border-border-subtle/60 bg-bg-base/40 px-3 py-2">
                   <ul className="text-sm text-text-secondary flex-1">
                     {purchase.items.map((item, index) => {
                       const matchedCategory = item.category
@@ -131,7 +158,7 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
               ))}
             </div>
           </div>
-        ))}
+        )})}
       </div>
     </DarkCard>
   )
