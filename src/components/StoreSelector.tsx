@@ -28,22 +28,26 @@ export default function StoreSelector({
   const [creating, setCreating] = useState(false)
   const [newStoreName, setNewStoreName] = useState('')
   const [creatingStore, setCreatingStore] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function handleCreate() {
     if (!newStoreName.trim()) return
     setCreatingStore(true)
+    setError(null)
     try {
       const store = await onCreateInline({ name: newStoreName.trim() })
       onSelect(store)
       setNewStoreName('')
       setCreating(false)
-    } catch {
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al crear el establecimiento')
     } finally {
       setCreatingStore(false)
     }
   }
 
   function handleSelectChange(value: string) {
+    setError(null)
     if (value === '__new__') {
       setCreating(true)
       onSelect(null)
@@ -116,11 +120,18 @@ export default function StoreSelector({
             onClick={() => {
               setCreating(false)
               setNewStoreName('')
+              setError(null)
             }}
           >
             Cancelar
           </DarkButton>
         </div>
+      )}
+
+      {error && (
+        <p className="mt-2 text-xs text-accent-red">
+          {error}
+        </p>
       )}
     </div>
   )

@@ -21,7 +21,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'cross-env VITE_USE_FIREBASE_EMULATOR=true npm run dev',
+    command: 'npm run dev:e2e',
     url: 'http://localhost:5173',
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
