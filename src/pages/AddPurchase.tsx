@@ -350,6 +350,7 @@ export default function AddPurchase({ onSaved }: Props) {
                   quantity: item.quantity,
                   unitPrice: item.unitPrice,
                   totalPrice: item.totalPrice,
+                  discountPercent: item.discountPercent,
                 }))
 
               if (validVoiceItems.length === 0) {
@@ -425,6 +426,14 @@ export default function AddPurchase({ onSaved }: Props) {
                       Subtotal: ${item.totalPrice.toLocaleString()}
                     </span>
                   </div>
+
+                  {item.discountPercent !== undefined && (
+                    <div className="text-right">
+                      <span className="text-xs text-accent-green">
+                        Descuento: {item.discountPercent}%
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

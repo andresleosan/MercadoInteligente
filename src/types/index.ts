@@ -25,6 +25,7 @@ export interface PurchaseItem {
   totalPrice: number
   confidence?: number
   category?: string
+  discountPercent?: number
 }
 
 export interface Purchase {
