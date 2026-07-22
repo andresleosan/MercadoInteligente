@@ -34,6 +34,11 @@ interface EmbeddedStoreData {
 
 const USER_STORES_FIELD = 'storeEntries'
 
+function requireDb() {
+  if (!db) throw new Error('Firebase no inicializado')
+  return db
+}
+
 function isPermissionDenied(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied'
 }
@@ -63,7 +68,7 @@ function deserializeEmbeddedStore(data: EmbeddedStoreData): Store {
 }
 
 async function readEmbeddedStores(userId: string): Promise<Store[]> {
-  const userDocRef = doc(db, 'users', userId)
+  const userDocRef = doc(requireDb(), 'users', userId)
   const snapshot = await getDoc(userDocRef)
 
   if (!snapshot.exists()) return []
@@ -77,7 +82,7 @@ async function readEmbeddedStores(userId: string): Promise<Store[]> {
 }
 
 async function writeEmbeddedStore(userId: string, store: Store): Promise<void> {
-  const userDocRef = doc(db, 'users', userId)
+  const userDocRef = doc(requireDb(), 'users', userId)
   await setDoc(
     userDocRef,
     {
@@ -88,7 +93,7 @@ async function writeEmbeddedStore(userId: string, store: Store): Promise<void> {
 }
 
 async function replaceEmbeddedStore(userId: string, store: Store): Promise<void> {
-  const userDocRef = doc(db, 'users', userId)
+  const userDocRef = doc(requireDb(), 'users', userId)
   const existingStores = await readEmbeddedStores(userId)
   const nextStores = existingStores.some((entry) => entry.id === store.id)
     ? existingStores.map((entry) => entry.id === store.id ? store : entry)
@@ -104,7 +109,7 @@ async function replaceEmbeddedStore(userId: string, store: Store): Promise<void>
 }
 
 async function removeEmbeddedStore(userId: string, storeId: string): Promise<void> {
-  const userDocRef = doc(db, 'users', userId)
+  const userDocRef = doc(requireDb(), 'users', userId)
   const existingStores = await readEmbeddedStores(userId)
   const nextStores = existingStores.filter((entry) => entry.id !== storeId)
 
@@ -127,6 +132,18 @@ function validateStoreData(data: StoreData): void {
   if (data.color && !/^#[0-9A-Fa-f]{6}$/.test(data.color)) {
     throw new Error('El color debe ser un hexadecimal válido (ej: #10B981)')
   }
+}
+
+function normalizeCategory(category?: string): Store['category'] | undefined {
+  if (!category) return undefined
+  if (category === 'supermercado' || category === 'tienda' || category === 'barrio' || category === 'otro') {
+    return category
+  }
+  return undefined
+}
+
+function normalizeString(value?: string | null): string | undefined {
+  return value || undefined
 }
 
 export async function getStores(userId: string): Promise<Store[]> {
@@ -173,7 +190,7 @@ export async function createStore(
     id: '',
     userId,
     name: data.name.trim(),
-    category: data.category as Store['category'],
+    category: normalizeCategory(data.category),
     color: data.color,
     icon: data.icon,
     createdAt: new Date(),
@@ -222,13 +239,13 @@ export async function updateStore(
   const storeRef = doc(db, 'users', userId, 'stores', storeId)
   const updateData: {
     name?: string
-    category?: string | null
+    category?: Store['category'] | null
     color?: string | null
     icon?: string | null
   } = {}
 
   if (data.name !== undefined) updateData.name = data.name.trim()
-  if (data.category !== undefined) updateData.category = data.category || null
+  if (data.category !== undefined) updateData.category = normalizeCategory(data.category) || null
   if (data.color !== undefined) updateData.color = data.color || null
   if (data.icon !== undefined) updateData.icon = data.icon || null
 
@@ -254,6 +271,9 @@ export async function updateStore(
       ...existingStore,
       ...updateData,
       name: updateData.name !== undefined ? updateData.name.trim() : existingStore.name,
+      category: updateData.category !== undefined ? updateData.category || undefined : existingStore.category,
+      color: updateData.color !== undefined ? normalizeString(updateData.color) : existingStore.color,
+      icon: updateData.icon !== undefined ? normalizeString(updateData.icon) : existingStore.icon,
     })
   }
 }
