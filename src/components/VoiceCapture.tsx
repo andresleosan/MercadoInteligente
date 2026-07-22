@@ -11,6 +11,13 @@ interface Props {
 export default function VoiceCapture({ onDone, onBack }: Props) {
   const { status, items, transcript, error, startListening, reset } = useVoice()
 
+  function restartListening() {
+    reset()
+    window.setTimeout(() => {
+      startListening()
+    }, 0)
+  }
+
   useEffect(() => {
     if (status === 'done') {
       onDone(items)
@@ -64,7 +71,7 @@ export default function VoiceCapture({ onDone, onBack }: Props) {
             <DarkButton
               variant="secondary"
               size="sm"
-              onClick={() => { reset(); startListening() }}
+              onClick={restartListening}
               className="flex-1"
             >
               Reintentar

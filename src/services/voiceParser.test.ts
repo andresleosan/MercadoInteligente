@@ -59,4 +59,21 @@ describe('parseVoiceText', () => {
     const result = parseVoiceText('pan a 500 y leche a 1000')
     expect(result).toHaveLength(2)
   })
+
+  it('parsea frases con descuento al final', () => {
+    const result = parseVoiceText('3 arroz a 5000 con 5 % de descuento')
+    expect(result).toHaveLength(1)
+    expect(result[0]!.name).toBe('Arroz')
+    expect(result[0]!.quantity).toBe(3)
+    expect(result[0]!.unitPrice).toBe(5000)
+    expect(result[0]!.discountPercent).toBe(5)
+    expect(result[0]!.totalPrice).toBe(14250)
+  })
+
+  it('parsea frases con descuento sin simbolo de porcentaje', () => {
+    const result = parseVoiceText('5 arroz a 5000 con 5 por ciento de descuento')
+    expect(result).toHaveLength(1)
+    expect(result[0]!.discountPercent).toBe(5)
+    expect(result[0]!.totalPrice).toBe(23750)
+  })
 })

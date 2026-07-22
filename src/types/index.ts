@@ -48,6 +48,7 @@ export interface ParsedItem {
   quantity: number
   totalPrice: number
   confidence: number
+  discountPercent?: number
 }
 
 export interface Store {

@@ -22,8 +22,8 @@ const QUANTITY_WORDS: Record<string, number> = {
   quince: 15,
 }
 
-const PATTERN_WITH_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+a\s+(\d{1,3}(?:\.\d{3})*|\d+)$/i
-const PATTERN_WITHOUT_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)$/i
+const PATTERN_WITH_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+a\s+(\d{1,3}(?:\.\d{3})*|\d+)(?:\s+con\s+(\d+(?:[.,]\d+)?)\s*(?:%|por\s*ciento|porciento)\s+de\s+descuento)?$/i
+const PATTERN_WITHOUT_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)(?:\s+con\s+(\d+(?:[.,]\d+)?)\s*(?:%|por\s*ciento|porciento)\s+de\s+descuento)?$/i
 
 function parseQuantity(raw: string | undefined): number {
   if (!raw) return 1
@@ -43,6 +43,13 @@ function parsePrice(raw: string): number {
     return parseFloat(cleaned)
   }
   return parseInt(cleaned.replace(/\./g, ''), 10)
+}
+
+function parseDiscount(raw: string | undefined): number | undefined {
+  if (!raw) return undefined
+  const value = Number(raw.replace(',', '.'))
+  if (!Number.isFinite(value)) return undefined
+  return Math.min(100, Math.max(0, value))
 }
 
 function cleanName(raw: string): string {
@@ -67,6 +74,7 @@ export function parseVoiceText(text: string): ParsedItem[] {
     let quantity = 1
     let name = ''
     let unitPrice = 0
+    let discountPercent: number | undefined
 
     const matchA = segment.match(PATTERN_WITH_A)
     const matchNoA = segment.match(PATTERN_WITHOUT_A)
@@ -75,22 +83,28 @@ export function parseVoiceText(text: string): ParsedItem[] {
       quantity = parseQuantity(matchA[1])
       name = cleanName(matchA[2]!)
       unitPrice = parsePrice(matchA[3]!)
+      discountPercent = parseDiscount(matchA[4])
     } else if (matchNoA) {
       quantity = parseQuantity(matchNoA[1])
       name = cleanName(matchNoA[2]!)
       unitPrice = parsePrice(matchNoA[3]!)
+      discountPercent = parseDiscount(matchNoA[4])
     } else {
       continue
     }
 
     if (!name) continue
 
+    const grossTotal = unitPrice * quantity
+    const totalPrice = discountPercent ? Math.round(grossTotal * (1 - discountPercent / 100)) : grossTotal
+
     items.push({
       name,
       unitPrice,
       quantity,
-      totalPrice: unitPrice * quantity,
+      totalPrice,
       confidence: 100,
+      ...(discountPercent !== undefined ? { discountPercent } : {}),
     })
   }
 
