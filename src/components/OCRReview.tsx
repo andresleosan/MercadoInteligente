@@ -14,6 +14,7 @@ interface Props {
   userId: string
   storeId?: string
   storeName?: string
+  resolveStore?: () => Promise<{ id: string; name: string } | null>
   purchaseDate?: string
   onSaved: () => void
   onRetry: () => void
@@ -25,6 +26,7 @@ export default function OCRReview({
   userId,
   storeId,
   storeName,
+  resolveStore,
   purchaseDate,
   onSaved,
   onRetry,
@@ -86,6 +88,7 @@ export default function OCRReview({
     setSaving(true)
     setError('')
     try {
+      const resolvedStore = resolveStore ? await resolveStore() : null
       const itemsWithCategory: PurchaseItem[] = items.map((item, index) => {
         const categoryId = itemCategories[index]
         if (categoryId && categoryId !== '') {
@@ -102,8 +105,8 @@ export default function OCRReview({
         userId,
         itemsWithCategory,
         imageUrl ?? undefined,
-        storeId || '',
-        storeName || 'Sin establecimiento',
+        resolvedStore?.id || storeId,
+        resolvedStore?.name || storeName,
         purchaseDate
       )
 

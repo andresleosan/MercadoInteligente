@@ -2,8 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AddPurchase from '@/pages/AddPurchase'
 
+const routerMocks = vi.hoisted(() => ({
+  navigate: vi.fn(),
+}))
+
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: vi.fn(() => ({ user: { uid: 'test-uid' }, loading: false })),
+}))
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => routerMocks.navigate,
 }))
 
 const mockProcessTicket = vi.fn()
@@ -48,6 +56,8 @@ vi.mock('@/hooks/useCategories', () => ({
 
 describe('OCR → Purchase Integration', () => {
   beforeEach(() => {
+    localStorage.clear()
+    routerMocks.navigate.mockReset()
     vi.clearAllMocks()
   })
 
@@ -150,8 +160,8 @@ describe('OCR → Purchase Integration', () => {
           { name: 'Pan', unitPrice: 100, quantity: 2, totalPrice: 200, confidence: 60 },
         ],
         'https://example.com/ticket.jpg',
-        '',
-        'Sin establecimiento',
+        undefined,
+        undefined,
         expect.any(String)
       )
       expect(mockReset).toHaveBeenCalled()

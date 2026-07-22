@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { useDailyBudget } from '@/hooks/useDailyBudget'
-import { useStores } from '@/hooks/useStores'
 import { useAuth } from '@/hooks/useAuth'
 import { getTodayPurchases } from '@/services/purchases'
-import { getStoreBudgets, setStoreBudget } from '@/services/storeBudget'
 import { getCurrentDate } from '@/utils/date'
 import { useEffect } from 'react'
+import { ChevronDown, ChevronUp, PencilLine, Plus } from 'lucide-react'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkInput } from '@/components/ui/DarkInput'
 import { DarkButton } from '@/components/ui/DarkButton'
@@ -20,69 +19,97 @@ export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
   const { user } = useAuth()
   const targetDate = date || getCurrentDate()
   const { budget, loading, save } = useDailyBudget(user?.uid ?? null, targetDate)
-  const stores = useStores(user?.uid ?? null)
   const [amount, setAmount] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [todaySpent, setTodaySpent] = useState(0)
-  const [storeAmounts, setStoreAmounts] = useState<Record<string, string>>({})
-  const [storeBudgetList, setStoreBudgetList] = useState<Array<{ storeId: string; storeName: string; amount: number }>>([])
+  const [isEditorOpen, setIsEditorOpen] = useState(false)
+  const [saveMode, setSaveMode] = useState<'add' | 'edit'>('edit')
 
   useEffect(() => {
     if (!user) return
 
     async function loadTodayData() {
-      const purchases = await getTodayPurchases(user!.uid, targetDate)
-      setTodaySpent(purchases.reduce((sum, p) => sum + p.total, 0))
-
-      const storeBudgets = await getStoreBudgets(user!.uid, targetDate)
-      setStoreBudgetList(storeBudgets.map(sb => ({
-        storeId: sb.storeId,
-        storeName: sb.storeName,
-        amount: sb.amount,
-      })))
+      try {
+        const purchases = await getTodayPurchases(user!.uid, targetDate)
+        setTodaySpent(purchases.reduce((sum, p) => sum + p.total, 0))
+      } catch (err) {
+        console.error('Error cargando compras de hoy:', err)
+      }
     }
 
     loadTodayData()
   }, [user, targetDate])
 
   useEffect(() => {
-    if (budget) {
-      setAmount(String(budget.amount))
+    if (budget?.amount && budget.amount > 0) {
+      setIsEditorOpen(false)
+      setSaveMode('add')
+      setAmount('')
+      return
     }
+
+    setIsEditorOpen(true)
+    setSaveMode('edit')
+    setAmount('')
   }, [budget])
 
-  async function handleSave() {
+  const budgetAmount = budget?.amount || 0
+  const hasBudget = budgetAmount > 0
+
+  function openEditor(mode: 'add' | 'edit') {
+    setMessage('')
+    setSaveMode(mode)
+    setIsEditorOpen(true)
+    setAmount(mode === 'edit' && hasBudget ? String(budgetAmount) : '')
+  }
+
+  function toggleEditor() {
+    if (isEditorOpen) {
+      closeEditor()
+      return
+    }
+
+    openEditor(hasBudget ? 'add' : 'edit')
+  }
+
+  function closeEditor() {
+    if (!hasBudget) return
+    setMessage('')
+    setIsEditorOpen(false)
+    setAmount('')
+    setSaveMode('add')
+  }
+
+  async function handleSave(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+
     const numAmount = Number(amount)
     if (isNaN(numAmount) || numAmount < 0) {
       setMessage('Ingresá un monto válido')
       return
     }
 
+    const nextAmount = hasBudget && saveMode === 'add'
+      ? budgetAmount + numAmount
+      : numAmount
+
     setSaving(true)
     setMessage('')
     try {
-      await save(numAmount)
+      await save(nextAmount)
       setMessage('Presupuesto guardado')
+      setAmount('')
+      if (nextAmount > 0) {
+        setIsEditorOpen(false)
+        setSaveMode('add')
+      }
       onBudgetChange?.()
-    } catch {
-      setMessage('Error al guardar')
+    } catch (err) {
+      console.error('Error al guardar presupuesto diario:', err)
+      setMessage(err instanceof Error ? err.message : 'Error al guardar')
     } finally {
       setSaving(false)
-    }
-  }
-
-  async function handleSaveStoreBudget(storeId: string, storeName: string) {
-    const storeAmount = Number(storeAmounts[storeId] || '0')
-    if (isNaN(storeAmount) || storeAmount < 0) return
-
-    try {
-      await setStoreBudget(user!.uid, targetDate, storeId, storeName, storeAmount)
-      setStoreBudgetList(prev =>
-        prev.map(sb => sb.storeId === storeId ? { ...sb, amount: storeAmount } : sb)
-      )
-      onBudgetChange?.()
-    } catch {
     }
   }
 
@@ -97,10 +124,22 @@ export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
     )
   }
 
-  const budgetAmount = budget?.amount || 0
   const percentage = budgetAmount > 0 ? (todaySpent / budgetAmount) * 100 : 0
   const isOverBudget = budgetAmount > 0 && todaySpent > budgetAmount
   const remaining = budgetAmount - todaySpent
+  const editorLabel = saveMode === 'add' && hasBudget ? 'Sumar al presupuesto' : 'Monto diario'
+  const editorHint = saveMode === 'add' && hasBudget
+    ? 'Se sumará al total actual'
+    : hasBudget
+      ? 'Reemplaza el total actual'
+      : 'Definí el presupuesto de hoy'
+  const submitLabel = saving
+    ? '...'
+    : saveMode === 'add' && hasBudget
+      ? 'Sumar'
+      : hasBudget
+        ? 'Guardar'
+        : 'Guardar'
 
   return (
     <DarkCard className="p-6">
@@ -139,65 +178,101 @@ export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
         </div>
       )}
 
-      <div className="flex gap-2 items-end">
-        <div className="flex-1">
-          <DarkInput
-            label="Monto diario"
-            type="number"
-            min="0"
-            step="1000"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="Ej: 50000"
-          />
-        </div>
-        <DarkButton
-          variant="primary"
-          size="sm"
-          onClick={handleSave}
-          disabled={saving}
+      {!isEditorOpen && hasBudget ? (
+        <button
+          type="button"
+          onClick={toggleEditor}
+          className="w-full rounded-radius-md border border-border-subtle bg-bg-elevated/50 px-4 py-3 flex items-center justify-between gap-3 text-left transition-colors hover:bg-bg-elevated"
+          aria-label="Abrir editor de presupuesto"
         >
-          {saving ? '...' : 'Guardar'}
-        </DarkButton>
-      </div>
+          <div>
+            <p className="text-xs text-text-secondary">Presupuesto actual</p>
+          </div>
+
+          <ChevronDown size={16} className="text-text-muted shrink-0" />
+        </button>
+      ) : (
+        <form onSubmit={handleSave} className="rounded-radius-md border border-border-subtle bg-bg-elevated/40 p-4 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-sm font-medium text-text-primary">{editorLabel}</p>
+              <p className="text-xs text-text-secondary">{editorHint}</p>
+            </div>
+
+            {hasBudget ? (
+              <button
+                type="button"
+                onClick={closeEditor}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-secondary transition-colors hover:text-text-primary hover:bg-elevated"
+                aria-label="Cerrar editor"
+              >
+                <ChevronUp size={16} />
+              </button>
+            ) : (
+              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-muted">
+                <ChevronDown size={16} />
+              </div>
+            )}
+          </div>
+
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
+              <DarkInput
+                label="Monto diario"
+                type="number"
+                min="0"
+                step="1000"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder={hasBudget && saveMode === 'add' ? 'Ej: 10000' : 'Ej: 50000'}
+              />
+            </div>
+
+            <DarkButton
+              variant="primary"
+              size="sm"
+              type="submit"
+              disabled={saving}
+            >
+              {submitLabel}
+            </DarkButton>
+          </div>
+
+          {hasBudget && (
+            <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+              <div className="flex gap-2">
+                <DarkButton
+                  variant={saveMode === 'add' ? 'primary' : 'secondary'}
+                  size="sm"
+                  type="button"
+                  onClick={() => openEditor('add')}
+                  className="flex items-center gap-1.5"
+                >
+                  <Plus size={14} />
+                  Sumar
+                </DarkButton>
+                <DarkButton
+                  variant={saveMode === 'edit' ? 'primary' : 'secondary'}
+                  size="sm"
+                  type="button"
+                  onClick={() => openEditor('edit')}
+                  className="flex items-center gap-1.5"
+                >
+                  <PencilLine size={14} />
+                  Editar total
+                </DarkButton>
+              </div>
+
+              <span className="text-text-muted">Guardado con Enter</span>
+            </div>
+          )}
+        </form>
+      )}
 
       {message && (
         <p className={`text-xs mt-2 ${message.includes('Error') ? 'text-accent-red' : 'text-accent-green'}`}>
           {message}
         </p>
-      )}
-
-      {stores.stores.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border-subtle">
-          <p className="text-xs font-medium text-text-secondary mb-3">Presupuesto por tienda</p>
-          <div className="space-y-3">
-            {stores.stores.map(store => {
-              const existingBudget = storeBudgetList.find(sb => sb.storeId === store.id)
-              return (
-                <div key={store.id} className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <p className="text-xs text-text-muted">{store.icon || '🏪'} {store.name}</p>
-                    <DarkInput
-                      type="number"
-                      min="0"
-                      step="1000"
-                      value={storeAmounts[store.id] || (existingBudget?.amount ? String(existingBudget.amount) : '')}
-                      onChange={(e) => setStoreAmounts(prev => ({ ...prev, [store.id]: e.target.value }))}
-                      placeholder="Monto"
-                    />
-                  </div>
-                  <DarkButton
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleSaveStoreBudget(store.id, store.name)}
-                  >
-                    Guardar
-                  </DarkButton>
-                </div>
-              )
-            })}
-          </div>
-        </div>
       )}
     </DarkCard>
   )

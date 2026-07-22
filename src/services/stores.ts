@@ -43,16 +43,23 @@ function isPermissionDenied(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'permission-denied'
 }
 
+function isNotFound(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && 'code' in error && (error as { code?: string }).code === 'not-found'
+}
+
 function serializeEmbeddedStore(store: Store): EmbeddedStoreData {
-  return {
+  const serialized: EmbeddedStoreData = {
     id: store.id,
     userId: store.userId,
     name: store.name,
-    category: store.category,
-    color: store.color,
-    icon: store.icon,
     createdAt: store.createdAt.toISOString(),
   }
+
+  if (store.category !== undefined) serialized.category = store.category
+  if (store.color !== undefined) serialized.color = store.color
+  if (store.icon !== undefined) serialized.icon = store.icon
+
+  return serialized
 }
 
 function deserializeEmbeddedStore(data: EmbeddedStoreData): Store {
@@ -149,23 +156,30 @@ function normalizeString(value?: string | null): string | undefined {
 export async function getStores(userId: string): Promise<Store[]> {
   if (!db) throw new Error('Firebase no inicializado')
 
-  const storesRef = collection(db, 'users', userId, 'stores')
-  const q = query(storesRef, orderBy('name', 'asc'))
-  const querySnapshot = await getDocs(q)
   const storeMap = new Map<string, Store>()
 
-  querySnapshot.docs.map((doc) => {
-    const data = doc.data()
-    storeMap.set(doc.id, {
-      id: doc.id,
-      userId,
-      name: data.name,
-      category: data.category || undefined,
-      color: data.color,
-      icon: data.icon,
-      createdAt: data.createdAt?.toDate() || new Date(),
+  try {
+    const storesRef = collection(db, 'users', userId, 'stores')
+    const q = query(storesRef, orderBy('name', 'asc'))
+    const querySnapshot = await getDocs(q)
+
+    querySnapshot.docs.map((doc) => {
+      const data = doc.data()
+      storeMap.set(doc.id, {
+        id: doc.id,
+        userId,
+        name: data.name,
+        category: data.category || undefined,
+        color: data.color,
+        icon: data.icon,
+        createdAt: data.createdAt?.toDate() || new Date(),
+      })
     })
-  })
+  } catch (error) {
+    if (!isPermissionDenied(error) && !isNotFound(error)) {
+      throw error
+    }
+  }
 
   const embeddedStores = await readEmbeddedStores(userId)
   embeddedStores.forEach((store) => {

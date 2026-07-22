@@ -2,8 +2,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AddPurchase from '@/pages/AddPurchase'
 
+const routerMocks = vi.hoisted(() => ({
+  navigate: vi.fn(),
+}))
+
 vi.mock('@/hooks/useAuth', () => ({
   useAuth: vi.fn(() => ({ user: { uid: 'test-uid' }, loading: false })),
+}))
+
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => routerMocks.navigate,
 }))
 
 vi.mock('@/hooks/useOCR', () => ({
@@ -73,6 +81,8 @@ vi.mock('@/hooks/useCategories', () => ({
 
 describe('Voice → Purchase Integration', () => {
   beforeEach(() => {
+    localStorage.clear()
+    routerMocks.navigate.mockReset()
     vi.clearAllMocks()
   })
 
@@ -118,8 +128,8 @@ describe('Voice → Purchase Integration', () => {
           { name: 'Pan', unitPrice: 500, quantity: 2, totalPrice: 1000, confidence: 90 },
         ],
         undefined,
-        '',
-        'Sin establecimiento',
+        undefined,
+        undefined,
         expect.any(String)
       )
       expect(screen.getByText('Compra registrada correctamente')).toBeInTheDocument()

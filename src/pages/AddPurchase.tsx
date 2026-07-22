@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
 import { useStores } from '@/hooks/useStores'
@@ -19,8 +20,10 @@ interface Props {
 
 export default function AddPurchase({ onSaved }: Props) {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const stores = useStores(user?.uid ?? null)
   const [selectedStore, setSelectedStore] = useState<Store | null>(null)
+  const [pendingStoreName, setPendingStoreName] = useState('')
   const [selectedDate, setSelectedDate] = useState(getCurrentDate())
   const [items, setItems] = useState<PurchaseItem[]>([
     { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }
@@ -31,6 +34,39 @@ export default function AddPurchase({ onSaved }: Props) {
   const [voiceItems, setVoiceItems] = useState<ParsedItem[]>([])
   const debounceTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
   const ocr = useOCR(user?.uid ?? null)
+  const lastStoreKey = user ? `mercado-inteligente:last-store:${user.uid}` : null
+
+  useEffect(() => {
+    if (!lastStoreKey || stores.loading || selectedStore) return
+
+    const storedStoreId = localStorage.getItem(lastStoreKey)
+    if (!storedStoreId) return
+
+    const storedStore = stores.stores.find((store) => store.id === storedStoreId) || null
+    if (storedStore) {
+      setSelectedStore(storedStore)
+    }
+  }, [lastStoreKey, selectedStore, stores.loading, stores.stores])
+
+  useEffect(() => {
+    if (!selectedStore || stores.loading) return
+
+    const stillExists = stores.stores.some((store) => store.id === selectedStore.id)
+    if (!stillExists) {
+      setSelectedStore(null)
+      setPendingStoreName('')
+    }
+  }, [selectedStore, stores.loading, stores.stores])
+
+  useEffect(() => {
+    if (!lastStoreKey) return
+
+    if (selectedStore) {
+      localStorage.setItem(lastStoreKey, selectedStore.id)
+    } else {
+      localStorage.removeItem(lastStoreKey)
+    }
+  }, [lastStoreKey, selectedStore])
 
   useEffect(() => {
     if (ocr.status === 'done') setMode('review')
@@ -67,6 +103,22 @@ export default function AddPurchase({ onSaved }: Props) {
     onSaved?.()
   }
 
+  async function resolvePurchaseStore(): Promise<Store | null> {
+    if (selectedStore) return selectedStore
+
+    const storeName = pendingStoreName.trim()
+    if (!storeName) return null
+
+    const createdStore = await stores.create({ name: storeName })
+    setSelectedStore(createdStore)
+    setPendingStoreName('')
+    return createdStore
+  }
+
+  function openStoreManager() {
+    navigate('/stores')
+  }
+
   function addItem() {
     setItems([...items, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
   }
@@ -94,12 +146,13 @@ export default function AddPurchase({ onSaved }: Props) {
     setMessage('')
 
     try {
+      const purchaseStore = await resolvePurchaseStore()
       await addPurchase(
         user.uid,
         validItems,
         undefined,
-        selectedStore?.id || '',
-        selectedStore?.name || 'Sin establecimiento',
+        purchaseStore?.id,
+        purchaseStore?.name,
         selectedDate
       )
 
@@ -124,11 +177,23 @@ export default function AddPurchase({ onSaved }: Props) {
 
       {mode === 'manual' && (
         <div className="mb-6 space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <p className="text-xs text-text-muted">
+              El establecimiento seleccionado queda guardado para la próxima compra.
+            </p>
+            <DarkButton variant="secondary" size="sm" onClick={openStoreManager}>
+              Gestionar
+            </DarkButton>
+          </div>
+
           <StoreSelector
             stores={stores.stores}
             selectedStore={selectedStore}
             onSelect={setSelectedStore}
             onCreateInline={stores.create}
+            onUpdateStore={stores.update}
+            onDeleteStore={stores.remove}
+            onDraftStoreNameChange={setPendingStoreName}
             loading={stores.loading}
           />
 
@@ -189,6 +254,7 @@ export default function AddPurchase({ onSaved }: Props) {
             userId={user!.uid}
             storeId={selectedStore?.id}
             storeName={selectedStore?.name}
+            resolveStore={resolvePurchaseStore}
             purchaseDate={selectedDate}
             onSaved={() => {
               ocr.reset()
@@ -252,6 +318,7 @@ export default function AddPurchase({ onSaved }: Props) {
             userId={user!.uid}
             storeId={selectedStore?.id}
             storeName={selectedStore?.name}
+            resolveStore={resolvePurchaseStore}
             purchaseDate={selectedDate}
             onSaved={() => {
               setVoiceItems([])
