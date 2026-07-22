@@ -211,7 +211,7 @@ export async function setDailyBudget(
     userId,
     date,
     amount,
-    createdAt: existingBudget.data()?.createdAt?.toDate() || new Date(),
+    createdAt: (existingBudget.data() as { createdAt?: { toDate?: () => Date } } | undefined)?.createdAt?.toDate?.() || new Date(),
     updatedAt: new Date(),
   }
 }
