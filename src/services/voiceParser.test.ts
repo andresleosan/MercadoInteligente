@@ -25,6 +25,15 @@ describe('parseVoiceText', () => {
     expect(result[0]!.unitPrice).toBe(1200)
   })
 
+  it('parsea cantidades habladas como "tres harina pan a 3000"', () => {
+    const result = parseVoiceText('tres harina pan a 3000')
+    expect(result).toHaveLength(1)
+    expect(result[0]!.name).toBe('Harina pan')
+    expect(result[0]!.quantity).toBe(3)
+    expect(result[0]!.unitPrice).toBe(3000)
+    expect(result[0]!.totalPrice).toBe(9000)
+  })
+
   it('filtra palabras vac as', () => {
     const result = parseVoiceText('compr leche a 1200')
     expect(result).toHaveLength(1)

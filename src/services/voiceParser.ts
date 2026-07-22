@@ -2,9 +2,39 @@ import type { ParsedItem } from '@/types'
 
 const STOP_WORDS = /^(?:compr |compre|comprar|mercado|supermercado|fuimos|para|en|el|la|los|las|un|una|unas|unos|del)\s*/i
 const SEGMENT_SEP = /[,;]\s*(?:y\s+)?|\s+y\s+/g
+const QUANTITY_WORDS: Record<string, number> = {
+  un: 1,
+  una: 1,
+  uno: 1,
+  dos: 2,
+  tres: 3,
+  cuatro: 4,
+  cinco: 5,
+  seis: 6,
+  siete: 7,
+  ocho: 8,
+  nueve: 9,
+  diez: 10,
+  once: 11,
+  doce: 12,
+  trece: 13,
+  catorce: 14,
+  quince: 15,
+}
 
-const PATTERN_WITH_A = /^(?:(\d+)\s+)?(.+?)\s+a\s+(\d{1,3}(?:\.\d{3})*|\d+)$/
-const PATTERN_WITHOUT_A = /^(?:(\d+)\s+)?(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)$/
+const PATTERN_WITH_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+a\s+(\d{1,3}(?:\.\d{3})*|\d+)$/i
+const PATTERN_WITHOUT_A = /^(?:(\d+|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince)\s+)?(.+?)\s+(\d{1,3}(?:\.\d{3})*|\d+)$/i
+
+function parseQuantity(raw: string | undefined): number {
+  if (!raw) return 1
+
+  const normalized = raw.toLowerCase()
+  if (/^\d+$/.test(normalized)) {
+    return parseInt(normalized, 10)
+  }
+
+  return QUANTITY_WORDS[normalized] || 1
+}
 
 function parsePrice(raw: string): number {
   const cleaned = raw.replace(/,/g, '')
@@ -42,11 +72,11 @@ export function parseVoiceText(text: string): ParsedItem[] {
     const matchNoA = segment.match(PATTERN_WITHOUT_A)
 
     if (matchA) {
-      quantity = matchA[1] ? parseInt(matchA[1], 10) : 1
+      quantity = parseQuantity(matchA[1])
       name = cleanName(matchA[2]!)
       unitPrice = parsePrice(matchA[3]!)
     } else if (matchNoA) {
-      quantity = matchNoA[1] ? parseInt(matchNoA[1], 10) : 1
+      quantity = parseQuantity(matchNoA[1])
       name = cleanName(matchNoA[2]!)
       unitPrice = parsePrice(matchNoA[3]!)
     } else {

@@ -31,7 +31,7 @@ export default function AddPurchase({ onSaved }: Props) {
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
-  const [voiceItems, setVoiceItems] = useState<ParsedItem[]>([])
+  const [voiceItems, setVoiceItems] = useState<PurchaseItem[]>([])
   const debounceTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
   const ocr = useOCR(user?.uid ?? null)
   const lastStoreKey = user ? `mercado-inteligente:last-store:${user.uid}` : null
@@ -99,8 +99,54 @@ export default function AddPurchase({ onSaved }: Props) {
     setItems(newItems)
   }
 
+  function updateVoiceItem(index: number, field: keyof PurchaseItem, value: string | number) {
+    const newItems = [...voiceItems]
+    const item = newItems[index]!
+
+    if (field === 'name') {
+      item.name = value as string
+    } else if (field === 'quantity') {
+      item.quantity = Number(value)
+    } else if (field === 'unitPrice') {
+      item.unitPrice = Number(value)
+    }
+
+    item.totalPrice = item.quantity * item.unitPrice
+    setVoiceItems(newItems)
+  }
+
   function handleSaved() {
     onSaved?.()
+  }
+
+  async function persistPurchase(itemsToSave: PurchaseItem[], receiptImageUrl?: string | null) {
+    const purchaseStore = await resolvePurchaseStore()
+    await addPurchase(
+      user!.uid,
+      itemsToSave,
+      receiptImageUrl ?? undefined,
+      purchaseStore?.id,
+      purchaseStore?.name,
+      selectedDate
+    )
+  }
+
+  async function savePurchaseWithFeedback(itemsToSave: PurchaseItem[], receiptImageUrl?: string | null) {
+    setSaving(true)
+    setMessage('')
+
+    try {
+      await persistPurchase(itemsToSave, receiptImageUrl)
+      setMessage('Compra registrada correctamente')
+      handleSaved()
+      return true
+    } catch (err) {
+      console.error('Error al registrar la compra:', err)
+      setMessage('Error al registrar la compra')
+      return false
+    } finally {
+      setSaving(false)
+    }
   }
 
   async function resolvePurchaseStore(): Promise<Store | null> {
@@ -123,6 +169,10 @@ export default function AddPurchase({ onSaved }: Props) {
     setItems([...items, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
   }
 
+  function addVoiceItem() {
+    setVoiceItems([...voiceItems, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
+  }
+
   function removeItem(index: number) {
     if (items.length === 1) return
     setItems(items.filter((_, i) => i !== index))
@@ -130,6 +180,11 @@ export default function AddPurchase({ onSaved }: Props) {
       clearTimeout(debounceTimersRef.current[index]!)
       delete debounceTimersRef.current[index]
     }
+  }
+
+  function removeVoiceItem(index: number) {
+    if (voiceItems.length === 1) return
+    setVoiceItems(voiceItems.filter((_, i) => i !== index))
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -142,28 +197,9 @@ export default function AddPurchase({ onSaved }: Props) {
       return
     }
 
-    setSaving(true)
-    setMessage('')
-
-    try {
-      const purchaseStore = await resolvePurchaseStore()
-      await addPurchase(
-        user.uid,
-        validItems,
-        undefined,
-        purchaseStore?.id,
-        purchaseStore?.name,
-        selectedDate
-      )
-
+    const saved = await savePurchaseWithFeedback(validItems)
+    if (saved) {
       setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
-      setMessage('Compra registrada correctamente')
-      handleSaved()
-    } catch (err) {
-      console.error('Error al registrar la compra:', err)
-      setMessage('Error al registrar la compra')
-    } finally {
-      setSaving(false)
     }
   }
 
@@ -302,7 +338,23 @@ export default function AddPurchase({ onSaved }: Props) {
         <div className="mb-6">
           <VoiceCapture
             onDone={(items) => {
-              setVoiceItems(items)
+              const validVoiceItems = items
+                .filter((item) => item.name.trim() && item.quantity > 0 && item.unitPrice > 0)
+                .map((item) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  unitPrice: item.unitPrice,
+                  totalPrice: item.totalPrice,
+                }))
+
+              if (validVoiceItems.length === 0) {
+                setVoiceItems([])
+                setMessage('No reconocimos productos. Reintenta o carga manualmente.')
+                setMode('voice')
+                return
+              }
+
+              setVoiceItems(validVoiceItems)
               setMode('voice-review')
             }}
             onBack={() => setMode('manual')}
@@ -312,25 +364,123 @@ export default function AddPurchase({ onSaved }: Props) {
 
       {mode === 'voice-review' && (
         <div className="mb-6">
-          <OCRReview
-            items={voiceItems}
-            imageUrl={null}
-            userId={user!.uid}
-            storeId={selectedStore?.id}
-            storeName={selectedStore?.name}
-            resolveStore={resolvePurchaseStore}
-            purchaseDate={selectedDate}
-            onSaved={() => {
-              setVoiceItems([])
-              setMode('manual')
-              setMessage('Compra registrada correctamente')
-              handleSaved()
-            }}
-            onRetry={() => {
-              setVoiceItems([])
-              setMode('voice')
-            }}
-          />
+          <DarkCard className="p-6 space-y-4">
+            <h3 className="text-xl font-semibold text-text-primary">Revisá lo que entendió la voz</h3>
+            <p className="text-sm text-text-secondary">
+              Editá nombre, cantidad y precio antes de guardar.
+            </p>
+
+            <div className="space-y-3">
+              {voiceItems.map((item, index) => (
+                <div key={index} className="bg-bg-surface p-3 rounded-radius-md space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-text-muted">Item {index + 1}</span>
+                    <DarkButton
+                      variant="danger"
+                      size="sm"
+                      onClick={() => removeVoiceItem(index)}
+                      disabled={voiceItems.length === 1}
+                    >
+                      ×
+                    </DarkButton>
+                  </div>
+
+                  <DarkInput
+                    label="Producto"
+                    type="text"
+                    value={item.name}
+                    onChange={(e) => updateVoiceItem(index, 'name', e.target.value)}
+                    placeholder="Ej: Harina pan"
+                  />
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <DarkInput
+                      label="Cantidad"
+                      type="number"
+                      min="1"
+                      required
+                      value={item.quantity || ''}
+                      onChange={(e) => updateVoiceItem(index, 'quantity', e.target.value)}
+                      placeholder="3"
+                    />
+                    <DarkInput
+                      label="Precio unitario"
+                      type="number"
+                      min="0"
+                      step="10"
+                      required
+                      value={item.unitPrice || ''}
+                      onChange={(e) => updateVoiceItem(index, 'unitPrice', e.target.value)}
+                      placeholder="3000"
+                    />
+                  </div>
+
+                  <div className="text-right">
+                    <span className="text-sm text-text-secondary">
+                      Subtotal: ${item.totalPrice.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <DarkButton
+              variant="secondary"
+              type="button"
+              onClick={addVoiceItem}
+            >
+              + Agregar producto
+            </DarkButton>
+
+            <div className="pt-4 border-t border-border-subtle">
+              <p className="text-lg font-semibold text-text-primary">
+                Total: ${voiceItems.reduce((sum, item) => sum + item.totalPrice, 0).toLocaleString()}
+              </p>
+            </div>
+
+            {message && (
+              <p className={`text-sm ${message.includes('Error') ? 'text-accent-red' : 'text-accent-green'}`}>
+                {message}
+              </p>
+            )}
+
+            <div className="flex gap-2">
+              <DarkButton
+                variant="primary"
+                type="button"
+                disabled={saving || voiceItems.length === 0}
+                className="flex-1"
+                onClick={() => {
+                  const validVoiceItems = voiceItems.filter((item) => item.name.trim() && item.quantity > 0 && item.unitPrice > 0)
+                  if (validVoiceItems.length === 0) {
+                    setMessage('Agregá al menos un producto válido')
+                    return
+                  }
+
+                  void (async () => {
+                    const saved = await savePurchaseWithFeedback(validVoiceItems)
+                    if (saved) {
+                      setVoiceItems([])
+                      setMode('manual')
+                    }
+                  })()
+                }}
+              >
+                {saving ? 'Guardando...' : 'Confirmar y guardar compra'}
+              </DarkButton>
+              <DarkButton
+                variant="secondary"
+                type="button"
+                onClick={() => {
+                  setVoiceItems([])
+                  setMode('voice')
+                }}
+                className="flex-1"
+              >
+                Regrabar
+              </DarkButton>
+            </div>
+          </DarkCard>
         </div>
       )}
 

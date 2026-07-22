@@ -4,7 +4,7 @@ interface ListeningOptions {
   onEnd?: () => void
 }
 
-const SILENCE_TIMEOUT_MS = 2000
+const SILENCE_TIMEOUT_MS = 12000
 
 export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
   const SpeechRecognitionAPI =
@@ -22,8 +22,10 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
 
   let silenceTimer: ReturnType<typeof setTimeout> | null = null
   let isStopped = false
+  let hasHeardSpeech = false
 
   function resetSilenceTimer() {
+    if (!hasHeardSpeech) return
     if (silenceTimer) clearTimeout(silenceTimer)
     if (isStopped) return
     silenceTimer = setTimeout(() => {
@@ -35,6 +37,7 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
     for (let i = event.resultIndex; i < event.results.length; i++) {
       const transcript = event.results[i][0].transcript.trim()
       if (transcript) {
+        hasHeardSpeech = true
         onResult(transcript, event.results[i].isFinal)
         resetSilenceTimer()
       }
@@ -64,7 +67,6 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
   }
 
   recognition.start()
-  resetSilenceTimer()
 
   return { stop }
 }
