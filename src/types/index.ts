@@ -34,6 +34,9 @@ export interface Purchase {
   storeName: string
   purchaseDate: string // YYYY-MM-DD
   items: PurchaseItem[]
+  subtotal?: number
+  discountPercent?: number
+  discountAmount?: number
   total: number
   receiptImageUrl?: string
   createdAt: Date

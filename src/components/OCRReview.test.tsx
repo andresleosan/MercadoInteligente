@@ -63,7 +63,7 @@ describe('OCRReview', () => {
     expect(screen.queryByText('Leche')).not.toBeInTheDocument()
   })
 
-  it('should add a manual product via ProductEditor', () => {
+  it('should not expose add-product action', () => {
     render(
       <OCRReview
         items={[]}
@@ -73,12 +73,7 @@ describe('OCRReview', () => {
         onRetry={vi.fn()}
       />
     )
-    fireEvent.click(screen.getByRole('button', { name: /agregar producto/i }))
-    fireEvent.change(screen.getByLabelText(/producto/i), { target: { value: 'Huevos' } })
-    fireEvent.change(screen.getByLabelText(/cant/i), { target: { value: '12' } })
-    fireEvent.change(screen.getByLabelText(/precio unit/i), { target: { value: '50' } })
-    fireEvent.click(screen.getByRole('button', { name: /guardar/i }))
-    expect(screen.getByText('Huevos')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /agregar producto/i })).not.toBeInTheDocument()
   })
 
   it('should call addPurchase and onSaved when guardar compra clicked', async () => {
@@ -103,7 +98,9 @@ describe('OCRReview', () => {
       'https://example.com/ticket.jpg',
       '',
       'Sin establecimiento',
-      undefined
+      undefined,
+      0,
+      0
     )
     expect(onSaved).toHaveBeenCalled()
   })

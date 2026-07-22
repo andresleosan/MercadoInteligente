@@ -33,7 +33,6 @@ export default function OCRReview({
 }: Props) {
   const [items, setItems] = useState<PurchaseItem[]>(initialItems)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [adding, setAdding] = useState(false)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [itemCategories, setItemCategories] = useState<Record<number, string>>({})
@@ -73,11 +72,6 @@ export default function OCRReview({
     newItems[editingIndex] = updated
     setItems(newItems)
     setEditingIndex(null)
-  }
-
-  function addManual(newItem: PurchaseItem) {
-    setItems([...items, newItem])
-    setAdding(false)
   }
 
   async function handleSavePurchase() {
@@ -133,7 +127,7 @@ export default function OCRReview({
       <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-6">
         <h2 className="text-xl font-semibold text-text-primary mb-4">Revisá los productos</h2>
 
-        {items.length === 0 && !adding && (
+        {items.length === 0 && (
           <p className="text-sm text-text-secondary mb-4">
             No reconocimos productos. Podés cargarlos manualmente o reintentar.
           </p>
@@ -172,7 +166,7 @@ export default function OCRReview({
                   </button>
                 </div>
               </div>
-              {editingIndex !== index && !adding && (
+              {editingIndex !== index && (
                 <div className="mt-1.5">
                   <CategorySelector
                     userId={userId}
@@ -198,22 +192,6 @@ export default function OCRReview({
             />
           </div>
         )}
-
-        {adding && (
-          <div className="mt-4">
-            <ProductEditor onSave={addManual} onCancel={() => setAdding(false)} />
-          </div>
-        )}
-
-        {!adding && !isEditing && (
-          <button
-            type="button"
-            onClick={() => setAdding(true)}
-            className="mt-4 text-sm text-accent-green hover:brightness-110 transition-fast"
-          >
-            + Agregar producto
-          </button>
-        )}
       </div>
 
       <div className="bg-surface rounded-radius-xl border border-border-subtle shadow-card p-4">
@@ -221,7 +199,7 @@ export default function OCRReview({
         {error && <p className="text-sm text-accent-red mt-1">{error}</p>}
       </div>
 
-      {!adding && !isEditing && (
+      {!isEditing && (
         <div className="flex gap-2">
           <DarkButton
             variant="primary"

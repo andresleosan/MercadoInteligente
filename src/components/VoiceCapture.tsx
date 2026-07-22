@@ -36,6 +36,11 @@ export default function VoiceCapture({ onDone, onBack }: Props) {
             </div>
           </div>
           <p className="text-sm text-text-secondary">Escuchando...</p>
+          <div className="space-y-1 rounded-radius-md border border-border-subtle bg-elevated/70 px-3 py-2 text-left">
+            <p className="text-xs text-text-muted">Ejemplo de frase</p>
+            <p className="text-sm text-text-primary">Di: 3 Arroz a 5000</p>
+            <p className="text-sm text-text-primary">Di: 3 Arroz a 5000 con 5 % de descuento</p>
+          </div>
           {transcript && (
             <p className="text-base text-text-primary italic border border-border-subtle rounded-radius-md p-3 bg-elevated">
               {transcript}

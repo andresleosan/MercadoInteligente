@@ -24,15 +24,22 @@ export async function addPurchase(
   receiptImageUrl?: string,
   storeId?: string,
   storeName?: string,
-  purchaseDate?: string
+  purchaseDate?: string,
+  discountPercent = 0,
+  discountAmount = 0
 ): Promise<Purchase> {
   if (!db) throw new Error('Firebase no inicializado')
   
-  const total = items.reduce((sum, item) => sum + item.totalPrice, 0)
+  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
+  const safeDiscountAmount = Math.max(0, Math.min(subtotal, discountAmount))
+  const total = Math.max(0, subtotal - safeDiscountAmount)
 
   const purchaseData: Record<string, unknown> = {
     userId,
     items,
+    subtotal,
+    discountPercent,
+    discountAmount: safeDiscountAmount,
     total,
     storeId: storeId || '',
     storeName: storeName || 'Sin establecimiento',
@@ -61,6 +68,9 @@ export async function addPurchase(
     storeName: storeName || 'Sin establecimiento',
     purchaseDate: purchaseDate || getCurrentDate(),
     items,
+    subtotal,
+    discountPercent,
+    discountAmount: safeDiscountAmount,
     total,
     receiptImageUrl,
     createdAt: new Date(),
@@ -106,6 +116,9 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
+      subtotal: data.subtotal,
+      discountPercent: data.discountPercent,
+      discountAmount: data.discountAmount,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
       createdAt: data.createdAt?.toDate() || new Date(),
@@ -154,6 +167,9 @@ export async function getPurchasesByDateRange(
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
+      subtotal: data.subtotal,
+      discountPercent: data.discountPercent,
+      discountAmount: data.discountAmount,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
       createdAt: data.createdAt?.toDate() || new Date(),
@@ -184,6 +200,9 @@ export async function getTodayPurchases(userId: string, date?: string): Promise<
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
+      subtotal: data.subtotal,
+      discountPercent: data.discountPercent,
+      discountAmount: data.discountAmount,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
       createdAt: data.createdAt?.toDate() || new Date(),
@@ -226,6 +245,9 @@ export async function getPurchasesByStore(
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
       items: data.items,
+      subtotal: data.subtotal,
+      discountPercent: data.discountPercent,
+      discountAmount: data.discountAmount,
       total: data.total,
       receiptImageUrl: data.receiptImageUrl,
       createdAt: data.createdAt?.toDate() || new Date(),

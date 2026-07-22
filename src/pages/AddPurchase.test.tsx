@@ -111,7 +111,7 @@ describe('AddPurchase', () => {
     const user = userEvent.setup()
     await user.click(screen.getByText(/registrar por voz/i))
     await user.click(screen.getByText('VoiceCaptureMock'))
-    expect(await screen.findByText(/Leche/)).toBeTruthy()
+    expect(screen.getByDisplayValue('Leche')).toBeTruthy()
   })
 
   it('crea y asocia el establecimiento pendiente al guardar', async () => {
@@ -142,7 +142,9 @@ describe('AddPurchase', () => {
       undefined,
       'store-1',
       'Éxito',
-      expect.any(String)
+      '2026-07-21',
+      0,
+      0
     )
 
   })

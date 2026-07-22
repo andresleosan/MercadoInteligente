@@ -5,6 +5,7 @@ interface ListeningOptions {
 }
 
 const SILENCE_TIMEOUT_MS = 12000
+const MAX_NO_SPEECH_RETRIES = 2
 
 export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
   const SpeechRecognitionAPI =
@@ -23,6 +24,7 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
   let silenceTimer: ReturnType<typeof setTimeout> | null = null
   let isStopped = false
   let hasHeardSpeech = false
+  let noSpeechRetries = 0
 
   function resetSilenceTimer() {
     if (!hasHeardSpeech) return
@@ -48,6 +50,15 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
     if (event.error === 'not-allowed') {
       onError?.('Permiso de microfono denegado')
     } else if (event.error === 'no-speech') {
+      if (!hasHeardSpeech && noSpeechRetries < MAX_NO_SPEECH_RETRIES) {
+        noSpeechRetries += 1
+        try {
+          recognition.stop()
+        } catch {
+          onError?.('No escuchamos nada. Reintenta.')
+        }
+        return
+      }
       onError?.('No escuchamos nada. Reintenta.')
     } else if (event.error === 'aborted') {
     } else {
@@ -57,6 +68,14 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
 
   recognition.onend = () => {
     if (silenceTimer) clearTimeout(silenceTimer)
+    if (!isStopped && !hasHeardSpeech && noSpeechRetries > 0 && noSpeechRetries <= MAX_NO_SPEECH_RETRIES) {
+      try {
+        recognition.start()
+        return
+      } catch {
+        onError?.('No escuchamos nada. Reintenta.')
+      }
+    }
     onEnd?.()
   }
 

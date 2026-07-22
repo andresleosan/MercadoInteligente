@@ -28,6 +28,7 @@ export default function AddPurchase({ onSaved }: Props) {
   const [items, setItems] = useState<PurchaseItem[]>([
     { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }
   ])
+  const [discountPercent, setDiscountPercent] = useState(0)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
@@ -121,13 +122,18 @@ export default function AddPurchase({ onSaved }: Props) {
 
   async function persistPurchase(itemsToSave: PurchaseItem[], receiptImageUrl?: string | null) {
     const purchaseStore = await resolvePurchaseStore()
+    const subtotal = itemsToSave.reduce((sum, item) => sum + item.totalPrice, 0)
+    const normalizedDiscountPercent = Math.min(100, Math.max(0, discountPercent || 0))
+    const discountAmount = Math.round(subtotal * (normalizedDiscountPercent / 100))
     await addPurchase(
       user!.uid,
       itemsToSave,
       receiptImageUrl ?? undefined,
       purchaseStore?.id,
       purchaseStore?.name,
-      selectedDate
+      selectedDate,
+      normalizedDiscountPercent,
+      discountAmount
     )
   }
 
@@ -165,10 +171,6 @@ export default function AddPurchase({ onSaved }: Props) {
     navigate('/stores')
   }
 
-  function addItem() {
-    setItems([...items, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
-  }
-
   function addVoiceItem() {
     setVoiceItems([...voiceItems, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
   }
@@ -200,10 +202,13 @@ export default function AddPurchase({ onSaved }: Props) {
     const saved = await savePurchaseWithFeedback(validItems)
     if (saved) {
       setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
+      setDiscountPercent(0)
     }
   }
 
-  const total = items.reduce((sum, item) => sum + item.totalPrice, 0)
+  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
+  const discountAmount = Math.round(subtotal * (Math.min(100, Math.max(0, discountPercent || 0)) / 100))
+  const total = Math.max(0, subtotal - discountAmount)
 
   return (
     <DarkCard className="p-6">
@@ -486,68 +491,86 @@ export default function AddPurchase({ onSaved }: Props) {
 
       {mode === 'manual' && (
         <form onSubmit={handleSubmit} className="space-y-4">
-          {items.map((item, index) => (
-            <div key={index} className="bg-bg-surface p-3 rounded-radius-md space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-text-muted">Item {index + 1}</span>
-                <DarkButton
-                  variant="danger"
-                  size="sm"
-                  onClick={() => removeItem(index)}
-                  disabled={items.length === 1}
-                >
-                  ×
-                </DarkButton>
-              </div>
-              <DarkInput
-                label="Producto"
-                type="text"
-                required
-                value={item.name}
-                onChange={(e) => updateItem(index, 'name', e.target.value)}
-                placeholder="Ej: Leche"
-              />
-              <div className="grid grid-cols-2 gap-3">
-                <DarkInput
-                  label="Cantidad"
-                  type="number"
-                  min="1"
-                  required
-                  value={item.quantity || ''}
-                  onChange={(e) => updateItem(index, 'quantity', e.target.value)}
-                  placeholder="1"
-                />
-                <DarkInput
-                  label="Precio unitario"
-                  type="number"
-                  min="0"
-                  step="10"
-                  required
-                  value={item.unitPrice || ''}
-                  onChange={(e) => updateItem(index, 'unitPrice', e.target.value)}
-                  placeholder="Precio"
-                />
-              </div>
-              <div className="text-right">
-                <span className="text-sm text-text-secondary">
-                  Subtotal: ${(item.quantity * item.unitPrice).toLocaleString()}
-                </span>
-              </div>
+          <div className="bg-bg-surface border border-border-subtle rounded-radius-md p-3 space-y-4">
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div key={index} className="bg-bg-elevated p-3 rounded-radius-md space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-text-muted">Item {index + 1}</span>
+                    <DarkButton
+                      variant="danger"
+                      size="sm"
+                      onClick={() => removeItem(index)}
+                      disabled={items.length === 1}
+                    >
+                      ×
+                    </DarkButton>
+                  </div>
+                  <DarkInput
+                    label="Producto"
+                    type="text"
+                    required
+                    value={item.name}
+                    onChange={(e) => updateItem(index, 'name', e.target.value)}
+                    placeholder="Ej: Leche"
+                  />
+                  <div className="grid grid-cols-2 gap-3">
+                    <DarkInput
+                      label="Cantidad"
+                      type="number"
+                      min="1"
+                      required
+                      value={item.quantity || ''}
+                      onChange={(e) => updateItem(index, 'quantity', e.target.value)}
+                      placeholder="1"
+                    />
+                    <DarkInput
+                      label="Precio unitario"
+                      type="number"
+                      min="0"
+                      step="10"
+                      required
+                      value={item.unitPrice || ''}
+                      onChange={(e) => updateItem(index, 'unitPrice', e.target.value)}
+                      placeholder="Precio"
+                    />
+                  </div>
+                  {index === 0 && (
+                    <div className="space-y-3 border-t border-border-subtle pt-4">
+                      <h3 className="text-sm font-medium text-text-primary">Descuento</h3>
+                      <DarkInput
+                        label="% de descuento"
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.1"
+                        value={discountPercent || ''}
+                        onChange={(e) => {
+                          const nextPercent = Number(e.target.value)
+                          setDiscountPercent(Number.isFinite(nextPercent) ? Math.min(100, Math.max(0, nextPercent)) : 0)
+                        }}
+                        placeholder="0"
+                        prefix="%"
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          ))}
 
-          <DarkButton
-            variant="secondary"
-            type="button"
-            onClick={addItem}
-          >
-            + Agregar producto
-          </DarkButton>
-
-          <div className="pt-4 border-t border-border-subtle">
-            <p className="text-lg font-semibold text-text-primary">
-              Total: ${total.toLocaleString()}
-            </p>
+            <div className="pt-1 border-t border-border-subtle">
+              <p className="text-sm text-text-secondary">
+                Subtotal: ${subtotal.toLocaleString()}
+              </p>
+              {discountAmount > 0 && (
+                <p className="text-sm text-accent-green mt-1">
+                  Descuento: -${discountAmount.toLocaleString()} ({Math.min(100, Math.max(0, discountPercent || 0))}%)
+                </p>
+              )}
+              <p className="text-lg font-semibold text-text-primary">
+                Total: ${total.toLocaleString()}
+              </p>
+            </div>
           </div>
 
           {message && (
