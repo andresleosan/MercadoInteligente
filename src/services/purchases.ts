@@ -51,7 +51,7 @@ export async function addPurchase(
   }
 
   const undefinedFields = Object.entries(purchaseData)
-    .filter(([_, v]) => v === undefined)
+     .filter(([, v]) => v === undefined)
     .map(([k]) => k)
   if (undefinedFields.length > 0) {
     console.error(`[purchases] Campo(s) undefined en purchaseData:`, undefinedFields, purchaseData)

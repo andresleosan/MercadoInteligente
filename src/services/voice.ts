@@ -4,15 +4,47 @@ interface ListeningOptions {
   onEnd?: () => void
 }
 
+interface SpeechRecognitionResultLike {
+  isFinal: boolean
+  [index: number]: { transcript: string }
+}
+
+interface SpeechRecognitionResultEventLike {
+  resultIndex: number
+  results: ArrayLike<SpeechRecognitionResultLike>
+}
+
+interface SpeechRecognitionErrorEventLike {
+  error: string
+}
+
+interface SpeechRecognitionInstanceLike {
+  lang: string
+  continuous: boolean
+  interimResults: boolean
+  onresult: ((event: SpeechRecognitionResultEventLike) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEventLike) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+}
+
+type SpeechRecognitionConstructor = new () => SpeechRecognitionInstanceLike
+
+interface SpeechRecognitionGlobal {
+  SpeechRecognition?: SpeechRecognitionConstructor
+  webkitSpeechRecognition?: SpeechRecognitionConstructor
+}
+
 const SILENCE_TIMEOUT_MS = 12000
 
 export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
-  const SpeechRecognitionAPI =
-    (globalThis as any).SpeechRecognition ?? (globalThis as any).webkitSpeechRecognition
+  const speechGlobal = globalThis as typeof globalThis & SpeechRecognitionGlobal
+  const SpeechRecognitionAPI = speechGlobal.SpeechRecognition ?? speechGlobal.webkitSpeechRecognition
 
   if (!SpeechRecognitionAPI) {
     onError?.('Voz no disponible en este navegador')
-    return { stop: () => {} }
+    return { stop: () => { /* La API no está disponible. */ } }
   }
 
   const recognition = new SpeechRecognitionAPI()
@@ -33,23 +65,28 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
     }, SILENCE_TIMEOUT_MS)
   }
 
-  recognition.onresult = (event: any) => {
+  recognition.onresult = (event: SpeechRecognitionResultEventLike) => {
     for (let i = event.resultIndex; i < event.results.length; i++) {
-      const transcript = event.results[i][0].transcript.trim()
+      const result = event.results[i]
+      const alternative = result?.[0]
+      if (!result || !alternative) continue
+
+      const transcript = alternative.transcript.trim()
       if (transcript) {
         hasHeardSpeech = true
-        onResult(transcript, event.results[i].isFinal)
+        onResult(transcript, result.isFinal)
         resetSilenceTimer()
       }
     }
   }
 
-  recognition.onerror = (event: any) => {
+  recognition.onerror = (event: SpeechRecognitionErrorEventLike) => {
     if (event.error === 'not-allowed') {
       onError?.('Permiso de microfono denegado')
     } else if (event.error === 'no-speech') {
       onError?.('No escuchamos nada. Reintenta.')
     } else if (event.error === 'aborted') {
+      // El usuario o el navegador detuvo el reconocimiento.
     } else {
       onError?.(`Error de reconocimiento: ${event.error}`)
     }
@@ -63,7 +100,11 @@ export function startListening({ onResult, onError, onEnd }: ListeningOptions) {
   function stop() {
     isStopped = true
     if (silenceTimer) clearTimeout(silenceTimer)
-    try { recognition.stop() } catch { }
+    try {
+      recognition.stop()
+    } catch {
+      // La API puede lanzar si ya estaba detenida.
+    }
   }
 
   recognition.start()

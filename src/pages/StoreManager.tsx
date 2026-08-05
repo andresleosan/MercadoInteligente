@@ -83,7 +83,7 @@ export default function StoreManager({ onBack }: Props) {
         setMessage('Establecimiento creado')
       }
       resetForm()
-    } catch (err) {
+    } catch {
       setMessage('Error al guardar')
     } finally {
       setSaving(false)
@@ -97,7 +97,7 @@ export default function StoreManager({ onBack }: Props) {
       await stores.remove(storeId)
       setMessage('Establecimiento eliminado')
       if (editingId === storeId) resetForm()
-    } catch (err) {
+    } catch {
       setMessage('Error al eliminar')
     }
   }

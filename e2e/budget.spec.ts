@@ -5,6 +5,7 @@ import {
   loginWithEmail,
   generateTestEmail,
   setBudget,
+  addManualPurchase,
 } from './helpers'
 
 const TEST_PASSWORD = 'test123456'
@@ -66,11 +67,9 @@ test.describe('Budget Management', () => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
     await setBudget(page, '10000')
 
-    await page.getByLabel('Producto').fill('Leche')
-    await page.getByLabel('Cantidad').fill('1')
-    await page.getByLabel('Precio unitario').fill('5000')
-    await page.locator('form').getByRole('button', { name: 'Registrar compra' }).click()
+    await addManualPurchase(page, 'Leche', '1', '5000')
 
+    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
     await expect(page.getByText('50.0% utilizado')).toBeVisible()
   })
 })

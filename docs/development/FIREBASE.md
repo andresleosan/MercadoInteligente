@@ -31,7 +31,7 @@ export const storage = app ? getStorage(app) : null;
 ### 1.2 Variables de entorno (`.env`)
 
 ```
-VITE_FIREBASE_API_KEY=AIzaSyA5-4C4urcXGWitjGjKOi9aTneiMBf4WCk
+VITE_FIREBASE_API_KEY=<REDACTED_CLIENT_KEY>
 VITE_FIREBASE_AUTH_DOMAIN=mercado-inteligente-90094.firebaseapp.com
 VITE_FIREBASE_PROJECT_ID=mercado-inteligente-90094
 VITE_FIREBASE_STORAGE_BUCKET=mercado-inteligente-90094.firebasestorage.app

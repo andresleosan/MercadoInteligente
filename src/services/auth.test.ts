@@ -7,7 +7,7 @@ import {
   logout,
   onAuthStateChange,
 } from './auth'
-import { auth, db, isConfigValid } from '@/config/firebase'
+import { auth } from '@/config/firebase'
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -15,7 +15,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from 'firebase/auth'
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore'
+import { setDoc } from 'firebase/firestore'
 
 vi.mock('firebase/auth')
 vi.mock('firebase/firestore')

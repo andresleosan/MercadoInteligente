@@ -16,7 +16,11 @@ export function useVoice() {
   statusRef.current = status
 
   const reset = useCallback(() => {
-    try { stopRef.current() } catch {}
+    try {
+      stopRef.current()
+    } catch {
+      // El reconocimiento puede ya estar detenido por el navegador.
+    }
     stopRef.current = () => {}
     transcriptRef.current = ''
     setStatus('idle')

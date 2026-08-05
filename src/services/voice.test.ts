@@ -24,7 +24,9 @@ let mockRecognition: ReturnType<typeof createMockRecognition>
 beforeEach(() => {
   vi.resetAllMocks()
   mockRecognition = createMockRecognition()
-  mockSpeechRecognition.mockImplementation(() => mockRecognition)
+  mockSpeechRecognition.mockImplementation(function MockSpeechRecognition() {
+    return mockRecognition
+  })
   ;(globalThis as any).SpeechRecognition = mockSpeechRecognition
   ;(globalThis as any).webkitSpeechRecognition = undefined
 })

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, type FormEvent } from 'react'
+import { useState, useEffect, useRef, useCallback, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
@@ -36,7 +36,7 @@ export default function AddPurchase({ onSaved }: Props) {
   const ocr = useOCR(user?.uid ?? null)
   const lastStoreKey = user ? `mercado-inteligente:last-store:${user.uid}` : null
 
-  function persistLastStore(store: Store | null) {
+  const persistLastStore = useCallback((store: Store | null) => {
     if (!lastStoreKey) return
 
     if (store) {
@@ -44,7 +44,7 @@ export default function AddPurchase({ onSaved }: Props) {
     } else {
       localStorage.removeItem(lastStoreKey)
     }
-  }
+  }, [lastStoreKey])
 
   useEffect(() => {
     if (!lastStoreKey || stores.loading || selectedStore) return
@@ -71,7 +71,7 @@ export default function AddPurchase({ onSaved }: Props) {
     if (!lastStoreKey) return
 
     persistLastStore(selectedStore)
-  }, [lastStoreKey, selectedStore])
+  }, [lastStoreKey, persistLastStore, selectedStore])
 
   useEffect(() => {
     if (ocr.status === 'done') setMode('review')
@@ -79,8 +79,9 @@ export default function AddPurchase({ onSaved }: Props) {
   }, [ocr.status])
 
   useEffect(() => {
+    const debounceTimers = debounceTimersRef.current
     return () => {
-      Object.values(debounceTimersRef.current).forEach((t) => clearTimeout(t))
+      Object.values(debounceTimers).forEach((t) => clearTimeout(t))
     }
   }, [])
 
@@ -196,6 +197,10 @@ export default function AddPurchase({ onSaved }: Props) {
       clearTimeout(debounceTimersRef.current[index]!)
       delete debounceTimersRef.current[index]
     }
+  }
+
+  function addItem() {
+    setItems([...items, { name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
   }
 
   function removeVoiceItem(index: number) {
@@ -360,7 +365,9 @@ export default function AddPurchase({ onSaved }: Props) {
                   quantity: item.quantity,
                   unitPrice: item.unitPrice,
                   totalPrice: item.totalPrice,
-                  discountPercent: item.discountPercent,
+                  ...(item.discountPercent !== undefined
+                    ? { discountPercent: item.discountPercent }
+                    : {}),
                 }))
 
               if (validVoiceItems.length === 0) {
@@ -576,6 +583,14 @@ export default function AddPurchase({ onSaved }: Props) {
                 </div>
               ))}
             </div>
+
+            <DarkButton
+              variant="secondary"
+              type="button"
+              onClick={addItem}
+            >
+              + Agregar producto
+            </DarkButton>
 
             <div className="pt-1 border-t border-border-subtle">
               <p className="text-sm text-text-secondary">

@@ -67,13 +67,28 @@ export async function expectDashboardLoaded(page: Page) {
 }
 
 export async function setBudget(page: Page, amount: string) {
-  await page.getByRole('button', { name: 'Presupuesto diario' }).click()
   const budgetInput = page.getByLabel('Monto diario')
+
+  if (!(await budgetInput.isVisible())) {
+    const editorButton = page.getByRole('button', { name: 'Abrir editor de presupuesto' })
+    if (await editorButton.isVisible()) {
+      await editorButton.click()
+    } else {
+      await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    }
+  }
+
   await expect(budgetInput).toBeVisible()
+  const editTotalButton = page.getByRole('button', { name: 'Editar total', exact: true })
+  if (await editTotalButton.isVisible()) {
+    await editTotalButton.click()
+  }
+
   await budgetInput.fill(amount)
-  const saveButton = budgetInput.locator('xpath=ancestor::div[contains(@class,"flex-1")]/following-sibling::button[normalize-space()="Guardar"]')
+  const budgetForm = budgetInput.locator('xpath=ancestor::form')
+  const saveButton = budgetForm.getByRole('button', { name: 'Guardar', exact: true })
   await saveButton.click()
-  await expect(page.getByText('Presupuesto guardado')).toBeVisible()
+  await expect(page.getByText(`$${Number(amount).toLocaleString()}`, { exact: true }).first()).toBeVisible()
 }
 
 export async function addManualPurchase(
@@ -86,6 +101,7 @@ export async function addManualPurchase(
   await page.getByLabel('Cantidad').fill(quantity)
   await page.getByLabel('Precio unitario').fill(unitPrice)
   await page.locator('form').getByRole('button', { name: 'Registrar compra' }).click()
+  await expect(page.getByText(productName, { exact: false }).first()).toBeVisible()
 }
 
 export function generateTestEmail(): string {

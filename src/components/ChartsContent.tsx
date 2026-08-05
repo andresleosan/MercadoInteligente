@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, CartesianGrid,
   ResponsiveContainer, BarChart, LineChart, PieChart, Pie, Cell,
@@ -29,7 +29,7 @@ export default function ChartsContent({ userId, selectedMonth }: Props) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  async function loadData() {
+  const loadData = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
@@ -49,11 +49,11 @@ export default function ChartsContent({ userId, selectedMonth }: Props) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedMonth, userId])
 
   useEffect(() => {
     loadData()
-  }, [userId, selectedMonth])
+  }, [loadData])
 
   if (loading) {
     return (

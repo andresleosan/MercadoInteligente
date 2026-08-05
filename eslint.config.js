@@ -25,4 +25,17 @@ export default tseslint.config(
       ],
     },
   },
+  {
+    files: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    files: ['src/config/categoryIcons.tsx', 'src/contexts/AuthContext.tsx'],
+    rules: {
+      // Estos módulos exponen componentes junto con sus registros/hooks públicos.
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 )

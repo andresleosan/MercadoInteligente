@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import OCRReview from './OCRReview'
 
 vi.mock('@/services/purchases', () => ({
@@ -91,18 +91,17 @@ describe('OCRReview', () => {
       />
     )
     fireEvent.click(screen.getByRole('button', { name: /guardar compra/i }))
-    await new Promise((r) => setTimeout(r, 0))
-    expect(addPurchase).toHaveBeenCalledWith(
-      'user-1',
-      [{ name: 'Leche', quantity: 1, unitPrice: 450, totalPrice: 450, confidence: 90 }],
-      'https://example.com/ticket.jpg',
-      '',
-      'Sin establecimiento',
-      undefined,
-      0,
-      0
-    )
-    expect(onSaved).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(addPurchase).toHaveBeenCalledWith(
+        'user-1',
+        [{ name: 'Leche', quantity: 1, unitPrice: 450, totalPrice: 450, confidence: 90 }],
+        'https://example.com/ticket.jpg',
+        undefined,
+        undefined,
+        undefined
+      )
+      expect(onSaved).toHaveBeenCalled()
+    })
   })
 
   it('should call onRetry when reintentar clicked', () => {

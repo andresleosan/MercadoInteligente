@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import AddPurchase from '@/pages/AddPurchase'
+import type { ParsedItem } from '@/types'
 
 const routerMocks = vi.hoisted(() => ({
   navigate: vi.fn(),
@@ -40,7 +41,7 @@ vi.mock('@/hooks/useVoice', () => ({
 }))
 
 vi.mock('@/components/VoiceCapture', () => ({
-  default: ({ onDone, onBack }: { onDone: (items: any[]) => void; onBack: () => void }) => (
+  default: ({ onDone, onBack }: { onDone: (items: ParsedItem[]) => void; onBack: () => void }) => (
     <div data-testid="voice-capture">
       <button data-testid="voice-done" onClick={() => onDone([
         { name: 'Leche', unitPrice: 1200, quantity: 1, totalPrice: 1200, confidence: 100 },
@@ -132,13 +133,15 @@ describe('Voice → Purchase Integration', () => {
       expect(addPurchase).toHaveBeenCalledWith(
         'test-uid',
         [
-          { name: 'Harina pan', unitPrice: 3000, quantity: 3, totalPrice: 9000 },
-          { name: 'Pan', unitPrice: 500, quantity: 2, totalPrice: 1000 },
-        ],
-        undefined,
-        undefined,
-        undefined,
-        expect.any(String)
+         { name: 'Harina pan', unitPrice: 3000, quantity: 3, totalPrice: 9000 },
+         { name: 'Pan', unitPrice: 500, quantity: 2, totalPrice: 1000 },
+       ],
+       undefined,
+       undefined,
+       undefined,
+       expect.any(String),
+       0,
+       0
       )
       expect(screen.getByText('Compra registrada correctamente')).toBeInTheDocument()
     })

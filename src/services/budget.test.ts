@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { getBudget, setBudget, getAllBudgets } from './budget'
-import { doc, setDoc, getDoc, getDocs, query, orderBy, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, getDocs } from 'firebase/firestore'
 
 vi.mock('firebase/firestore')
 vi.mock('@/config/firebase', () => ({

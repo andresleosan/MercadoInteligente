@@ -14,12 +14,15 @@ vi.mock('@/services/supabase', () => ({
 
 beforeAll(() => {
   vi.stubGlobal('createImageBitmap', vi.fn().mockResolvedValue({ width: 100, height: 100, close: vi.fn() }))
-  vi.stubGlobal('OffscreenCanvas', vi.fn().mockImplementation(() => ({
-    getContext: () => ({
-      drawImage: vi.fn(),
-    }),
-    convertToBlob: vi.fn().mockResolvedValue(new Blob(['compressed'], { type: 'image/jpeg' })),
-  })))
+  class MockOffscreenCanvas {
+    getContext() {
+      return { drawImage: vi.fn() }
+    }
+
+    convertToBlob = vi.fn().mockResolvedValue(new Blob(['compressed'], { type: 'image/jpeg' }))
+  }
+
+  vi.stubGlobal('OffscreenCanvas', MockOffscreenCanvas)
 })
 
 describe('Storage Service', () => {

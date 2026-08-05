@@ -29,7 +29,7 @@ export function useCategories(userId: string | null): UseCategoriesReturn {
     try {
       const data = await getCategories(userId)
       setCategories(data)
-    } catch (err) {
+    } catch {
       setError('Error al cargar categorías')
     } finally {
       setLoading(false)

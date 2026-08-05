@@ -4,8 +4,6 @@ import {
   clearFirestore,
   loginWithEmail,
   generateTestEmail,
-  setBudget,
-  addManualPurchase,
 } from './helpers'
 
 const TEST_PASSWORD = 'test123456'

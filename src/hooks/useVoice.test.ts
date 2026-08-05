@@ -6,7 +6,6 @@ const mockStartListening = vi.fn()
 const mockStopListening = vi.fn()
 
 vi.mock('@/services/voice', () => ({
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   startListening: (...args: any[]) => {
     mockStartListening(...args)
     return { stop: mockStopListening }
