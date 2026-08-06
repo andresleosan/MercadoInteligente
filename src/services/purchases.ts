@@ -18,6 +18,16 @@ function formatDateKey(date: Date): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
+function normalizePurchaseItems(items: PurchaseItem[]): PurchaseItem[] {
+  return items.map((item) => {
+    const normalizedItem = { ...item }
+    if (normalizedItem.category === undefined) {
+      delete normalizedItem.category
+    }
+    return normalizedItem
+  })
+}
+
 export async function addPurchase(
   userId: string,
   items: PurchaseItem[],
@@ -29,14 +39,15 @@ export async function addPurchase(
   discountAmount = 0
 ): Promise<Purchase> {
   if (!db) throw new Error('Firebase no inicializado')
-  
-  const subtotal = items.reduce((sum, item) => sum + item.totalPrice, 0)
+
+  const normalizedItems = normalizePurchaseItems(items)
+  const subtotal = normalizedItems.reduce((sum, item) => sum + item.totalPrice, 0)
   const safeDiscountAmount = Math.max(0, Math.min(subtotal, discountAmount))
   const total = Math.max(0, subtotal - safeDiscountAmount)
 
   const purchaseData: Record<string, unknown> = {
     userId,
-    items,
+    items: normalizedItems,
     subtotal,
     discountPercent,
     discountAmount: safeDiscountAmount,
@@ -50,15 +61,7 @@ export async function addPurchase(
     purchaseData.receiptImageUrl = receiptImageUrl
   }
 
-  const undefinedFields = Object.entries(purchaseData)
-     .filter(([, v]) => v === undefined)
-    .map(([k]) => k)
-  if (undefinedFields.length > 0) {
-    console.error(`[purchases] Campo(s) undefined en purchaseData:`, undefinedFields, purchaseData)
-  }
-
   const purchasesRef = collection(db, 'users', userId, 'purchases')
-  console.log('[purchases] purchaseData:', JSON.stringify(purchaseData, (_, v) => v === undefined ? '__undefined__' : v))
   const docRef = await addDoc(purchasesRef, purchaseData)
 
   return {
@@ -67,7 +70,7 @@ export async function addPurchase(
     storeId: storeId || '',
     storeName: storeName || 'Sin establecimiento',
     purchaseDate: purchaseDate || getCurrentDate(),
-    items,
+    items: normalizedItems,
     subtotal,
     discountPercent,
     discountAmount: safeDiscountAmount,
@@ -88,11 +91,6 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   const startDateString = formatDateKey(startDate)
   const endDateString = formatDateKey(endDate)
 
-  const path = `users/${userId}/purchases`
-  console.log('[purchases:getPurchases] UID READ:', userId, '| month:', targetMonth)
-  console.log('[purchases:getPurchases] QUERY PATH:', path)
-  console.log('[purchases:getPurchases] startDate:', startDateString, 'endDate:', endDateString)
-
   const purchasesRef = collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
@@ -102,10 +100,6 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   )
 
   const querySnapshot = await getDocs(q)
-  console.log('[purchases:getPurchases] docs found:', querySnapshot.docs.length)
-  querySnapshot.docs.forEach((d) => {
-    console.log('[purchases:getPurchases] doc id:', d.id, 'createdAt:', d.data().createdAt)
-  })
 
   return querySnapshot.docs.map((doc) => {
     const data = doc.data()

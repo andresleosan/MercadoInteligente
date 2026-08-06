@@ -4,12 +4,14 @@ import { useAuth } from '@/hooks/useAuth'
 import { useOCR } from '@/hooks/useOCR'
 import { useStores } from '@/hooks/useStores'
 import { addPurchase } from '@/services/purchases'
+import { suggestCategory } from '@/services/categorizer'
 import { getCurrentDate } from '@/utils/date'
 import type { PurchaseItem, Store } from '@/types'
 import OCRCapture from '@/components/OCRCapture'
 import OCRReview from '@/components/OCRReview'
 import VoiceCapture from '@/components/VoiceCapture'
 import StoreSelector from '@/components/StoreSelector'
+import { CategorySelector } from '@/components/CategorySelector'
 import { DarkCard } from '@/components/ui/DarkCard'
 import { DarkInput } from '@/components/ui/DarkInput'
 import { DarkButton } from '@/components/ui/DarkButton'
@@ -33,6 +35,7 @@ export default function AddPurchase({ onSaved }: Props) {
   const [mode, setMode] = useState<'manual' | 'photo' | 'review' | 'error' | 'voice' | 'voice-review'>('manual')
   const [voiceItems, setVoiceItems] = useState<PurchaseItem[]>([])
   const debounceTimersRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({})
+  const categoryRequestVersionsRef = useRef<Record<number, number>>({})
   const ocr = useOCR(user?.uid ?? null)
   const lastStoreKey = user ? `mercado-inteligente:last-store:${user.uid}` : null
 
@@ -85,6 +88,52 @@ export default function AddPurchase({ onSaved }: Props) {
     }
   }, [])
 
+  function cancelCategorySuggestion(index: number) {
+    const timer = debounceTimersRef.current[index]
+    if (timer) {
+      clearTimeout(timer)
+      delete debounceTimersRef.current[index]
+    }
+
+    categoryRequestVersionsRef.current[index] = (categoryRequestVersionsRef.current[index] ?? 0) + 1
+  }
+
+  function cancelAllCategorySuggestions() {
+    Object.values(debounceTimersRef.current).forEach((timer) => clearTimeout(timer))
+    debounceTimersRef.current = {}
+    categoryRequestVersionsRef.current = {}
+  }
+
+  function scheduleCategorySuggestion(index: number, productName: string) {
+    cancelCategorySuggestion(index)
+    const requestVersion = categoryRequestVersionsRef.current[index]!
+    const normalizedName = productName.trim()
+
+    if (!user || normalizedName.length < 3) {
+      setItems((currentItems) => currentItems.map((item, itemIndex) => (
+        itemIndex === index ? { ...item, category: undefined } : item
+      )))
+      return
+    }
+
+    debounceTimersRef.current[index] = setTimeout(() => {
+      void (async () => {
+        try {
+          const category = await suggestCategory(user.uid, normalizedName)
+          if (categoryRequestVersionsRef.current[index] !== requestVersion) return
+
+          setItems((currentItems) => currentItems.map((item, itemIndex) => (
+            itemIndex === index ? { ...item, category: category ?? undefined } : item
+          )))
+        } catch {
+          console.error('Error sugiriendo categoría')
+        } finally {
+          delete debounceTimersRef.current[index]
+        }
+      })()
+    }, 300)
+  }
+
   function handleImageSelected(file: File) {
     ocr.processTicket(file)
   }
@@ -95,6 +144,10 @@ export default function AddPurchase({ onSaved }: Props) {
 
     if (field === 'name') {
       item.name = value as string
+      item.category = undefined
+      setItems(newItems)
+      scheduleCategorySuggestion(index, item.name)
+      return
     } else if (field === 'quantity') {
       item.quantity = Number(value)
     } else if (field === 'unitPrice') {
@@ -193,10 +246,7 @@ export default function AddPurchase({ onSaved }: Props) {
   function removeItem(index: number) {
     if (items.length === 1) return
     setItems(items.filter((_, i) => i !== index))
-    if (debounceTimersRef.current[index]) {
-      clearTimeout(debounceTimersRef.current[index]!)
-      delete debounceTimersRef.current[index]
-    }
+    cancelAllCategorySuggestions()
   }
 
   function addItem() {
@@ -220,6 +270,7 @@ export default function AddPurchase({ onSaved }: Props) {
 
     const saved = await savePurchaseWithFeedback(validItems)
     if (saved) {
+      cancelAllCategorySuggestions()
       setItems([{ name: '', quantity: 0, unitPrice: 0, totalPrice: 0 }])
       setDiscountPercent(0)
     }
@@ -540,6 +591,25 @@ export default function AddPurchase({ onSaved }: Props) {
                     onChange={(e) => updateItem(index, 'name', e.target.value)}
                     placeholder="Ej: Leche"
                   />
+                  {user && (
+                    <div className="space-y-1">
+                      <label className="block text-sm text-text-secondary">
+                        Categoría
+                      </label>
+                      <CategorySelector
+                        userId={user.uid}
+                        selectedCategoryId={item.category}
+                        onSelect={(categoryId) => {
+                          cancelCategorySuggestion(index)
+                          setItems((currentItems) => currentItems.map((currentItem, itemIndex) => (
+                            itemIndex === index
+                              ? { ...currentItem, category: categoryId ?? undefined }
+                              : currentItem
+                          )))
+                        }}
+                      />
+                    </div>
+                  )}
                   <div className="grid grid-cols-2 gap-3">
                     <DarkInput
                       label="Cantidad"

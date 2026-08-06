@@ -31,6 +31,24 @@ describe('Purchases Service', () => {
       expect(result.total).toBe(2500)
       expect(result.items).toEqual(items)
     })
+
+    it('should omit undefined optional item fields before writing to Firestore', async () => {
+      const items = [
+        { name: 'Leche', quantity: 1, unitPrice: 5000, totalPrice: 5000, category: undefined },
+      ]
+
+      vi.mocked(addDoc).mockResolvedValue({
+        id: 'purchase-id',
+      } as any)
+
+      await addPurchase('user-id', items)
+
+      const purchaseData = vi.mocked(addDoc).mock.calls[0]![1] as { items: unknown[] }
+      expect(purchaseData.items).toEqual([
+        { name: 'Leche', quantity: 1, unitPrice: 5000, totalPrice: 5000 },
+      ])
+      expect(Object.prototype.hasOwnProperty.call(purchaseData.items[0], 'category')).toBe(false)
+    })
   })
 
   describe('getPurchases', () => {

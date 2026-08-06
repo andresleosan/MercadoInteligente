@@ -8,10 +8,10 @@
 | 1.1 | Definir categorías predefinidas (lácteos, panadería, carnes, etc.) | Tetis | pendiente |
 | 1.2 | Crear servicio de categorización (`src/services/categories.ts`) — mapa de palabras clave → categoría | Prometeo | pendiente |
 | 1.3 | Integrar categorización en flujo OCR (auto-asignar categoría al producto) | Prometeo | pendiente |
-| 1.4 | Integrar categorización en flujo manual (sugerir categoría al escribir nombre) | Hefesto | pendiente |
+| 1.4 | Integrar categorización en flujo manual (sugerir categoría al escribir nombre) | Hefesto | aprobada |
 | 1.5 | Mostrar categoría en lista de productos y historial | Hefesto | pendiente |
 | 1.6 | Agregar filtro por categoría en historial | Hefesto | pendiente |
-| 1.7 | Tests de categorización | Temis | pendiente |
+| 1.7 | Tests de categorización | Temis | aprobada |
 
 ### Fase 2 — Reportes y tendencias de gasto
 | # | Tarea | Titán | Estado |

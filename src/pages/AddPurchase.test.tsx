@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   storesList: [] as Array<{ id: string; userId: string; name: string; createdAt: Date }>,
   createStoreMock: vi.fn(),
   addPurchaseMock: vi.fn(),
+  suggestCategoryMock: vi.fn(),
 }))
 
 vi.mock('@/hooks/useAuth', () => ({
@@ -35,6 +36,28 @@ vi.mock('@/hooks/useStores', () => ({
 
 vi.mock('@/services/purchases', () => ({
   addPurchase: mocks.addPurchaseMock,
+}))
+
+vi.mock('@/services/categorizer', () => ({
+  suggestCategory: mocks.suggestCategoryMock,
+}))
+
+vi.mock('@/components/CategorySelector', () => ({
+  CategorySelector: ({
+    selectedCategoryId,
+    onSelect,
+  }: {
+    selectedCategoryId?: string
+    onSelect: (categoryId: string | null) => void
+  }) => (
+    <button
+      type="button"
+      data-testid="manual-category-selector"
+      onClick={() => onSelect('manual-selection')}
+    >
+      {selectedCategoryId ?? 'Sin categoría'}
+    </button>
+  ),
 }))
 
 vi.mock('@/hooks/useOCR', () => ({
@@ -91,6 +114,7 @@ describe('AddPurchase', () => {
       return store
     })
     mocks.addPurchaseMock.mockResolvedValue({ id: 'purchase-1' })
+    mocks.suggestCategoryMock.mockReset()
   })
 
   it('renderiza botones de foto y voz en modo manual', () => {
@@ -104,6 +128,74 @@ describe('AddPurchase', () => {
     const user = userEvent.setup()
     await user.click(screen.getByText(/registrar por voz/i))
     expect(screen.getByText('VoiceCaptureMock')).toBeTruthy()
+  })
+
+  it('sugiere categoría para un producto manual', async () => {
+    mocks.suggestCategoryMock.mockResolvedValue('lacteos')
+    render(<AddPurchase />)
+    const user = userEvent.setup()
+
+    await user.type(screen.getByPlaceholderText('Ej: Leche'), 'Leche')
+
+    await waitFor(() => {
+      expect(screen.getByTestId('manual-category-selector')).toHaveTextContent('lacteos')
+    })
+    expect(mocks.suggestCategoryMock).toHaveBeenCalledWith('test-uid', 'Leche')
+  })
+
+  it('permite cambiar la sugerencia y persiste la categoría elegida', async () => {
+    mocks.suggestCategoryMock.mockResolvedValue('lacteos')
+    render(<AddPurchase />)
+    const user = userEvent.setup()
+
+    await user.type(screen.getByPlaceholderText('Ej: Leche'), 'Leche')
+    await waitFor(() => {
+      expect(screen.getByTestId('manual-category-selector')).toHaveTextContent('lacteos')
+    })
+    await user.click(screen.getByTestId('manual-category-selector'))
+    await user.clear(screen.getByPlaceholderText('1'))
+    await user.type(screen.getByPlaceholderText('1'), '1')
+    await user.type(screen.getByPlaceholderText('Precio'), '15000')
+    await user.click(screen.getByRole('button', { name: /registrar compra/i }))
+
+    expect(mocks.addPurchaseMock).toHaveBeenCalledWith(
+      'test-uid',
+      expect.arrayContaining([
+        expect.objectContaining({
+          name: 'Leche',
+          quantity: 1,
+          unitPrice: 15000,
+          totalPrice: 15000,
+          category: 'manual-selection',
+        }),
+      ]),
+      undefined,
+      undefined,
+      undefined,
+      expect.any(String),
+      0,
+      0
+    )
+  })
+
+  it('limpia la sugerencia cuando se borra el nombre', async () => {
+    mocks.suggestCategoryMock.mockResolvedValue('lacteos')
+    render(<AddPurchase />)
+    const user = userEvent.setup()
+    const productInput = screen.getByPlaceholderText('Ej: Leche')
+
+    await user.type(productInput, 'Leche')
+    await waitFor(() => {
+      expect(screen.getByTestId('manual-category-selector')).toHaveTextContent('lacteos')
+    })
+    const callsBeforeClear = mocks.suggestCategoryMock.mock.calls.length
+
+    await user.clear(productInput)
+
+    await waitFor(() => {
+      expect(screen.getByTestId('manual-category-selector')).toHaveTextContent('Sin categoría')
+    })
+    expect(mocks.suggestCategoryMock).toHaveBeenCalledTimes(callsBeforeClear)
   })
 
   it('vuelve a manual con boton Volver desde voz', async () => {
