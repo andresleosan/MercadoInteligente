@@ -7,7 +7,10 @@ vi.mock('@/hooks/useAuth', () => ({
 }))
 
 vi.mock('@/hooks/useCategories', () => ({
-  useCategories: () => ({ categories: [], loading: false }),
+  useCategories: () => ({
+    categories: [{ id: 'lacteos', name: 'Lácteos', icon: 'milk', isDefault: true }],
+    loading: false,
+  }),
 }))
 
 vi.mock('@/services/purchases', () => ({
@@ -16,7 +19,9 @@ vi.mock('@/services/purchases', () => ({
 }))
 
 vi.mock('@/components/CategoryBadge', () => ({
-  CategoryBadge: () => <span>CategoryBadge</span>,
+  CategoryBadge: ({ category }: { category: { id: string; name: string } }) => (
+    <span data-testid={`category-badge-${category.id}`}>{category.name}</span>
+  ),
 }))
 
 import { getTodayPurchases } from '@/services/purchases'
@@ -34,7 +39,7 @@ describe('TodayPurchases', () => {
         storeId: 'store-1',
         storeName: 'Éxito',
         purchaseDate: '2026-07-22',
-        items: [{ name: 'Leche', quantity: 1, unitPrice: 1200, totalPrice: 1200 }],
+        items: [{ name: 'Leche', quantity: 1, unitPrice: 1200, totalPrice: 1200, category: 'lacteos' }],
         total: 1200,
         createdAt: new Date(),
       },
@@ -72,5 +77,7 @@ describe('TodayPurchases', () => {
     expect(screen.getAllByText((_, element) => element?.textContent === `$${(4200).toLocaleString()}`)).toHaveLength(1)
     expect(screen.getAllByText((_, element) => element?.textContent === `$${(5000).toLocaleString()}`)).toHaveLength(2)
     expect(screen.getAllByText('Tienda')).toHaveLength(2)
+    expect(screen.getByTestId('category-badge-lacteos')).toHaveTextContent('Lácteos')
+    expect(screen.queryByTestId('category-badge-panaderia')).not.toBeInTheDocument()
   })
 })

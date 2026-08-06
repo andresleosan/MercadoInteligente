@@ -9,7 +9,7 @@
 | 1.2 | Crear servicio de categorización (`src/services/categories.ts`) — mapa de palabras clave → categoría | Prometeo | pendiente |
 | 1.3 | Integrar categorización en flujo OCR (auto-asignar categoría al producto) | Prometeo | pendiente |
 | 1.4 | Integrar categorización en flujo manual (sugerir categoría al escribir nombre) | Hefesto | aprobada |
-| 1.5 | Mostrar categoría en lista de productos y historial | Hefesto | pendiente |
+| 1.5 | Mostrar categoría en lista de productos y historial | Hefesto | aprobada |
 | 1.6 | Agregar filtro por categoría en historial | Hefesto | pendiente |
 | 1.7 | Tests de categorización | Temis | aprobada |
 
