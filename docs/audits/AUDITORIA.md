@@ -1,8 +1,8 @@
 # AUDITORÍA — Mercado Inteligente
 
 **Fecha:** 2026-07-13
-**Auditor:** Cronos (Agencia Los Titanes)
-**Participantes:** Atlas, Prometeo, Hefesto, Temis, Crío
+**Auditor:** Equipo de Auditoría Técnica
+**Alcance:** Arquitectura, Backend, Frontend, QA y Seguridad
 **Estado:** COMPLETADA (solo diagnóstico, sin modificaciones)
 
 ---

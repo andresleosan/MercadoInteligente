@@ -1,8 +1,7 @@
 import { spawn } from 'node:child_process'
 import net from 'node:net'
 
-const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx'
+const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
 
 function start(command, args, options = {}) {
   const child = spawn(command, args, {
@@ -64,13 +63,13 @@ async function main() {
 
     const emulatorReady = await isPortOpen('localhost', 9099)
   if (!emulatorReady) {
-    const emulatorProcess = start(npmCommand, ['run', 'emulators', '--', '--only', 'auth,firestore'])
+    const emulatorProcess = start(pnpmCommand, ['run', 'emulators', '--', '--only', 'auth,firestore'])
     startedProcesses.push(emulatorProcess)
   }
 
     const devReady = await isPortOpen('localhost', 5173)
   if (!devReady) {
-    const devProcess = start(npmCommand, ['run', 'dev', '--', '--port', '5173', '--strictPort'], {
+    const devProcess = start(pnpmCommand, ['run', 'dev', '--', '--port', '5173', '--strictPort'], {
       env: { ...process.env, VITE_USE_FIREBASE_EMULATOR: 'true' },
     })
     startedProcesses.push(devProcess)
@@ -96,7 +95,7 @@ async function main() {
         waitForPort('localhost', 5173),
     ])
 
-    const playwright = start(npxCommand, ['playwright', 'test'], {
+    const playwright = start(pnpmCommand, ['exec', 'playwright', 'test'], {
       env: process.env,
     })
 

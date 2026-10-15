@@ -106,56 +106,27 @@ Los siguientes archivos permanecen en la raíz del proyecto:
 
 ---
 
-## Guía para Agentes IA
+## Guía de Roles y Áreas
 
-### Cronos (Orquestador)
+### Arquitectura y Stack
+- **Referencia:** `architecture/STACK.md`
+- **Responsabilidad:** Decisiones de stack técnico, dependencias y estructura de carpetas.
 
-- **Archivo principal:** `agency/AGENCY.md`
-- **Workflow:** Ciclo de autocrítica completo
-- **Skills:** Todas las skills del sistema
-- **Responsabilidad:** Orquestar todas las fases del desarrollo
+### Backend y Datos
+- **Referencia:** `architecture/STACK.md`, `development/FIREBASE.md`
+- **Responsabilidad:** Integración con Firebase (Auth, Firestore), Supabase Storage y reglas de seguridad.
 
-### Atlas (Arquitecto)
+### Frontend e Interfaz
+- **Referencia:** `architecture/STACK.md`, `product/BRIEF.md`
+- **Responsabilidad:** Componentes UI en React, Tailwind CSS, gráficos (Recharts) y configuración PWA.
 
-- **Perfil:** `agency/titanes/atlas.md`
-- **Archivo de referencia:** `architecture/STACK.md`
-- **Responsabilidad:** Decisiones de stack y arquitectura
+### QA y Pruebas
+- **Referencia:** `development/BUILD.md`, `product/BRIEF.md`
+- **Responsabilidad:** Pruebas unitarias/integración con Vitest y pruebas E2E con Playwright.
 
-### Prometeo (Backend)
-
-- **Perfil:** `agency/titanes/prometeo.md`
-- **Archivo de referencia:** `architecture/STACK.md`
-- **Responsabilidad:** Lógica de negocio y capa de datos
-
-### Hefesto (Frontend)
-
-- **Perfil:** `agency/titanes/hefesto.md`
-- **Archivo de referencia:** `architecture/STACK.md`
-- **Responsabilidad:** Interfaz de usuario y experiencia visual
-
-### Temis (QA)
-
-- **Perfil:** `agency/titanes/temis.md`
-- **Archivo de referencia:** `product/BRIEF.md`
-- **Responsabilidad:** Pruebas y validación
-
-### Crío (Seguridad)
-
-- **Perfil:** `agency/titanes/crio.md`
-- **Archivo de referencia:** `audits/AUDITORIA-SEGURIDAD.md`
-- **Responsabilidad:** Auditoría de seguridad
-
-### Tetis (Bases de Datos)
-
-- **Perfil:** `agency/titanes/tetis.md`
-- **Archivo de referencia:** `architecture/STACK.md`
-- **Responsabilidad:** Modelo de datos y esquemas
-
-### Coeus (Producto)
-
-- **Perfil:** `agency/titanes/coeus.md`
-- **Archivo de referencia:** `product/BRIEF.md`
-- **Responsabilidad:** Requisitos y priorización
+### Seguridad
+- **Referencia:** `audits/AUDITORIA-SEGURIDAD.md`
+- **Responsabilidad:** Auditoría de dependencias, variables de entorno y reglas de Firestore/Storage.
 
 ---
 

@@ -3,7 +3,7 @@
 **Fecha:** 2026-07-20
 **Estado:** Aceptada
 **Decisor:** Andrés Santiago (Product Owner)
-**Agente ejecutor:** Cronos (Agencia Los Titanes)
+**Ejecutor:** AI Assistant
 
 ---
 

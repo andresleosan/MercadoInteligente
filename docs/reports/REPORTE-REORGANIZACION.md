@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-20
 **Proyecto:** Mercado Inteligente
-**Agente:** Cronos (Agencia Los Titanes)
+**Agente:** AI Assistant
 
 ---
 

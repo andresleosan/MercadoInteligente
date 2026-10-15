@@ -35,30 +35,30 @@ ai/
 
 ---
 
-## Uso por Agente
+## Uso por Rol
 
-### Cronos (Orquestador)
+### Orquestación
 - **Lee:** `context/PROJECT.md`, `memory/STATUS.md`
 - **Actualiza:** `memory/STATUS.md`, `memory/LESSONS.md`
 - **Genera:** `reports/`
 
-### Atlas (Arquitecto)
+### Arquitectura
 - **Lee:** `context/PROJECT.md`
 - **Referencia:** `docs/architecture/STACK.md`
 
-### Prometeo (Backend)
+### Backend
 - **Lee:** `context/PROJECT.md`
 - **Referencia:** `docs/architecture/STACK.md`
 
-### Hefesto (Frontend)
+### Frontend
 - **Lee:** `context/PROJECT.md`
 - **Referencia:** `docs/architecture/STACK.md`
 
-### Temis (QA)
+### QA
 - **Lee:** `context/PROJECT.md`
 - **Referencia:** `docs/product/BRIEF.md`
 
-### Crío (Seguridad)
+### Seguridad
 - **Lee:** `context/PROJECT.md`
 - **Referencia:** `docs/audits/AUDITORIA-SEGURIDAD.md`
 
@@ -84,11 +84,11 @@ Aprendizaje → memory/LESSONS.md
 
 | Archivo | Frecuencia | Responsable |
 |---------|------------|-------------|
-| `context/PROJECT.md` | Al cambiar stack/features | Cronos |
-| `memory/STATUS.md` | Al final de cada sesión | Cronos |
-| `memory/LESSONS.md` | Al aprender algo nuevo | Cronos |
-| `skills/` | Al crear/completar tareas | Cronos |
-| `reports/` | Al generar reportes | Cronos |
+| `context/PROJECT.md` | Al cambiar stack/features | AI / Desarrollador |
+| `memory/STATUS.md` | Al final de cada sesión | AI / Desarrollador |
+| `memory/LESSONS.md` | Al aprender algo nuevo | AI / Desarrollador |
+| `skills/` | Al crear/completar tareas | AI / Desarrollador |
+| `reports/` | Al generar reportes | AI / Desarrollador |
 
 ---
 
@@ -97,7 +97,6 @@ Aprendizaje → memory/LESSONS.md
 | Recurso | Ubicación |
 |---------|-----------|
 | Documentación del proyecto | `docs/README.md` |
-| Workflow de agentes | `docs/agency/AGENCY.md` |
 | Knowledge graph | `graphify-out/` |
 | Configuración OpenCode | `.opencode/` |
 

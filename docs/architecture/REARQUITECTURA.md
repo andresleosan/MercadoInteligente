@@ -1,7 +1,7 @@
 # REARQUITECTURA — Mercado Inteligente
 
 **Fecha:** 2026-07-16 (propuesta) / 2026-07-17 (implementada)
-**Arquitecto:** Cronos (Agencia Los Titanes)
+**Arquitecto:** Equipo de Arquitectura
 **Estado:** IMPLEMENTADA — Todas las 7 fases completadas
 
 ---

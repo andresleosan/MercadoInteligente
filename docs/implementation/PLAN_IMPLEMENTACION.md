@@ -1,7 +1,7 @@
 # PLAN DE IMPLEMENTACIÓN — Mercado Inteligente
 
 **Fecha:** 2026-07-16 (propuesta) / 2026-07-17 (implementada)
-**Autor:** Cronos (Agencia Los Titanes)
+**Autor:** Equipo de Desarrollo
 **Estado:** IMPLEMENTADA — 86/88 tests pasan, build limpio. 2 failures preexistentes (Recharts PieLabel type)
 
 ---

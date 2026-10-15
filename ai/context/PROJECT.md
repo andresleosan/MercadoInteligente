@@ -94,32 +94,17 @@ users/{uid}
 
 ---
 
-## Agentes Disponibles
-
-| Agente | Rol | Perfil |
-|--------|-----|--------|
-| Cronos | Orquestador | `.opencode/agents/cronos.md` |
-| Atlas | Arquitecto | `docs/agency/titanes/atlas.md` |
-| Prometeo | Backend | `docs/agency/titanes/prometeo.md` |
-| Hefesto | Frontend | `docs/agency/titanes/hefesto.md` |
-| Temis | QA | `docs/agency/titanes/temis.md` |
-| Crío | Seguridad | `docs/agency/titanes/crio.md` |
-| Tetis | Bases de datos | `docs/agency/titanes/tetis.md` |
-| Coeus | Producto | `docs/agency/titanes/coeus.md` |
-
----
-
 ## Comandos Útiles
 
 ```bash
 # Desarrollo
-npm run dev
+pnpm dev
 
 # Tests
-npm run test
+pnpm test
 
 # Build
-npm run build
+pnpm build
 
 # Knowledge graph
 graphify update .

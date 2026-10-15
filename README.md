@@ -25,20 +25,20 @@ PWA para registro de compras de mercado con control de presupuesto, OCR y análi
 
 ```bash
 # Instalar dependencias
-npm install
+pnpm install
 
 # Configurar entorno
 cp .env.example .env
 # Editar .env con tus credenciales de Firebase
 
 # Ejecutar en desarrollo
-npm run dev
+pnpm dev
 
 # Ejecutar tests
-npm run test
+pnpm test
 
 # Build para producción
-npm run build
+pnpm build
 ```
 
 ## Documentación
@@ -48,12 +48,6 @@ Ver [docs/README.md](docs/README.md) para el mapa completo de documentación.
 ## Conocimiento AI
 
 Ver [ai/README.md](ai/README.md) para contexto, memoria y skills de agentes.
-
-## Workflow
-
-Este proyecto usa **Agencia Los Titanes** v3.3.3 — un sistema de desarrollo autónomo donde Cronos orquesta todas las fases del desarrollo.
-
-Ver [docs/agency/AGENCY.md](docs/agency/AGENCY.md) para detalles del workflow.
 
 ## Licencia
 

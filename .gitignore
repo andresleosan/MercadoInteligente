@@ -1,4 +1,4 @@
-# Base de 1 Titán — Cronos la completa con lo específico del stack elegido (STACK.md).
+# Configuración de gitignore específica para el stack del proyecto
 
 # Secretos y credenciales — nunca deben llegar al repo
 .env
@@ -41,17 +41,11 @@ qa/reports/
 playwright-report/
 test-results/
 
-# Knowledge graph generado (se regenera con graphify update .)
-graphify-out/
-
 # Editor / sistema operativo
 .DS_Store
 .vscode/
 .idea/
 Thumbs.db
-
-# Superpowers local cache
-.superpowers/
 
 # Bases de datos locales
 *.sqlite3

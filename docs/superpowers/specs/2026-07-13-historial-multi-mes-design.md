@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-07-13
 **Proyecto:** Mercado Inteligente (v2)
-**Autor:** Cronos (orquestación) + Andrés (aprobación)
+**Autor:** Equipo de Desarrollo + Andrés (aprobación)
 **Estado:** Aprobado — listo para plan de implementación
 
 ## Contexto

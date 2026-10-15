@@ -19,13 +19,13 @@
 
 ## Últimas Acciones
 
-| Fecha | Acción | Agente |
-|-------|--------|--------|
-| 2026-07-20 | Reorganización documentación | Cronos |
-| 2026-07-20 | Optimización estructura repo | Cronos |
-| 2026-07-20 | Implementación M-07 (índices Firestore) | Cronos |
-| 2026-07-20 | Verificación 8 mejoras auditoría | Cronos |
-| 2026-07-20 | Creación LECCIONES.md | Cronos |
+| Fecha | Acción | Responsable |
+|-------|--------|-------------|
+| 2026-07-20 | Reorganización documentación | AI Assistant |
+| 2026-07-20 | Optimización estructura repo | AI Assistant |
+| 2026-07-20 | Implementación M-07 (índices Firestore) | AI Assistant |
+| 2026-07-20 | Verificación 8 mejoras auditoría | AI Assistant |
+| 2026-07-20 | Creación LECCIONES.md | AI Assistant |
 
 ---
 

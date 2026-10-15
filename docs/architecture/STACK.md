@@ -71,21 +71,19 @@ PWA de control de gastos de mercado con React + TypeScript + Firebase, registro 
 - ¿`.env.example` documentado?: sí
 - **Mecanismo:** Firebase config (API keys del lado del cliente, restringidas por dominio en Firebase Console) + Supabase anon key (restringida por RLS). Sin secretos del lado del servidor.
 
-## Titanes activos para este proyecto
+## Áreas y responsabilidades técnicas
 
-| Titán    | Participa | Motivo                                                      |
-| -------- | --------- | ----------------------------------------------------------- |
-| Cronos   | Sí        | Orquestador                                                 |
-| Ceo      | Sí        | Priorización y alcance                                      |
-| Atlas    | Sí        | Arquitectura y estructura                                   |
-| Prometeo | Sí        | Lógica de negocio, Firebase integration                     |
-| Hefesto  | Sí        | UI React, PWA, responsive                                   |
-| Tetis    | Sí        | Diseño de esquema Firestore                                 |
-| Temis    | Sí        | Pruebas con Vitest                                          |
-| Crío     | Sí        | Auth, Firestore Security Rules                              |
-| Océano   | No        | Sin integraciones externas en v1 (Tesseract.js corre local) |
-| Hiperión | No        | Optimización no es prioridad en v1                          |
-| Jápeto   | Sí        | Deploy a Cloudflare Pages (auto-deploy desde Git)           |
+| Área | Activa | Enfoque / Alcance |
+| ---- | ------ | ----------------- |
+| Orquestación | Sí | Coordinación de tareas y ciclo de desarrollo |
+| Producto | Sí | Priorización y alcance funcional |
+| Arquitectura | Sí | Definición de stack, estructura y dependencias |
+| Backend | Sí | Lógica de negocio, integración Firebase y Supabase Storage |
+| Frontend | Sí | UI React, Tailwind CSS, PWA responsiva |
+| Datos | Sí | Diseño de modelo y reglas de Firestore |
+| QA | Sí | Pruebas unitarias/integración con Vitest y E2E Playwright |
+| Seguridad | Sí | Auth, Firestore Security Rules y auditorías |
+| Despliegue | Sí | Build y despliegue continuo |
 
 ## Convenciones de código
 

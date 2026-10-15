@@ -67,11 +67,11 @@
 
 ## Lecciones de Agentes
 
-### 8. Coordinación entre agentes
+### 8. Coordinación entre tareas y agentes
 **Fecha:** 2026-07-20
-**Contexto:** Agencia Los Titanes
-**Problema:** Múltiples agentes modificando mismos archivos
-**Lección:** Usar cronos como orquestador único, evitar conflictos
+**Contexto:** Coordinación de desarrollo
+**Problema:** Múltiples agentes o tareas modificando mismos archivos
+**Lección:** Centralizar la orquestación y evitar conflictos concurrentes
 **Prevención:** Checkpoints obligatorios entre fases
 
 ### 9. Memoria entre sesiones

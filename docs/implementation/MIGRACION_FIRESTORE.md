@@ -1,7 +1,7 @@
 # MIGRACIÓN FIRESTORE — Mercado Inteligente
 
 **Fecha:** 2026-07-16
-**Autor:** Cronos (Agencia Los Titanes)
+**Autor:** Equipo de Desarrollo
 **Estado:** PROPUESTA — Pendiente de aprobación
 
 ---
