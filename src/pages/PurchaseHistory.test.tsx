@@ -31,6 +31,12 @@ vi.mock('@/services/purchases', () => ({
   deletePurchase: vi.fn(),
 }))
 
+vi.mock('@/services/export', () => ({
+  exportPurchasesToCSV: vi.fn(),
+}))
+
+import { exportPurchasesToCSV } from '@/services/export'
+
 import {
   getPurchases,
   getPurchasesGroupedByDate,
@@ -103,5 +109,25 @@ describe('PurchaseHistory', () => {
     })
     expect(screen.queryByTestId('category-badge-categoria-inexistente')).not.toBeInTheDocument()
     expect(screen.queryByText(/error al cargar/i)).not.toBeInTheDocument()
+  })
+
+  it('permite exportar las compras a CSV', async () => {
+    const purchase = createPurchase('lacteos')
+    mockHistory(purchase)
+    const user = userEvent.setup()
+
+    render(<PurchaseHistory month="2026-07" />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Leche/)).toBeInTheDocument()
+    })
+
+    const exportBtn = screen.getByTitle('Exportar a CSV')
+    await user.click(exportBtn)
+
+    expect(exportPurchasesToCSV).toHaveBeenCalledWith(
+      [purchase],
+      'historial-compras-2026-07.csv'
+    )
   })
 })

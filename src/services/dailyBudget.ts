@@ -127,39 +127,69 @@ async function setDailyBudgetInUserDoc(
 
 export async function getDailyBudget(
   userId: string,
-  date: string
+  date: string,
+  familyId?: string
 ): Promise<DailyBudget | null> {
   if (!db) throw new Error('Firebase no inicializado')
 
   validateDate(date)
 
-  const budgetRef = doc(db, 'users', userId, 'dailyBudgets', date)
+  const budgetRef = familyId
+    ? doc(db, 'families', familyId, 'dailyBudgets', date)
+    : doc(db, 'users', userId, 'dailyBudgets', date)
 
   try {
     const budgetSnap = await getDoc(budgetRef)
 
     if (budgetSnap.exists()) {
       const data = budgetSnap.data() as Record<string, unknown>
-      return normalizeDailyBudget(userId, date, data)
+      const normalized = normalizeDailyBudget(userId, date, data)
+      if (familyId) normalized.familyId = familyId
+      return normalized
     }
   } catch (err) {
-    if (!isPermissionDeniedError(err)) {
+    if (familyId || !isPermissionDeniedError(err)) {
+      if (familyId) return null
       throw err
     }
   }
 
+  if (familyId) return null
   return getDailyBudgetFromUserDoc(userId, date)
 }
 
 export async function setDailyBudget(
   userId: string,
   date: string,
-  amount: number
+  amount: number,
+  familyId?: string
 ): Promise<DailyBudget> {
   if (!db) throw new Error('Firebase no inicializado')
 
   validateDate(date)
   validateAmount(amount)
+
+  if (familyId) {
+    const budgetRef = doc(db, 'families', familyId, 'dailyBudgets', date)
+    const budgetData = {
+      userId,
+      familyId,
+      date,
+      amount,
+      updatedAt: serverTimestamp(),
+      createdAt: serverTimestamp(),
+    }
+    await setDoc(budgetRef, budgetData, { merge: true })
+    return {
+      id: date,
+      userId,
+      familyId,
+      date,
+      amount,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
+  }
 
   const budgetRef = doc(db, 'users', userId, 'dailyBudgets', date)
   let existingBudget: Awaited<ReturnType<typeof getDoc>> | null = null
@@ -219,7 +249,8 @@ export async function setDailyBudget(
 export async function getAllDailyBudgets(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  familyId?: string
 ): Promise<DailyBudget[]> {
   if (!db) throw new Error('Firebase no inicializado')
 
@@ -230,7 +261,9 @@ export async function getAllDailyBudgets(
     throw new Error('startDate debe ser anterior o igual a endDate')
   }
 
-  const budgetsRef = collection(db, 'users', userId, 'dailyBudgets')
+  const budgetsRef = familyId
+    ? collection(db, 'families', familyId, 'dailyBudgets')
+    : collection(db, 'users', userId, 'dailyBudgets')
   try {
     const q = query(budgetsRef, orderBy('date', 'desc'))
     const querySnapshot = await getDocs(q)

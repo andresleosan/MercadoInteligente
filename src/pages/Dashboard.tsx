@@ -19,6 +19,8 @@ import {
   sendBudgetNotification,
   type BudgetAlert,
 } from '@/services/notifications'
+import { getUserFamily } from '@/services/families'
+import type { Family } from '@/types'
 
 import {
   Wallet,
@@ -33,6 +35,7 @@ import {
   Loader2,
   ShoppingBag,
   Calendar,
+  Users,
 } from 'lucide-react'
 
 function stringToDate(month: string): Date {
@@ -56,6 +59,7 @@ export default function Dashboard() {
   const [error, setError] = useState('')
   const [budgetVersion, setBudgetVersion] = useState(0)
   const [purchaseVersion, setPurchaseVersion] = useState(0)
+  const [family, setFamily] = useState<Family | null>(null)
   const [alerts, setAlerts] = useState<BudgetAlert[]>([])
   const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>([])
   const { isInstallable, promptInstall } = usePWAInstall()
@@ -68,8 +72,20 @@ export default function Dashboard() {
       setLoading(true)
       setError('')
 
+      let userFam: Family | null = null
       try {
-        const spent = await getTotalSpent(user.uid, selectedMonth)
+        userFam = await getUserFamily(user.uid)
+        if (isMounted) {
+          setFamily(userFam)
+        }
+      } catch (famErr) {
+        console.error('Error al cargar datos familiares:', famErr)
+      }
+
+      try {
+        const spent = userFam?.id
+          ? await getTotalSpent(user.uid, selectedMonth, userFam.id)
+          : await getTotalSpent(user.uid, selectedMonth)
         if (!isMounted) return
         setTotalSpent(spent)
       } catch {
@@ -83,7 +99,9 @@ export default function Dashboard() {
       }
 
       try {
-        const activeAlerts = await evaluateBudgetAlerts(user.uid, selectedDate, selectedMonth)
+        const activeAlerts = userFam?.id
+          ? await evaluateBudgetAlerts(user.uid, selectedDate, selectedMonth, userFam.id)
+          : await evaluateBudgetAlerts(user.uid, selectedDate, selectedMonth)
         if (isMounted) {
           setAlerts(activeAlerts)
           for (const alert of activeAlerts) {
@@ -169,8 +187,29 @@ export default function Dashboard() {
               onDismiss={handleDismissAlert}
             />
 
+            {/* Indicador de modo familiar */}
+            {family && (
+              <div
+                onClick={() => navigate('/family')}
+                role="button"
+                tabIndex={0}
+                className="flex items-center justify-between bg-accent-green/10 border border-accent-green/20 rounded-radius-md px-3.5 py-2 text-xs cursor-pointer hover:bg-accent-green/15 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <Users size={14} className="text-accent-green shrink-0" />
+                  <span className="font-semibold text-accent-green">
+                    Modo Familiar: {family.name}
+                  </span>
+                  <span className="text-[11px] text-text-muted">
+                    ({family.members.length} {family.members.length === 1 ? 'miembro' : 'miembros'})
+                  </span>
+                </div>
+                <span className="text-[11px] text-accent-green font-medium">Gestionar →</span>
+              </div>
+            )}
+
             {/* Accesos rápidos */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <button
                 onClick={() => navigate('/reports')}
                 className="flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
@@ -186,8 +225,15 @@ export default function Dashboard() {
                 <span>Tiendas</span>
               </button>
               <button
+                onClick={() => navigate('/family')}
+                className="flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
+              >
+                <Users size={16} className="text-accent-green" />
+                <span>{family ? family.name : 'Familia'}</span>
+              </button>
+              <button
                 onClick={() => navigate('/analytics')}
-                className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
+                className="flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
               >
                 <TrendingUp size={16} className="text-accent-green" />
                 <span>Analítica</span>
@@ -202,6 +248,7 @@ export default function Dashboard() {
               <BudgetPage
                 date={selectedDate}
                 onSaved={() => setBudgetVersion(v => v + 1)}
+                familyId={family?.id}
               />
             </ExpandableCard>
 
@@ -211,7 +258,10 @@ export default function Dashboard() {
               icon={<PlusCircle size={18} />}
               defaultExpanded
             >
-              <AddPurchase onSaved={() => setPurchaseVersion(v => v + 1)} />
+              <AddPurchase
+                onSaved={() => setPurchaseVersion(v => v + 1)}
+                familyId={family?.id}
+              />
             </ExpandableCard>
 
             {/* 3. Compras de hoy */}
@@ -220,7 +270,11 @@ export default function Dashboard() {
               icon={<ShoppingBag size={18} />}
               defaultExpanded
             >
-              <TodayPurchases date={selectedDate} refreshKey={purchaseVersion} />
+              <TodayPurchases
+                date={selectedDate}
+                refreshKey={purchaseVersion}
+                familyId={family?.id}
+              />
             </ExpandableCard>
 
             {/* 4. Historial */}
@@ -228,7 +282,11 @@ export default function Dashboard() {
               title="Historial"
               icon={<History size={18} />}
             >
-              <PurchaseHistory month={selectedMonth} version={purchaseVersion} />
+              <PurchaseHistory
+                month={selectedMonth}
+                version={purchaseVersion}
+                familyId={family?.id}
+              />
             </ExpandableCard>
 
             {/* 5. Resumen mensual */}

@@ -1,11 +1,11 @@
 # Graph Report - Dev  (2026-10-14)
 
 ## Corpus Check
-- 339 files · ~193,698 words
+- 343 files · ~195,517 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2249 nodes · 2729 edges · 252 communities (146 shown, 48 thin omitted)
+- 2267 nodes · 2795 edges · 248 communities (140 shown, 50 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -16,12 +16,12 @@
 
 ## Community Hubs (Navigation)
 - reports.ts
-- useOCR.ts
-- ParsedItem
+- AddPurchase
+- AddPurchase.tsx
 - compilerOptions
 - scripts
-- firebase.ts
-- index.ts
+- App.tsx
+- stores.ts
 - Spec — Fase 3: Dashboard con Gráficos
 - Dashboard.tsx
 - categories.test.ts
@@ -48,7 +48,7 @@
 - Auditoría de Seguridad — Mercado Inteligente
 - File Structure
 - Fase 3: Dashboard con Gráficos — Implementation Plan
-- useAuth
+- index.ts
 - Lecciones Aprendidas — Memoria de Agentes
 - Mejoras Priorizadas
 - 2. Evidencia de Problemas
@@ -58,7 +58,7 @@
 - Task 7 Report: CategoryBadge Component
 - helpers.ts
 - Fase 4: Historial Multi-Mes — Implementation Plan
-- AddPurchase.tsx
+- OCRCapture.tsx
 - Contexto del Proyecto — Mercado Inteligente
 - Historial Task 6 - Report
 - 4. Servicios (`src/services/`)
@@ -83,7 +83,7 @@
 - BRIEF — Mercado Inteligente
 - v3 — Crecimiento
 - Budget Page Redesign — Dark Theme
-- OCRReview.tsx
+- categoryMapping.test.ts
 - Changes Made
 - Task 3 Report — Modificar `PurchaseHistory.tsx` (aceptar prop `month`)
 - Task 5 Report — Tests de integración del Dashboard multi-mes
@@ -95,7 +95,7 @@
 - Task 9 Report: CategoryManager Component
 - Design Notes
 - Task 1 Report: voiceParser — parsear texto a productos
-- Login.tsx
+- EmptyState.tsx
 - Task 2 Report: Create Default Categories Definition
 - Task 4 Report: Create Category Mapping Service
 - Task 5 Report — Categorizer Service
@@ -120,9 +120,7 @@
 - Entradas
 - Diseño — Categorías en compras e historial
 - Uso por Rol
-- AddPurchase
-- App.tsx
-- dailyBudget.ts
+- notifications.ts
 - Task 2 Report: voice service — Web Speech API wrapper
 - Changes made
 - MonthSelector.tsx
@@ -159,12 +157,10 @@
 - Global Constraints
 - Global Constraints
 - Diseño — Categorización automática en carga manual
-- categoryMapping.test.ts
 - MonthNavigator.tsx
 - Task 12: Refactorizar Register Page
 - Task 15 Report: Refactorizar PurchaseHistory Page
 - Task 5 Fix: 3 issues from code review
-- DailyBudgetCard
 - Task 14 Report: AddPurchase Refactor
 - Task 16 Report: ChartsContent Dark Theme
 - Task 4 Report: DarkButton Component
@@ -215,41 +211,41 @@
 2. `2. Componentes (`src/components/`)` - 25 edges
 3. `File Structure` - 23 edges
 4. `useAuth()` - 21 edges
-5. `compilerOptions` - 19 edges
-6. `File Structure` - 18 edges
-7. `getPurchases()` - 17 edges
+5. `getPurchases()` - 20 edges
+6. `compilerOptions` - 19 edges
+7. `File Structure` - 18 edges
 8. `getCurrentMonth()` - 15 edges
 9. `getCurrentDate()` - 15 edges
 10. `UI/UX V2 — Mercado Inteligente` - 15 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `loadTodayData()` --calls--> `getTodayPurchases()`  [EXTRACTED]
-  src/components/DailyBudgetCard.tsx → src/services/purchases.ts
 - `Dashboard()` --indirect_call--> `getCurrentDate()`  [INFERRED]
   src/pages/Dashboard.tsx → src/utils/date.ts
-- `Dashboard()` --indirect_call--> `getCurrentMonth()`  [INFERRED]
-  src/pages/Dashboard.tsx → src/utils/date.ts
-- `loadData()` --calls--> `getTotalSpent()`  [EXTRACTED]
-  src/pages/Dashboard.tsx → src/services/purchases.ts
 - `Reports()` --indirect_call--> `getCurrentMonth()`  [INFERRED]
   src/pages/Reports.tsx → src/utils/date.ts
+- `Props` --references--> `BudgetAlert`  [EXTRACTED]
+  src/components/BudgetAlertBanner.tsx → src/services/notifications.ts
+- `handleEnablePush()` --calls--> `requestNotificationPermission()`  [EXTRACTED]
+  src/components/BudgetAlertBanner.tsx → src/services/notifications.ts
+- `CategoryBadgeProps` --references--> `Category`  [EXTRACTED]
+  src/components/CategoryBadge.tsx → src/types/index.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (252 total, 48 thin omitted)
+## Communities (248 total, 50 thin omitted)
 
 ### Community 0 - "reports.ts"
+Cohesion: 0.09
+Nodes (42): ChartsContent(), MONTH_LABELS, monthToLabel(), PIE_COLORS, Props, ChartsContent, ChartsSection(), Props (+34 more)
+
+### Community 1 - "AddPurchase"
 Cohesion: 0.07
-Nodes (51): ChartsContent(), MONTH_LABELS, monthToLabel(), PIE_COLORS, Props, ChartsContent, ChartsSection(), Props (+43 more)
+Nodes (29): OCRStatus, useOCR(), AddPurchase(), cancelAllCategorySuggestions(), cancelCategorySuggestion(), handleSaved(), handleSubmit(), persistPurchase() (+21 more)
 
-### Community 1 - "useOCR.ts"
-Cohesion: 0.17
-Nodes (13): OCRStatus, useOCR(), OCRResult, runOCR(), compressImage(), MockOffscreenCanvas, uploadReceiptImage(), supabase (+5 more)
-
-### Community 2 - "ParsedItem"
-Cohesion: 0.20
-Nodes (8): Props, ProductEditor(), Props, Props, { mockUseVoice }, VoiceCapture(), ParsedItem, PurchaseItem
+### Community 2 - "AddPurchase.tsx"
+Cohesion: 0.13
+Nodes (15): OCRReview(), handleSavePurchase(), Props, ProductEditor(), Props, DarkButton(), DarkButtonProps, Props (+7 more)
 
 ### Community 3 - "compilerOptions"
 Cohesion: 0.07
@@ -259,21 +255,21 @@ Nodes (29): DOM, DOM.Iterable, ES2020, src, src/**/*.spec.ts, src/**/*.spec.tsx,
 Cohesion: 0.06
 Nodes (35): firebase, lucide-react, dependencies, firebase, lucide-react, react, react-dom, react-router-dom (+27 more)
 
-### Community 5 - "firebase.ts"
-Cohesion: 0.16
-Nodes (16): auth, db, firebaseConfig, missingVars, REQUIRED_VARS, Login(), handleGoogleLogin(), handleSubmit() (+8 more)
+### Community 5 - "App.tsx"
+Cohesion: 0.07
+Nodes (39): Analytics, App(), Dashboard, Login, Register, Reports, DarkInput(), DarkInputProps (+31 more)
 
-### Community 6 - "index.ts"
-Cohesion: 0.08
-Nodes (45): StoreManager, StoreBadge(), StoreBadgeProps, StoreSelector(), closeMenu(), selectStore(), StoreSelectorProps, StoreData (+37 more)
+### Community 6 - "stores.ts"
+Cohesion: 0.10
+Nodes (36): StoreManager, StoreBadge(), StoreBadgeProps, StoreSelector(), closeMenu(), selectStore(), StoreSelectorProps, StoreData (+28 more)
 
 ### Community 7 - "Spec — Fase 3: Dashboard con Gráficos"
 Cohesion: 0.09
 Nodes (21): 1. Barras — Gastado vs Presupuesto (6 meses hasta el seleccionado), 2. Top 5 productos (mes seleccionado), 3. Línea — Tendencia de gastos (6 meses hasta el seleccionado), Archivos existentes que se modifican, Arquitectura, ChartsSection — colapsable y lazy-load, Contexto, Decisiones de diseño (aprobadas) (+13 more)
 
 ### Community 8 - "Dashboard.tsx"
-Cohesion: 0.12
-Nodes (12): ExpandableCard(), ExpandableCardProps, KpiCard(), KpiCardProps, BeforeInstallPromptEvent, usePWAInstall(), Dashboard(), handleLogout() (+4 more)
+Cohesion: 0.10
+Nodes (15): ProtectedRoute(), ProtectedRouteProps, StoreAnalytics(), ExpandableCard(), ExpandableCardProps, KpiCard(), KpiCardProps, useAuth() (+7 more)
 
 ### Community 9 - "categories.test.ts"
 Cohesion: 0.07
@@ -352,12 +348,12 @@ Cohesion: 0.13
 Nodes (14): Archivos modificados, Commit, Fix aplicado, Fix aplicado, Historial Task 6 - Report, Issue 1 (Critical): onSaved no refrescaba el estado del Dashboard, Issue 2 (Important): Integration test faltante, Problema (+6 more)
 
 ### Community 28 - "TodayPurchases.tsx"
-Cohesion: 0.15
-Nodes (11): Props, TodayPurchases(), EmptyState(), EmptyStateProps, BudgetPage(), Props, getTodayPurchases(), getCurrentDate() (+3 more)
+Cohesion: 0.14
+Nodes (14): DailyBudgetCard(), closeEditor(), loadTodayData(), openEditor(), toggleEditor(), Props, TodayPurchases(), BudgetPage() (+6 more)
 
 ### Community 29 - "purchases.ts"
-Cohesion: 0.17
-Nodes (18): handleSavePurchase(), handleDelete(), Props, PurchaseHistory(), handleDelete(), mockHistory(), ViewMode, addPurchase() (+10 more)
+Cohesion: 0.20
+Nodes (14): handleDelete(), Props, PurchaseHistory(), handleDelete(), mockHistory(), ViewMode, deletePurchase(), formatDateKey() (+6 more)
 
 ### Community 30 - "Auditoría de Seguridad — Mercado Inteligente"
 Cohesion: 0.09
@@ -371,9 +367,9 @@ Nodes (21): Categorización Automática — Implementation Plan, File Structure,
 Cohesion: 0.17
 Nodes (11): Fase 3: Dashboard con Gráficos — Implementation Plan, File Structure, Global Constraints, Self-Review Checklist, Task 1: `getPurchasesByDateRange` en `purchases.ts`, Task 2: `getBudgetsByMonthRange` en `budget.ts`, Task 3: `analytics.ts` — servicios de agregación, Task 4: Instalar Recharts + `ChartsContent.tsx` (+3 more)
 
-### Community 33 - "useAuth"
-Cohesion: 0.39
-Nodes (6): ProtectedRoute(), ProtectedRouteProps, StoreAnalytics(), useAuth(), Analytics(), getCurrentMonth()
+### Community 33 - "index.ts"
+Cohesion: 0.18
+Nodes (10): FrequencyData, Props, StoreChartData, mockReset, mockStartListening, routerMocks, DailySpending, DefaultCategoryId (+2 more)
 
 ### Community 34 - "Lecciones Aprendidas — Memoria de Agentes"
 Cohesion: 0.12
@@ -410,10 +406,6 @@ Nodes (7): addManualPurchase(), clearFirestore(), createEmulatorUser(), generate
 ### Community 42 - "Fase 4: Historial Multi-Mes — Implementation Plan"
 Cohesion: 0.18
 Nodes (10): Fase 4: Historial Multi-Mes — Implementation Plan, File Structure, Global Constraints, Self-Review Checklist, Task 1: `MonthNavigator.tsx` — componente de navegación de meses, Task 2: Modificar `Budget.tsx` — aceptar `month` y `onSaved` props, Task 3: Modificar `PurchaseHistory.tsx` — aceptar prop `month`, Task 4: Modificar `Dashboard.tsx` — integrar MonthNavigator, selectedMonth, resumen 3 números, botón definir presupuesto (+2 more)
-
-### Community 43 - "AddPurchase.tsx"
-Cohesion: 0.12
-Nodes (11): OCRCapture(), Props, Props, mocks, routerMocks, mockProcessTicket, mockReset, routerMocks (+3 more)
 
 ### Community 44 - "Contexto del Proyecto — Mercado Inteligente"
 Cohesion: 0.14
@@ -511,9 +503,9 @@ Nodes (10): Fase 1 — Categorización automática de productos, Fase 2 — Repo
 Cohesion: 0.18
 Nodes (10): Alcance, Budget Page Redesign — Dark Theme, Business Logic Unchanged, Commit, Component Usage Pattern, Current State, Edge Cases, Target State (+2 more)
 
-### Community 68 - "OCRReview.tsx"
-Cohesion: 0.24
-Nodes (9): OCRReview(), KEYWORD_MAP, normalizeProductName(), suggestCategory(), getCategoryForProduct(), getMappingsByCategory(), normalizeProductName(), saveCategoryMapping() (+1 more)
+### Community 68 - "categoryMapping.test.ts"
+Cohesion: 0.15
+Nodes (16): KEYWORD_MAP, normalizeProductName(), suggestCategory(), getCategoryForProduct(), getMappingsByCategory(), normalizeProductName(), saveCategoryMapping(), dbState (+8 more)
 
 ### Community 69 - "Changes Made"
 Cohesion: 0.18
@@ -558,10 +550,6 @@ Nodes (9): Answer, Clarifying Question, Current State, Design Notes, Edge Cases,
 ### Community 79 - "Task 1 Report: voiceParser — parsear texto a productos"
 Cohesion: 0.20
 Nodes (9): Files changed, GREEN phase, Issues or concerns, RED phase, Self-review findings, Task 1 Report: voiceParser — parsear texto a productos, TDD Evidence, What was implemented (+1 more)
-
-### Community 80 - "Login.tsx"
-Cohesion: 0.25
-Nodes (6): DarkButton(), DarkButtonProps, DarkInput(), DarkInputProps, GoogleAuthButton(), GoogleAuthButtonProps
 
 ### Community 81 - "Task 2 Report: Create Default Categories Definition"
 Cohesion: 0.29
@@ -659,17 +647,9 @@ Nodes (7): Alcance, Arquitectura actual, Criterio de aceptación, Diseño — Ca
 Cohesion: 0.04
 Nodes (46): AI — Conocimiento de Agentes, Arquitectura, Backend, Estructura, Flujo de Información, Frontend, Mantenimiento, Orquestación (+38 more)
 
-### Community 105 - "AddPurchase"
-Cohesion: 0.16
-Nodes (11): AddPurchase(), cancelAllCategorySuggestions(), cancelCategorySuggestion(), handleSaved(), handleSubmit(), persistPurchase(), removeItem(), resolvePurchaseStore() (+3 more)
-
-### Community 106 - "App.tsx"
-Cohesion: 0.18
-Nodes (10): Analytics, App(), Dashboard, Login, Register, Reports, AuthContext, AuthContextValue (+2 more)
-
-### Community 107 - "dailyBudget.ts"
-Cohesion: 0.36
-Nodes (12): useDailyBudget(), getAllDailyBudgets(), getDailyBudget(), getDailyBudgetFromUserDoc(), isPermissionDeniedError(), normalizeDailyBudget(), setDailyBudget(), setDailyBudgetInUserDoc() (+4 more)
+### Community 107 - "notifications.ts"
+Cohesion: 0.13
+Nodes (31): BudgetAlertBanner(), handleEnablePush(), Props, useDailyBudget(), loadData(), getAllBudgets(), getBudget(), setBudget() (+23 more)
 
 ### Community 108 - "Task 2 Report: voice service — Web Speech API wrapper"
 Cohesion: 0.29
@@ -743,10 +723,6 @@ Nodes (5): Categorización manual Implementation Plan, Global Constraints, Task 
 Cohesion: 0.33
 Nodes (5): Alcance, Casos límite, Diseño aprobado, Diseño — Categorización automática en carga manual, Verificación
 
-### Community 145 - "categoryMapping.test.ts"
-Cohesion: 0.20
-Nodes (8): dbState, mockAddDoc, mockCollection, mockDoc, mockGetDocs, mockQuery, mockUpdateDoc, mockWhere
-
 ### Community 147 - "Task 12: Refactorizar Register Page"
 Cohesion: 0.33
 Nodes (5): Changes Made, Concerns, Status: DONE, Task 12: Refactorizar Register Page, Test Results
@@ -758,10 +734,6 @@ Nodes (5): Changes Made, Concerns, Status: DONE, Task 15 Report: Refactorizar Pu
 ### Community 149 - "Task 5 Fix: 3 issues from code review"
 Cohesion: 0.33
 Nodes (5): Issue 1 (Critical): Restore dashboard-multi-month.test.tsx, Issue 2 (Important): Restore "Gastado" assertion in Dashboard.test.tsx, Issue 3 (Important): Put assertions inside waitFor, Steps, Task 5 Fix: 3 issues from code review
-
-### Community 150 - "DailyBudgetCard"
-Cohesion: 0.47
-Nodes (5): DailyBudgetCard(), closeEditor(), loadTodayData(), openEditor(), toggleEditor()
 
 ### Community 152 - "Task 14 Report: AddPurchase Refactor"
 Cohesion: 0.40
@@ -824,24 +796,24 @@ Cohesion: 0.50
 Nodes (3): Categorización Automática Progress Ledger, Resumen final, Tasks
 
 ## Knowledge Gaps
-- **1312 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `rm -rf *`, `git push --force*` (+1307 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1528 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **48 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1315 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `rm -rf *`, `git push --force*` (+1310 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1532 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AddPurchase()` connect `AddPurchase` to `useAuth`, `useOCR.ts`, `index.ts`, `Dashboard.tsx`, `AddPurchase.tsx`, `TodayPurchases.tsx`?**
+- **Why does `useAuth()` connect `Dashboard.tsx` to `reports.ts`, `AddPurchase`, `AddPurchase.tsx`, `App.tsx`, `stores.ts`, `DailyBudgetCard.tsx`, `TodayPurchases.tsx`, `purchases.ts`?**
+  _High betweenness centrality (0.006) - this node is a cross-community bridge._
+- **Why does `AddPurchase()` connect `AddPurchase` to `index.ts`, `AddPurchase.tsx`, `stores.ts`, `Dashboard.tsx`, `TodayPurchases.tsx`?**
+  _High betweenness centrality (0.004) - this node is a cross-community bridge._
+- **Why does `PurchaseHistory()` connect `purchases.ts` to `Dashboard.tsx`, `categories.test.ts`, `TodayPurchases.tsx`?**
   _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `DailyBudgetCard()` connect `DailyBudgetCard` to `DailyBudgetCard.tsx`, `useAuth`, `dailyBudget.ts`, `TodayPurchases.tsx`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `StoreSelector()` connect `index.ts` to `AddPurchase.tsx`?**
-  _High betweenness centrality (0.002) - this node is a cross-community bridge._
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `$schema` to the rest of the system?**
-  _1312 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1315 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `reports.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.0697980684811238 - nodes in this community are weakly interconnected._
-- **Should `compilerOptions` be split into smaller, more focused modules?**
-  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
-- **Should `scripts` be split into smaller, more focused modules?**
-  _Cohesion score 0.05555555555555555 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08636363636363636 - nodes in this community are weakly interconnected._
+- **Should `AddPurchase` be split into smaller, more focused modules?**
+  _Cohesion score 0.06826241134751773 - nodes in this community are weakly interconnected._
+- **Should `AddPurchase.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.1349206349206349 - nodes in this community are weakly interconnected._

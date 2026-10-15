@@ -9,15 +9,18 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { CategoryBadge } from '@/components/CategoryBadge'
 import { CategorySelector } from '@/components/CategorySelector'
 import { useCategories } from '@/hooks/useCategories'
+import { Download } from 'lucide-react'
+import { exportPurchasesToCSV } from '@/services/export'
 
 interface Props {
   month?: string
   version?: number
+  familyId?: string
 }
 
 type ViewMode = 'date' | 'store'
 
-export default function PurchaseHistory({ month, version }: Props) {
+export default function PurchaseHistory({ month, version, familyId }: Props) {
   const { user } = useAuth()
   const { categories } = useCategories(user?.uid ?? null)
   const [purchases, setPurchases] = useState<Purchase[]>([])
@@ -37,9 +40,9 @@ export default function PurchaseHistory({ month, version }: Props) {
       const { start, end } = getMonthRange(targetMonth)
 
       const [flat, byDate, byStore] = await Promise.all([
-        getPurchases(user.uid, month),
-        getPurchasesGroupedByDate(user.uid, start, end),
-        getPurchasesGroupedByStore(user.uid, start, end),
+        getPurchases(user.uid, month, familyId),
+        getPurchasesGroupedByDate(user.uid, start, end, familyId),
+        getPurchasesGroupedByStore(user.uid, start, end, familyId),
       ])
 
       setPurchases(flat)
@@ -49,7 +52,7 @@ export default function PurchaseHistory({ month, version }: Props) {
       console.error('Error al cargar compras:', err)
       setError('Error al cargar las compras. Reintentar.')
     }
-  }, [user, month])
+  }, [user, month, familyId])
 
   useEffect(() => {
     let isMounted = true
@@ -76,7 +79,7 @@ export default function PurchaseHistory({ month, version }: Props) {
     if (!confirm('¿Eliminar esta compra?')) return
 
     try {
-      await deletePurchase(user.uid, purchaseId)
+      await deletePurchase(user.uid, purchaseId, familyId)
       await loadData()
     } catch (err) {
       console.error('Error al eliminar compra:', err)
@@ -160,7 +163,7 @@ export default function PurchaseHistory({ month, version }: Props) {
     <DarkCard className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-text-primary">Historial de compras</h2>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           <DarkButton
             variant={viewMode === 'date' ? 'primary' : 'secondary'}
             size="sm"
@@ -174,6 +177,15 @@ export default function PurchaseHistory({ month, version }: Props) {
             onClick={() => setViewMode('store')}
           >
             Por tienda
+          </DarkButton>
+          <DarkButton
+            variant="secondary"
+            size="sm"
+            onClick={() => exportPurchasesToCSV(purchases, `historial-compras-${month || 'actual'}.csv`)}
+            title="Exportar a CSV"
+          >
+            <Download size={14} className="mr-1 inline" />
+            CSV
           </DarkButton>
           <DarkButton variant="secondary" size="sm" onClick={handleRefresh} disabled={refreshing}>
             {refreshing ? '...' : '↻'}

@@ -26,7 +26,9 @@ import {
   Loader2,
   AlertCircle,
   PlusCircle,
+  Download,
 } from 'lucide-react'
+import { exportReportToPDF } from '@/services/export'
 
 export default function Reports() {
   const { user } = useAuth()
@@ -86,24 +88,46 @@ export default function Reports() {
             </div>
           </div>
 
-          {/* Month Navigator */}
-          <div className="flex items-center gap-1.5 bg-bg-surface border border-border-subtle rounded-radius-md px-2 py-1">
+          <div className="flex items-center gap-2">
+            {/* Month Navigator */}
+            <div className="flex items-center gap-1.5 bg-bg-surface border border-border-subtle rounded-radius-md px-2 py-1">
+              <button
+                onClick={() => setSelectedMonth((m) => shiftMonth(m, -1))}
+                className="p-1 rounded-radius-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                aria-label="Mes anterior"
+              >
+                <ChevronLeft size={16} />
+              </button>
+              <span className="text-xs font-semibold px-2 min-w-[100px] text-center">
+                {formatMonthLabel(selectedMonth)}
+              </span>
+              <button
+                onClick={() => setSelectedMonth((m) => shiftMonth(m, 1))}
+                className="p-1 rounded-radius-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
+                aria-label="Mes siguiente"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
+
+            {/* Export PDF Button */}
             <button
-              onClick={() => setSelectedMonth((m) => shiftMonth(m, -1))}
-              className="p-1 rounded-radius-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-              aria-label="Mes anterior"
+              onClick={() => {
+                if (comparison) {
+                  exportReportToPDF({
+                    month: selectedMonth,
+                    comparison,
+                    categories: categoryData,
+                  })
+                }
+              }}
+              disabled={loading || !comparison}
+              className="flex items-center gap-1.5 text-xs bg-bg-surface border border-border-subtle hover:border-accent-green hover:text-accent-green transition-colors px-2.5 py-1.5 rounded-radius-md font-medium text-text-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Exportar reporte a PDF"
+              aria-label="Exportar reporte a PDF"
             >
-              <ChevronLeft size={16} />
-            </button>
-            <span className="text-xs font-semibold px-2 min-w-[100px] text-center">
-              {formatMonthLabel(selectedMonth)}
-            </span>
-            <button
-              onClick={() => setSelectedMonth((m) => shiftMonth(m, 1))}
-              className="p-1 rounded-radius-sm text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors"
-              aria-label="Mes siguiente"
-            >
-              <ChevronRight size={16} />
+              <Download size={14} />
+              <span className="hidden sm:inline">PDF</span>
             </button>
           </div>
         </div>

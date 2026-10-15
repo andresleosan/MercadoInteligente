@@ -1,15 +1,238 @@
 rules_version = '2';
 
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: users/{userId}
+// Document ID: Firebase Auth UID
+// Fields:
+//   - uid: string (required) - UID of the user
+//   - email: string (required) - Email address of the user
+//   - displayName: string (optional, nullable) - User display name
+//   - familyId: string (optional, nullable) - Linked family document ID
+//   - createdAt: timestamp (required) - Creation timestamp
+//
+// Subcollections under users/{userId}:
+//   - budgets/{budgetId}: Legacy monthly budgets
+//   - purchases/{purchaseId}: Personal purchase records
+//   - stores/{storeId}: Personal store master records
+//   - categoryMappings/{mappingId}: Personal category mapping overrides
+//   - dailyBudgets/{date}: Personal daily budget records (YYYY-MM-DD)
+//   - storeBudgets/{dateStoreId}: Personal store-specific daily budgets
+//
+// Collection: families/{familyId}
+// Document ID: Auto-generated family ID
+// Fields:
+//   - name: string (required, 2-100 chars) - Name of the family group
+//   - code: string (required, 3-30 chars) - Invitation code (e.g., FAM-XXXX)
+//   - ownerId: string (required, 1-128 chars) - UID of current family owner
+//   - members: list of maps (required, 1-15 items) - Member descriptors:
+//       * uid: string (required, 1-128 chars)
+//       * email: string (required, 1-128 chars)
+//       * displayName: string | null (optional, max 100 chars)
+//       * role: string ('owner' | 'member')
+//       * joinedAt: timestamp (required)
+//   - createdAt: timestamp (required, immutable) - Family creation timestamp
+//   - updatedAt: timestamp (required) - Last family update timestamp
+//
+// Collection: families/{familyId}/purchases/{purchaseId}
+// Document ID: Auto-generated purchase ID
+// Fields:
+//   - userId: string (required, immutable) - UID of family member who made purchase
+//   - familyId: string (optional) - Associated family group ID
+//   - createdByEmail: string (optional, max 128 chars) - Email of creator
+//   - storeId: string (required, max 128 chars) - Store ID
+//   - storeName: string (required, max 100 chars) - Store name
+//   - purchaseDate: string (required, YYYY-MM-DD) - Purchase date
+//   - items: list of maps (required, max 200 items) - Line items purchased
+//   - total: number (required, >= 0, <= 999999999) - Grand total
+//   - subtotal: number (optional, >= 0) - Subtotal before discounts
+//   - discountPercent: number (optional, 0-100) - Percent discount
+//   - discountAmount: number (optional, >= 0) - Amount discounted
+//   - receiptImageUrl: string (optional, max 2000 chars) - Image URL/path
+//   - createdAt: timestamp (required, immutable) - Creation timestamp
+//   - updatedAt: timestamp (optional) - Update timestamp
+//
+// Collection: families/{familyId}/dailyBudgets/{date}
+// Document ID: Date string (YYYY-MM-DD)
+// Fields:
+//   - userId: string (required) - UID of member who set budget
+//   - familyId: string (required) - Must match parent familyId
+//   - date: string (required, YYYY-MM-DD) - Must match document ID
+//   - amount: number (required, >= 0, <= 999999999) - Shared daily budget amount
+//   - createdAt: timestamp (optional) - Creation timestamp
+//   - updatedAt: timestamp (required) - Last update timestamp
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
     
     function isAuthenticated() {
       return request.auth != null;
     }
     
     function isOwner(userId) {
-      return request.auth.uid == userId;
+      return isAuthenticated() && request.auth.uid == userId;
     }
+    
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(data, fields) {
+      return data.keys().hasOnly(fields);
+    }
+
+    function memberHasUid(m, uid) {
+      return m is map && ('uid' in m) && m.uid == uid;
+    }
+
+    // Inspect members list safely without out-of-bounds error
+    function isUidInMembers(members, uid) {
+      return members is list && (
+        (members.size() > 0 && memberHasUid(members[0], uid)) ||
+        (members.size() > 1 && memberHasUid(members[1], uid)) ||
+        (members.size() > 2 && memberHasUid(members[2], uid)) ||
+        (members.size() > 3 && memberHasUid(members[3], uid)) ||
+        (members.size() > 4 && memberHasUid(members[4], uid)) ||
+        (members.size() > 5 && memberHasUid(members[5], uid)) ||
+        (members.size() > 6 && memberHasUid(members[6], uid)) ||
+        (members.size() > 7 && memberHasUid(members[7], uid)) ||
+        (members.size() > 8 && memberHasUid(members[8], uid)) ||
+        (members.size() > 9 && memberHasUid(members[9], uid)) ||
+        (members.size() > 10 && memberHasUid(members[10], uid)) ||
+        (members.size() > 11 && memberHasUid(members[11], uid)) ||
+        (members.size() > 12 && memberHasUid(members[12], uid)) ||
+        (members.size() > 13 && memberHasUid(members[13], uid)) ||
+        (members.size() > 14 && memberHasUid(members[14], uid))
+      );
+    }
+
+    function isValidMemberMap(m) {
+      return m is map &&
+        m.keys().hasAll(['uid', 'email', 'role', 'joinedAt']) &&
+        m.keys().hasOnly(['uid', 'email', 'role', 'joinedAt', 'displayName']) &&
+        m.uid is string && m.uid.size() > 0 && m.uid.size() <= 128 &&
+        m.email is string && m.email.size() > 0 && m.email.size() <= 128 &&
+        m.role in ['owner', 'member'] &&
+        m.joinedAt is timestamp &&
+        (!('displayName' in m) || m.displayName == null || (m.displayName is string && m.displayName.size() <= 100));
+    }
+
+    function areMembersValid(members) {
+      return members is list &&
+        members.size() >= 1 && members.size() <= 15 &&
+        isValidMemberMap(members[0]) &&
+        (members.size() <= 1 || isValidMemberMap(members[1])) &&
+        (members.size() <= 2 || isValidMemberMap(members[2])) &&
+        (members.size() <= 3 || isValidMemberMap(members[3])) &&
+        (members.size() <= 4 || isValidMemberMap(members[4])) &&
+        (members.size() <= 5 || isValidMemberMap(members[5])) &&
+        (members.size() <= 6 || isValidMemberMap(members[6])) &&
+        (members.size() <= 7 || isValidMemberMap(members[7])) &&
+        (members.size() <= 8 || isValidMemberMap(members[8])) &&
+        (members.size() <= 9 || isValidMemberMap(members[9])) &&
+        (members.size() <= 10 || isValidMemberMap(members[10])) &&
+        (members.size() <= 11 || isValidMemberMap(members[11])) &&
+        (members.size() <= 12 || isValidMemberMap(members[12])) &&
+        (members.size() <= 13 || isValidMemberMap(members[13])) &&
+        (members.size() <= 14 || isValidMemberMap(members[14]));
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidFamily(data) {
+      return hasRequiredFields(data, ['name', 'code', 'ownerId', 'members', 'createdAt', 'updatedAt']) &&
+        hasOnlyAllowedFields(data, ['name', 'code', 'ownerId', 'members', 'createdAt', 'updatedAt']) &&
+        data.name is string && data.name.size() >= 2 && data.name.size() <= 100 &&
+        data.code is string && data.code.size() >= 3 && data.code.size() <= 30 &&
+        data.ownerId is string && data.ownerId.size() > 0 && data.ownerId.size() <= 128 &&
+        data.createdAt is timestamp &&
+        data.updatedAt is timestamp &&
+        areMembersValid(data.members);
+    }
+
+    function isExistingFamilyMember(data, uid) {
+      return ('ownerId' in data && data.ownerId == uid) ||
+        ('members' in data && isUidInMembers(data.members, uid));
+    }
+
+    function isJoiningFamily(existingData, newData, uid) {
+      return !isExistingFamilyMember(existingData, uid) &&
+        newData.ownerId == existingData.ownerId &&
+        newData.code == existingData.code &&
+        newData.name == existingData.name &&
+        newData.createdAt == existingData.createdAt &&
+        newData.members.size() == existingData.members.size() + 1 &&
+        isUidInMembers(newData.members, uid);
+    }
+
+    function canUpdateFamily(existingData, newData, uid) {
+      return (
+        (isExistingFamilyMember(existingData, uid) &&
+         newData.code == existingData.code &&
+         newData.createdAt == existingData.createdAt &&
+         (existingData.ownerId == uid || newData.ownerId == existingData.ownerId)) ||
+        isJoiningFamily(existingData, newData, uid)
+      );
+    }
+
+    function isFamilyMember(familyId) {
+      return isAuthenticated() &&
+        exists(/databases/$(database)/documents/families/$(familyId)) &&
+        (
+          ('ownerId' in get(/databases/$(database)/documents/families/$(familyId)).data &&
+           get(/databases/$(database)/documents/families/$(familyId)).data.ownerId == request.auth.uid) ||
+          ('members' in get(/databases/$(database)/documents/families/$(familyId)).data &&
+           isUidInMembers(get(/databases/$(database)/documents/families/$(familyId)).data.members, request.auth.uid))
+        );
+    }
+
+    function isValidFamilyPurchase(data, familyId) {
+      return hasRequiredFields(data, ['userId', 'items', 'total', 'storeId', 'storeName', 'purchaseDate', 'createdAt']) &&
+        hasOnlyAllowedFields(data, [
+          'userId', 'familyId', 'createdByEmail', 'items', 'subtotal',
+          'discountPercent', 'discountAmount', 'total', 'storeId',
+          'storeName', 'purchaseDate', 'receiptImageUrl', 'createdAt', 'updatedAt'
+        ]) &&
+        data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 &&
+        (!('familyId' in data) || data.familyId == familyId) &&
+        (!('createdByEmail' in data) || (data.createdByEmail is string && data.createdByEmail.size() <= 128)) &&
+        data.total is number && data.total >= 0 && data.total <= 999999999 &&
+        (!('subtotal' in data) || (data.subtotal is number && data.subtotal >= 0 && data.subtotal <= 999999999)) &&
+        (!('discountPercent' in data) || (data.discountPercent is number && data.discountPercent >= 0 && data.discountPercent <= 100)) &&
+        (!('discountAmount' in data) || (data.discountAmount is number && data.discountAmount >= 0 && data.discountAmount <= 999999999)) &&
+        data.storeId is string && data.storeId.size() <= 128 &&
+        data.storeName is string && data.storeName.size() <= 100 &&
+        data.purchaseDate is string && data.purchaseDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') &&
+        (!('receiptImageUrl' in data) || (data.receiptImageUrl is string && data.receiptImageUrl.size() <= 2000)) &&
+        data.items is list && data.items.size() <= 200 &&
+        data.createdAt is timestamp &&
+        (!('updatedAt' in data) || data.updatedAt is timestamp);
+    }
+
+    function isValidFamilyDailyBudget(data, familyId, date) {
+      return hasRequiredFields(data, ['userId', 'familyId', 'date', 'amount', 'updatedAt']) &&
+        hasOnlyAllowedFields(data, ['userId', 'familyId', 'date', 'amount', 'createdAt', 'updatedAt']) &&
+        data.userId is string && data.userId.size() > 0 && data.userId.size() <= 128 &&
+        data.familyId == familyId &&
+        data.date == date &&
+        data.date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') &&
+        data.amount is number && data.amount >= 0 && data.amount <= 999999999 &&
+        (!('createdAt' in data) || data.createdAt is timestamp) &&
+        data.updatedAt is timestamp;
+    }
+
+    // ===============================================================
+    // Users Collection (Preserved)
+    // ===============================================================
     
     match /users/{userId} {
       allow read, write: if isAuthenticated() && isOwner(userId);
@@ -38,6 +261,60 @@ service cloud.firestore {
       
       match /storeBudgets/{dateStoreId} {
         allow read, write: if isAuthenticated() && isOwner(userId);
+      }
+    }
+
+    // ===============================================================
+    // Families Collection & Shared Budgeting (Fase 4)
+    // ===============================================================
+    
+    match /families/{familyId} {
+      // Lectura permitida a usuarios autenticados para resolver código de invitación o leer su grupo
+      allow read: if isAuthenticated();
+      
+      // Creación: el usuario autenticado debe ser el owner inicial y estar en la lista de miembros
+      allow create: if isAuthenticated() &&
+        request.auth.uid == request.resource.data.ownerId &&
+        isValidFamily(request.resource.data) &&
+        request.resource.data.members[0].uid == request.auth.uid &&
+        request.resource.data.members[0].role == 'owner';
+        
+      // Actualización: miembro existente, owner, o nuevo miembro uniéndose via código
+      allow update: if isAuthenticated() &&
+        canUpdateFamily(resource.data, request.resource.data, request.auth.uid) &&
+        isValidFamily(request.resource.data);
+        
+      // Eliminación: únicamente el owner
+      allow delete: if isAuthenticated() &&
+        resource.data.ownerId == request.auth.uid;
+        
+      // Compras compartidas del grupo familiar
+      match /purchases/{purchaseId} {
+        allow read: if isFamilyMember(familyId);
+        
+        allow create: if isFamilyMember(familyId) &&
+          request.resource.data.userId == request.auth.uid &&
+          isValidFamilyPurchase(request.resource.data, familyId);
+          
+        allow update: if isFamilyMember(familyId) &&
+          request.resource.data.userId == resource.data.userId &&
+          request.resource.data.createdAt == resource.data.createdAt &&
+          isValidFamilyPurchase(request.resource.data, familyId);
+          
+        allow delete: if isFamilyMember(familyId);
+      }
+      
+      // Presupuesto diario compartido del grupo familiar
+      match /dailyBudgets/{date} {
+        allow read: if isFamilyMember(familyId);
+        
+        allow create: if isFamilyMember(familyId) &&
+          isValidFamilyDailyBudget(request.resource.data, familyId, date);
+          
+        allow update: if isFamilyMember(familyId) &&
+          isValidFamilyDailyBudget(request.resource.data, familyId, date);
+          
+        allow delete: if isFamilyMember(familyId);
       }
     }
   }

@@ -3,15 +3,15 @@
 ## v3 — Crecimiento
 
 ### Fase 1 — Categorización automática de productos
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 1.1 | Definir categorías predefinidas (lácteos, panadería, carnes, etc.) | Tetis | pendiente |
-| 1.2 | Crear servicio de categorización (`src/services/categories.ts`) — mapa de palabras clave → categoría | Prometeo | pendiente |
-| 1.3 | Integrar categorización en flujo OCR (auto-asignar categoría al producto) | Prometeo | pendiente |
-| 1.4 | Integrar categorización en flujo manual (sugerir categoría al escribir nombre) | Hefesto | aprobada |
-| 1.5 | Mostrar categoría en lista de productos y historial | Hefesto | aprobada |
-| 1.6 | Agregar filtro por categoría en historial | Hefesto | pendiente |
-| 1.7 | Tests de categorización | Temis | aprobada |
+| 1.1 | Definir categorías predefinidas (lácteos, panadería, carnes, etc.) | Datos | completada |
+| 1.2 | Crear servicio de categorización (`src/services/categories.ts`) — mapa de palabras clave → categoría | Backend / Lógica | completada |
+| 1.3 | Integrar categorización en flujo OCR (auto-asignar categoría al producto) | Backend / Lógica | completada |
+| 1.4 | Integrar categorización en flujo manual (sugerir categoría al escribir nombre) | Frontend | completada |
+| 1.5 | Mostrar categoría en lista de productos y historial | Frontend | completada |
+| 1.6 | Agregar filtro por categoría en historial | Frontend | completada |
+| 1.7 | Tests de categorización | QA | completada |
 
 ### Fase 2 — Reportes y tendencias de gasto
 | # | Tarea | Área | Estado |
@@ -25,36 +25,36 @@
 | 2.7 | Tests de reportes | QA | completada |
 
 ### Fase 3 — Notificaciones push
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 3.1 | Configurar Firebase Cloud Messaging (FCM) / Web Notification API | Atlas | completada |
-| 3.2 | Crear servicio de notificaciones (`src/services/notifications.ts`) — solicitar permiso, deduplicación | Prometeo | completada |
-| 3.3 | Crear lógica de alerta: presupuesto diario y mensual al 80% y 100% | Prometeo | completada |
-| 3.4 | Crear componente de banner in-app para alertas (fallback si no hay permiso push) | Hefesto | completada |
-| 3.5 | Integrar alertas en Dashboard (verificar al cargar datos) | Hefesto | completada |
-| 3.6 | Tests de notificaciones | Temis | completada |
+| 3.1 | Configurar Firebase Cloud Messaging (FCM) / Web Notification API | PWA / Infra | completada |
+| 3.2 | Crear servicio de notificaciones (`src/services/notifications.ts`) — solicitar permiso, deduplicación | Backend / Lógica | completada |
+| 3.3 | Crear lógica de alerta: presupuesto diario y mensual al 80% y 100% | Backend / Lógica | completada |
+| 3.4 | Crear componente de banner in-app para alertas (fallback si no hay permiso push) | Frontend | completada |
+| 3.5 | Integrar alertas en Dashboard (verificar al cargar datos) | Frontend | completada |
+| 3.6 | Tests de notificaciones | QA | completada |
 
 ### Fase 4 — Compartir presupuesto familiar
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 4.1 | Diseñar modelo de datos: `families/{familyId}` con miembros | Tetis | pendiente |
-| 4.2 | Crear servicio de familias (`src/services/families.ts`) — crear, unirse, listar miembros | Prometeo | pendiente |
-| 4.3 | Crear página de configuración familiar (`src/pages/Family.tsx`) | Hefesto | pendiente |
-| 4.4 | Modificar compras para asociar a familyId | Prometeo | pendiente |
-| 4.5 | Modificar presupuesto diario para ser compartido (lectura de familyId) | Prometeo | pendiente |
-| 4.6 | Dashboard muestra compras de todos los miembros | Hefesto | pendiente |
-| 4.7 | Firestore rules para acceso familiar | Crío | pendiente |
-| 4.8 | Tests de familia | Temis | pendiente |
+| 4.1 | Diseñar modelo de datos: `families/{familyId}` con miembros | Arquitectura / Datos | completada |
+| 4.2 | Crear servicio de familias (`src/services/families.ts`) — crear, unirse, listar miembros | Backend / Lógica | completada |
+| 4.3 | Crear página de configuración familiar (`src/pages/Family.tsx`) | Frontend | completada |
+| 4.4 | Modificar compras para asociar a familyId | Backend / Lógica | completada |
+| 4.5 | Modificar presupuesto diario para ser compartido (lectura de familyId) | Backend / Lógica | completada |
+| 4.6 | Dashboard muestra compras de todos los miembros | Frontend | completada |
+| 4.7 | Firestore rules para acceso familiar | Seguridad / Backend | completada |
+| 4.8 | Tests de familia | QA | completada |
 
 ### Fase 5 — Exportar historial a CSV/PDF
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 5.1 | Instalar librería de exportación (ej: jsPDF o html2canvas + jsPDF) | Atlas | pendiente |
-| 5.2 | Crear servicio de exportación (`src/services/export.ts`) — generar CSV | Prometeo | pendiente |
-| 5.3 | Crear servicio de exportación PDF con formato | Prometeo | pendiente |
-| 5.4 | Agregar botón de exportar en historial (CSV) | Hefesto | pendiente |
-| 5.5 | Agregar botón de exportar en reportes (PDF) | Hefesto | pendiente |
-| 5.6 | Tests de exportación | Temis | pendiente |
+| 5.1 | Instalar librería de exportación (ej: jsPDF o html2canvas + jsPDF) | Dependencias | completada |
+| 5.2 | Crear servicio de exportación (`src/services/export.ts`) — generar CSV | Backend / Lógica | completada |
+| 5.3 | Crear servicio de exportación PDF con formato | Backend / Lógica | completada |
+| 5.4 | Agregar botón de exportar en historial (CSV) | Frontend | completada |
+| 5.5 | Agregar botón de exportar en reportes (PDF) | Frontend | completada |
+| 5.6 | Tests de exportación | QA | completada |
 
 ### Fase 6 — Cierre v3
 | # | Tarea | Titán | Estado |

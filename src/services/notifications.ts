@@ -85,15 +85,16 @@ export function checkBudgetStatus(
 export async function evaluateBudgetAlerts(
   userId: string,
   date: string,
-  month: string
+  month: string,
+  familyId?: string
 ): Promise<BudgetAlert[]> {
   const alerts: BudgetAlert[] = []
 
   const [dailyBudgetDoc, monthlyBudgetDoc, monthPurchases, monthTotal] = await Promise.all([
-    Promise.resolve(getDailyBudget(userId, date)).catch(() => null),
+    Promise.resolve(getDailyBudget(userId, date, familyId)).catch(() => null),
     Promise.resolve(getBudget(userId, month)).catch(() => null),
-    Promise.resolve(getPurchases(userId, month)).catch(() => []),
-    Promise.resolve(getTotalSpent(userId, month)).catch(() => 0),
+    Promise.resolve(getPurchases(userId, month, familyId)).catch(() => []),
+    Promise.resolve(getTotalSpent(userId, month, familyId)).catch(() => 0),
   ])
 
   // 1. Evaluar presupuesto diario

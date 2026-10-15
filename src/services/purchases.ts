@@ -36,7 +36,9 @@ export async function addPurchase(
   storeName?: string,
   purchaseDate?: string,
   discountPercent = 0,
-  discountAmount = 0
+  discountAmount = 0,
+  familyId?: string,
+  createdByEmail?: string
 ): Promise<Purchase> {
   if (!db) throw new Error('Firebase no inicializado')
 
@@ -60,13 +62,23 @@ export async function addPurchase(
   if (receiptImageUrl !== undefined) {
     purchaseData.receiptImageUrl = receiptImageUrl
   }
+  if (familyId) {
+    purchaseData.familyId = familyId
+  }
+  if (createdByEmail) {
+    purchaseData.createdByEmail = createdByEmail
+  }
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const docRef = await addDoc(purchasesRef, purchaseData)
 
   return {
     id: docRef.id,
     userId,
+    familyId,
+    createdByEmail,
     storeId: storeId || '',
     storeName: storeName || 'Sin establecimiento',
     purchaseDate: purchaseDate || getCurrentDate(),
@@ -80,7 +92,11 @@ export async function addPurchase(
   }
 }
 
-export async function getPurchases(userId: string, month?: string): Promise<Purchase[]> {
+export async function getPurchases(
+  userId: string,
+  month?: string,
+  familyId?: string
+): Promise<Purchase[]> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
   
   const targetMonth = month || getCurrentMonth()
@@ -91,7 +107,9 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   const startDateString = formatDateKey(startDate)
   const endDateString = formatDateKey(endDate)
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('purchaseDate', '>=', startDateString),
@@ -106,6 +124,8 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
     return {
       id: doc.id,
       userId: data.userId,
+      familyId: (data.familyId as string | undefined) || familyId,
+      createdByEmail: data.createdByEmail as string | undefined,
       storeId: data.storeId || '',
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
@@ -120,29 +140,42 @@ export async function getPurchases(userId: string, month?: string): Promise<Purc
   })
 }
 
-export async function deletePurchase(userId: string, purchaseId: string): Promise<void> {
+export async function deletePurchase(
+  userId: string,
+  purchaseId: string,
+  familyId?: string
+): Promise<void> {
   if (!db) throw new Error('Firebase no inicializado')
   
-  const purchaseRef = doc(db, 'users', userId, 'purchases', purchaseId)
+  const purchaseRef = familyId
+    ? doc(db, 'families', familyId, 'purchases', purchaseId)
+    : doc(db, 'users', userId, 'purchases', purchaseId)
   await deleteDoc(purchaseRef)
 }
 
-export async function getTotalSpent(userId: string, month?: string): Promise<number> {
-  const purchases = await getPurchases(userId, month)
+export async function getTotalSpent(
+  userId: string,
+  month?: string,
+  familyId?: string
+): Promise<number> {
+  const purchases = await getPurchases(userId, month, familyId)
   return purchases.reduce((sum, purchase) => sum + purchase.total, 0)
 }
 
 export async function getPurchasesByDateRange(
   userId: string,
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  familyId?: string
 ): Promise<Purchase[]> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
   const startDateString = `${startDate.getFullYear()}-${String(startDate.getMonth() + 1).padStart(2, '0')}-${String(startDate.getDate()).padStart(2, '0')}`
   const endDateString = `${endDate.getFullYear()}-${String(endDate.getMonth() + 1).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('purchaseDate', '>=', startDateString),
@@ -171,12 +204,18 @@ export async function getPurchasesByDateRange(
   })
 }
 
-export async function getTodayPurchases(userId: string, date?: string): Promise<Purchase[]> {
+export async function getTodayPurchases(
+  userId: string,
+  date?: string,
+  familyId?: string
+): Promise<Purchase[]> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
   const targetDate = date || getCurrentDate()
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('purchaseDate', '==', targetDate),
@@ -190,6 +229,8 @@ export async function getTodayPurchases(userId: string, date?: string): Promise<
     return {
       id: doc.id,
       userId: data.userId,
+      familyId: (data.familyId as string | undefined) || familyId,
+      createdByEmail: data.createdByEmail as string | undefined,
       storeId: data.storeId || '',
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
@@ -252,7 +293,8 @@ export async function getPurchasesByStore(
 export async function getPurchasesGroupedByDate(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  familyId?: string
 ): Promise<Map<string, Purchase[]>> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
@@ -262,7 +304,9 @@ export async function getPurchasesGroupedByDate(
   const start = new Date(startYear!, startMonth! - 1, startDay)
   const end = new Date(endYear!, endMonth! - 1, endDay!, 23, 59, 59)
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('createdAt', '>=', Timestamp.fromDate(start)),
@@ -279,6 +323,8 @@ export async function getPurchasesGroupedByDate(
     const purchase: Purchase = {
       id: doc.id,
       userId: data.userId,
+      familyId: (data.familyId as string | undefined) || familyId,
+      createdByEmail: data.createdByEmail as string | undefined,
       storeId: data.storeId || '',
       storeName: data.storeName || 'Sin establecimiento',
       purchaseDate: data.purchaseDate || data.createdAt?.toDate().toISOString().split('T')[0] || '',
@@ -301,7 +347,8 @@ export async function getPurchasesGroupedByDate(
 export async function getPurchasesGroupedByStore(
   userId: string,
   startDate: string,
-  endDate: string
+  endDate: string,
+  familyId?: string
 ): Promise<Map<string, Purchase[]>> {
   if (!db || !isConfigValid) throw new Error('Firebase no inicializado')
 
@@ -311,7 +358,9 @@ export async function getPurchasesGroupedByStore(
   const start = new Date(startYear!, startMonth! - 1, startDay)
   const end = new Date(endYear!, endMonth! - 1, endDay!, 23, 59, 59)
 
-  const purchasesRef = collection(db, 'users', userId, 'purchases')
+  const purchasesRef = familyId
+    ? collection(db, 'families', familyId, 'purchases')
+    : collection(db, 'users', userId, 'purchases')
   const q = query(
     purchasesRef,
     where('createdAt', '>=', Timestamp.fromDate(start)),

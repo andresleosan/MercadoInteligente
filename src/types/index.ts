@@ -28,9 +28,29 @@ export interface PurchaseItem {
   discountPercent?: number
 }
 
+export interface FamilyMember {
+  uid: string
+  email: string
+  displayName?: string | null
+  role: 'owner' | 'member'
+  joinedAt: Date
+}
+
+export interface Family {
+  id: string
+  name: string
+  code: string // Código de invitación (ej: FAM-9X2Y)
+  ownerId: string
+  members: FamilyMember[]
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Purchase {
   id: string
   userId: string
+  familyId?: string
+  createdByEmail?: string
   storeId: string
   storeName: string
   purchaseDate: string // YYYY-MM-DD
@@ -84,6 +104,7 @@ export interface CategoryMapping {
 export interface DailyBudget {
   id: string
   userId: string
+  familyId?: string
   date: string       // YYYY-MM-DD
   amount: number
   createdAt: Date

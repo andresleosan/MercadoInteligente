@@ -9,6 +9,7 @@ const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Analytics = lazy(() => import('@/pages/Analytics'))
 const StoreManager = lazy(() => import('@/pages/StoreManager'))
 const Reports = lazy(() => import('@/pages/Reports'))
+const Family = lazy(() => import('@/pages/Family'))
 
 function Loading() {
   return (
@@ -55,6 +56,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <StoreManager />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/family"
+              element={
+                <ProtectedRoute>
+                  <Family />
                 </ProtectedRoute>
               }
             />

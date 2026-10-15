@@ -21,6 +21,12 @@ vi.mock('@/services/reports', () => ({
   shiftMonth: vi.fn((m, d) => `${m}-shifted-${d}`),
 }))
 
+vi.mock('@/services/export', () => ({
+  exportReportToPDF: vi.fn(),
+}))
+
+import { exportReportToPDF } from '@/services/export'
+
 // Mock recharts ResponsiveContainer to avoid size/DOM issues in JSDOM
 vi.mock('recharts', async () => {
   const actual = await vi.importActual('recharts')
@@ -199,5 +205,54 @@ describe('Reports Page', () => {
     })
 
     expect(screen.getByText('Reintentar')).toBeInTheDocument()
+  })
+
+  it('triggers exportReportToPDF when clicking export PDF button', async () => {
+    const mockComparison = {
+      currentMonth: '2026-07',
+      currentSpent: 150000,
+      currentBudget: 200000,
+      previousMonth: '2026-06',
+      previousSpent: 120000,
+      difference: 30000,
+      percentageChange: 25,
+      topCategory: null,
+      purchaseCount: 3,
+      averageTicket: 50000,
+      savingsOrDeficit: 50000,
+    }
+    const mockCategories = [
+      {
+        categoryId: 'carnes',
+        categoryName: 'Carnes',
+        icon: 'beef',
+        color: '#EF4444',
+        total: 80000,
+        percentage: 53.3,
+        itemCount: 4,
+      },
+    ]
+
+    vi.mocked(getMonthlyComparison).mockResolvedValue(mockComparison)
+    vi.mocked(getCategorySpending).mockResolvedValue(mockCategories)
+    vi.mocked(getMonthlyTrends).mockResolvedValue([])
+
+    render(
+      <BrowserRouter>
+        <Reports />
+      </BrowserRouter>
+    )
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Exportar reporte a PDF')).toBeInTheDocument()
+    })
+
+    fireEvent.click(screen.getByLabelText('Exportar reporte a PDF'))
+
+    expect(exportReportToPDF).toHaveBeenCalledWith({
+      month: expect.any(String),
+      comparison: mockComparison,
+      categories: mockCategories,
+    })
   })
 })

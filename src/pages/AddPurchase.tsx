@@ -18,9 +18,10 @@ import { DarkButton } from '@/components/ui/DarkButton'
 
 interface Props {
   onSaved?: () => void
+  familyId?: string
 }
 
-export default function AddPurchase({ onSaved }: Props) {
+export default function AddPurchase({ onSaved, familyId }: Props) {
   const { user } = useAuth()
   const navigate = useNavigate()
   const stores = useStores(user?.uid ?? null)
@@ -183,16 +184,31 @@ export default function AddPurchase({ onSaved }: Props) {
     const subtotal = itemsToSave.reduce((sum, item) => sum + item.totalPrice, 0)
     const normalizedDiscountPercent = Math.min(100, Math.max(0, discountPercent || 0))
     const discountAmount = Math.round(subtotal * (normalizedDiscountPercent / 100))
-    await addPurchase(
-      user!.uid,
-      itemsToSave,
-      receiptImageUrl ?? undefined,
-      purchaseStore?.id,
-      purchaseStore?.name,
-      selectedDate,
-      normalizedDiscountPercent,
-      discountAmount
-    )
+    if (familyId) {
+      await addPurchase(
+        user!.uid,
+        itemsToSave,
+        receiptImageUrl ?? undefined,
+        purchaseStore?.id,
+        purchaseStore?.name,
+        selectedDate,
+        normalizedDiscountPercent,
+        discountAmount,
+        familyId,
+        user?.email || undefined
+      )
+    } else {
+      await addPurchase(
+        user!.uid,
+        itemsToSave,
+        receiptImageUrl ?? undefined,
+        purchaseStore?.id,
+        purchaseStore?.name,
+        selectedDate,
+        normalizedDiscountPercent,
+        discountAmount
+      )
+    }
   }
 
   async function savePurchaseWithFeedback(itemsToSave: PurchaseItem[], receiptImageUrl?: string | null) {

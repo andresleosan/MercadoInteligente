@@ -12,9 +12,10 @@ import { Store } from 'lucide-react'
 interface Props {
   date?: string
   refreshKey?: number
+  familyId?: string
 }
 
-export default function TodayPurchases({ date, refreshKey }: Props) {
+export default function TodayPurchases({ date, refreshKey, familyId }: Props) {
   const { user } = useAuth()
   const { categories } = useCategories(user?.uid ?? null)
   const targetDate = date || getCurrentDate()
@@ -24,14 +25,14 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
   const loadData = useCallback(async () => {
     if (!user) return
     try {
-      const data = await getTodayPurchases(user.uid, targetDate)
+      const data = await getTodayPurchases(user.uid, targetDate, familyId)
       setPurchases(data)
     } catch (err) {
       console.error('Error al cargar compras de hoy:', err)
     } finally {
       setLoading(false)
     }
-  }, [user, targetDate])
+  }, [user, targetDate, familyId])
 
   useEffect(() => {
     loadData()
@@ -41,7 +42,7 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
     if (!user) return
     if (!confirm('¿Eliminar esta compra?')) return
     try {
-      await deletePurchase(user.uid, purchaseId)
+      await deletePurchase(user.uid, purchaseId, familyId)
       setPurchases(prev => prev.filter(p => p.id !== purchaseId))
     } catch (err) {
       console.error('Error al eliminar compra:', err)
@@ -144,6 +145,14 @@ export default function TodayPurchases({ date, refreshKey }: Props) {
                     })}
                   </ul>
                   <div className="flex items-center gap-2">
+                    {purchase.createdByEmail && (
+                      <span
+                        className="text-[10px] text-text-muted bg-bg-elevated border border-border-subtle px-1.5 py-0.5 rounded truncate max-w-[90px]"
+                        title={`Registrado por ${purchase.createdByEmail}`}
+                      >
+                        {purchase.createdByEmail.split('@')[0]}
+                      </span>
+                    )}
                     <span className="text-sm font-medium text-text-primary">
                       ${purchase.total.toLocaleString()}
                     </span>

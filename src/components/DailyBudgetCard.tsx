@@ -13,12 +13,13 @@ import { ProgressBar } from '@/components/ui/ProgressBar'
 interface Props {
   date?: string
   onBudgetChange?: () => void
+  familyId?: string
 }
 
-export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
+export default function DailyBudgetCard({ date, onBudgetChange, familyId }: Props) {
   const { user } = useAuth()
   const targetDate = date || getCurrentDate()
-  const { budget, loading, save } = useDailyBudget(user?.uid ?? null, targetDate)
+  const { budget, loading, save } = useDailyBudget(user?.uid ?? null, targetDate, familyId)
   const [amount, setAmount] = useState('')
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
@@ -31,7 +32,7 @@ export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
 
     async function loadTodayData() {
       try {
-        const purchases = await getTodayPurchases(user!.uid, targetDate)
+        const purchases = await getTodayPurchases(user!.uid, targetDate, familyId)
         setTodaySpent(purchases.reduce((sum, p) => sum + p.total, 0))
       } catch (err) {
         console.error('Error cargando compras de hoy:', err)
@@ -39,7 +40,7 @@ export default function DailyBudgetCard({ date, onBudgetChange }: Props) {
     }
 
     loadTodayData()
-  }, [user, targetDate])
+  }, [user, targetDate, familyId])
 
   useEffect(() => {
     if (budget?.amount && budget.amount > 0) {
