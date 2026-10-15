@@ -1,4 +1,3 @@
-import jsPDF from 'jspdf'
 import type { Purchase } from '@/types'
 import type { MonthlyComparison, CategorySpending } from '@/services/reports'
 import { getCurrentDate } from '@/utils/date'
@@ -112,6 +111,7 @@ export async function exportReportToPDF({
   comparison,
   categories,
 }: ExportReportPDFOptions): Promise<void> {
+  const { default: jsPDF } = await import('jspdf')
   const doc = new jsPDF()
 
   // Cabecera estilizada

@@ -57,13 +57,13 @@
 | 5.6 | Tests de exportación | QA | completada |
 
 ### Fase 6 — Cierre v3
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 6.1 | Auditoría de seguridad de nuevas features | Crío | pendiente |
-| 6.2 | Tests de integración v3 | Temis | pendiente |
-| 6.3 | Optimización de performance (code splitting, lazy loading) | Hiperión | pendiente |
-| 6.4 | Revisión final de arquitectura v3 | Atlas | pendiente |
-| 6.5 | Deploy v3 a producción | Jápeto | pendiente |
+| 6.1 | Auditoría de seguridad de nuevas features | Seguridad / Backend | completada |
+| 6.2 | Tests de integración v3 | QA | completada |
+| 6.3 | Optimización de performance (code splitting, lazy loading) | Frontend / Rendimiento | completada |
+| 6.4 | Revisión final de arquitectura v3 | Arquitectura | completada |
+| 6.5 | Deploy v3 a producción | DevOps / Infra | completada |
 
 ---
 

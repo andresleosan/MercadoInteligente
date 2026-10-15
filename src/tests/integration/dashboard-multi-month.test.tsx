@@ -19,6 +19,9 @@ vi.mock('@/services/purchases', () => ({
   getTotalSpent: vi.fn(),
   getPurchases: vi.fn(),
 }))
+vi.mock('@/services/families', () => ({
+  getUserFamily: vi.fn().mockResolvedValue(null),
+}))
 vi.mock('@/pages/Budget', () => ({
   default: ({ onSaved }: { onSaved?: () => void }) => (
     <div data-testid="budget-form">
