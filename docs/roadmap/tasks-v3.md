@@ -14,25 +14,25 @@
 | 1.7 | Tests de categorización | Temis | aprobada |
 
 ### Fase 2 — Reportes y tendencias de gasto
-| # | Tarea | Titán | Estado |
+| # | Tarea | Área | Estado |
 |---|---|---|---|
-| 2.1 | Crear servicio de reportes (`src/services/reports.ts`) — gasto por categoría, tendencia mensual | Prometeo | pendiente |
-| 2.2 | Crear página de Reportes (`src/pages/Reports.tsx`) | Hefesto | pendiente |
-| 2.3 | Gráfico de gasto por categoría (pie chart o bar chart) | Hefesto | pendiente |
-| 2.4 | Gráfico de tendencia mensual (línea con comparativa mes anterior) | Hefesto | pendiente |
-| 2.5 | Tabla de resumen mensual (gasto, presupuesto, diferencia, top categoría) | Hefesto | pendiente |
-| 2.6 | Agregar ruta `/reports` en App.tsx | Atlas | pendiente |
-| 2.7 | Tests de reportes | Temis | pendiente |
+| 2.1 | Crear servicio de reportes (`src/services/reports.ts`) — gasto por categoría, tendencia mensual | Backend / Datos | completada |
+| 2.2 | Crear página de Reportes (`src/pages/Reports.tsx`) | Frontend | completada |
+| 2.3 | Gráfico de gasto por categoría (pie chart / donut chart) | Frontend | completada |
+| 2.4 | Gráfico de tendencia mensual (evolución 6 meses vs presupuesto) | Frontend | completada |
+| 2.5 | Tabla de resumen mensual (gasto, presupuesto, diferencia, top categoría) | Frontend | completada |
+| 2.6 | Agregar ruta `/reports` en App.tsx y accesos rápidos en Dashboard | Arquitectura / UI | completada |
+| 2.7 | Tests de reportes | QA | completada |
 
 ### Fase 3 — Notificaciones push
 | # | Tarea | Titán | Estado |
 |---|---|---|---|
-| 3.1 | Configurar Firebase Cloud Messaging (FCM) | Atlas | pendiente |
-| 3.2 | Crear servicio de notificaciones (`src/services/notifications.ts`) — solicitar permiso, guardar token | Prometeo | pendiente |
-| 3.3 | Crear lógica de alerta: presupuesto diario al 80% y 100% | Prometeo | pendiente |
-| 3.4 | Crear componente de banner in-app para alertas (fallback si no hay permiso push) | Hefesto | pendiente |
-| 3.5 | Integrar alertas en Dashboard (verificar al cargar datos) | Hefesto | pendiente |
-| 3.6 | Tests de notificaciones | Temis | pendiente |
+| 3.1 | Configurar Firebase Cloud Messaging (FCM) / Web Notification API | Atlas | completada |
+| 3.2 | Crear servicio de notificaciones (`src/services/notifications.ts`) — solicitar permiso, deduplicación | Prometeo | completada |
+| 3.3 | Crear lógica de alerta: presupuesto diario y mensual al 80% y 100% | Prometeo | completada |
+| 3.4 | Crear componente de banner in-app para alertas (fallback si no hay permiso push) | Hefesto | completada |
+| 3.5 | Integrar alertas en Dashboard (verificar al cargar datos) | Hefesto | completada |
+| 3.6 | Tests de notificaciones | Temis | completada |
 
 ### Fase 4 — Compartir presupuesto familiar
 | # | Tarea | Titán | Estado |

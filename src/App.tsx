@@ -8,6 +8,7 @@ const Register = lazy(() => import('@/pages/Register'))
 const Dashboard = lazy(() => import('@/pages/Dashboard'))
 const Analytics = lazy(() => import('@/pages/Analytics'))
 const StoreManager = lazy(() => import('@/pages/StoreManager'))
+const Reports = lazy(() => import('@/pages/Reports'))
 
 function Loading() {
   return (
@@ -38,6 +39,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Analytics />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports"
+              element={
+                <ProtectedRoute>
+                  <Reports />
                 </ProtectedRoute>
               }
             />

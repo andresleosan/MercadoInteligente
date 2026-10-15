@@ -13,6 +13,12 @@ import { getCurrentMonth, getCurrentDate } from '@/utils/date'
 import ExpandableCard from '@/components/ui/ExpandableCard'
 import { MonthSelector } from '@/components/ui/MonthSelector'
 import { KpiCard } from '@/components/ui/KpiCard'
+import { BudgetAlertBanner } from '@/components/BudgetAlertBanner'
+import {
+  evaluateBudgetAlerts,
+  sendBudgetNotification,
+  type BudgetAlert,
+} from '@/services/notifications'
 
 import {
   Wallet,
@@ -48,8 +54,10 @@ export default function Dashboard() {
   const [totalSpent, setTotalSpent] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [, setBudgetVersion] = useState(0)
+  const [budgetVersion, setBudgetVersion] = useState(0)
   const [purchaseVersion, setPurchaseVersion] = useState(0)
+  const [alerts, setAlerts] = useState<BudgetAlert[]>([])
+  const [dismissedAlertIds, setDismissedAlertIds] = useState<string[]>([])
   const { isInstallable, promptInstall } = usePWAInstall()
 
   useEffect(() => {
@@ -73,11 +81,29 @@ export default function Dashboard() {
           setLoading(false)
         }
       }
+
+      try {
+        const activeAlerts = await evaluateBudgetAlerts(user.uid, selectedDate, selectedMonth)
+        if (isMounted) {
+          setAlerts(activeAlerts)
+          for (const alert of activeAlerts) {
+            sendBudgetNotification(alert)
+          }
+        }
+      } catch (alertError) {
+        console.error('Error al evaluar alertas de presupuesto:', alertError)
+      }
     }
 
     loadData()
     return () => { isMounted = false }
-  }, [user, selectedMonth, purchaseVersion])
+  }, [user, selectedMonth, selectedDate, purchaseVersion, budgetVersion])
+
+  function handleDismissAlert(alertId: string) {
+    setDismissedAlertIds((prev) => [...prev, alertId])
+  }
+
+  const visibleAlerts = alerts.filter((alert) => !dismissedAlertIds.includes(alert.id))
 
   async function handleLogout() {
     try {
@@ -137,6 +163,37 @@ export default function Dashboard() {
           </div>
         ) : (
           <>
+            {/* Alertas de presupuesto */}
+            <BudgetAlertBanner
+              alerts={visibleAlerts}
+              onDismiss={handleDismissAlert}
+            />
+
+            {/* Accesos rápidos */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              <button
+                onClick={() => navigate('/reports')}
+                className="flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
+              >
+                <BarChart3 size={16} className="text-accent-green" />
+                <span>Reportes</span>
+              </button>
+              <button
+                onClick={() => navigate('/stores')}
+                className="flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
+              >
+                <ShoppingBag size={16} className="text-accent-amber" />
+                <span>Tiendas</span>
+              </button>
+              <button
+                onClick={() => navigate('/analytics')}
+                className="col-span-2 sm:col-span-1 flex items-center justify-center gap-2 bg-bg-surface hover:bg-bg-elevated border border-border-subtle rounded-radius-md p-3 text-xs font-semibold text-text-primary transition-colors"
+              >
+                <TrendingUp size={16} className="text-accent-green" />
+                <span>Analítica</span>
+              </button>
+            </div>
+
             {/* 1. Presupuesto diario */}
             <ExpandableCard
               title="Presupuesto diario"
@@ -196,6 +253,14 @@ export default function Dashboard() {
               title="Gráficos"
               icon={<BarChart3 size={18} />}
             >
+              <div className="mb-4 flex justify-end">
+                <button
+                  onClick={() => navigate('/reports')}
+                  className="inline-flex items-center gap-1.5 text-xs text-accent-green hover:underline font-medium"
+                >
+                  Ver reporte detallado y categorías →
+                </button>
+              </div>
               <ChartsSection userId={user!.uid} selectedMonth={selectedMonth} />
             </ExpandableCard>
           </>

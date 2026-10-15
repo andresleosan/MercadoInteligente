@@ -214,4 +214,37 @@ describe('Dashboard', () => {
       expect(charts.getAttribute('data-month')).toMatch(/^\d{4}-\d{2}$/)
     })
   })
+
+  it('should display and dismiss budget alert banner when active alert is returned', async () => {
+    const notificationsService = await import('@/services/notifications')
+    const spyEvaluate = vi.spyOn(notificationsService, 'evaluateBudgetAlerts').mockResolvedValue([
+      {
+        id: 'daily-2026-07-20-80',
+        scope: 'daily',
+        level: 'warning',
+        percentage: 85,
+        spent: 85,
+        budget: 100,
+        remaining: 15,
+        title: '⚡ Alerta: 80% del Presupuesto Diario',
+        message: 'Has consumido el 85% de tu presupuesto.',
+        dateOrMonth: '2026-07-20',
+      },
+    ])
+
+    renderDashboard()
+
+    await waitFor(() => {
+      expect(screen.getByText('⚡ Alerta: 80% del Presupuesto Diario')).toBeInTheDocument()
+    })
+
+    const dismissBtn = screen.getByLabelText(/Descartar alerta/i)
+    fireEvent.click(dismissBtn)
+
+    await waitFor(() => {
+      expect(screen.queryByText('⚡ Alerta: 80% del Presupuesto Diario')).not.toBeInTheDocument()
+    })
+
+    spyEvaluate.mockRestore()
+  })
 })
