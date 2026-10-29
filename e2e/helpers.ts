@@ -74,20 +74,24 @@ export async function setBudget(page: Page, amount: string) {
     if (await editorButton.isVisible()) {
       await editorButton.click()
     } else {
-      await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+      await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
     }
   }
 
-  await expect(budgetInput).toBeVisible()
   const editTotalButton = page.getByRole('button', { name: 'Editar total', exact: true })
   if (await editTotalButton.isVisible()) {
     await editTotalButton.click()
   }
 
+  await expect(budgetInput).toBeVisible()
   await budgetInput.fill(amount)
   const budgetForm = budgetInput.locator('xpath=ancestor::form')
   const saveButton = budgetForm.getByRole('button', { name: 'Guardar', exact: true })
   await saveButton.click()
+  // Saving refreshes the dashboard and remounts its collapsed budget card.
+  const budgetSection = page.getByRole('button', { name: 'Presupuesto diario', exact: true })
+  await expect(budgetSection).toHaveAttribute('aria-expanded', 'false')
+  await budgetSection.click()
   await expect(page.getByText(`$${Number(amount).toLocaleString()}`, { exact: true }).first()).toBeVisible()
 }
 
@@ -102,6 +106,10 @@ export async function addManualPurchase(
   await page.getByLabel('Precio unitario').fill(unitPrice)
   await page.locator('form').getByRole('button', { name: 'Registrar compra' }).click()
   await expect(page.getByText(productName, { exact: false }).first()).toBeVisible()
+  // Wait for the saved purchase and the remounted form, not an in-flight preview.
+  await expect(page.getByLabel('Producto').first()).toHaveValue('')
+  await expect(page.getByRole('listitem').filter({ hasText: productName }).first()).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Presupuesto diario', exact: true })).toHaveAttribute('aria-expanded', 'false')
 }
 
 export function generateTestEmail(): string {

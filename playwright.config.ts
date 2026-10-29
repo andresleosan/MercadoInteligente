@@ -23,7 +23,16 @@ export default defineConfig({
   webServer: {
     command: 'npm run dev:e2e',
     url: 'http://localhost:5173',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
+    env: {
+      VITE_USE_FIREBASE_EMULATOR: 'true',
+      VITE_FIREBASE_API_KEY: 'test-api-key',
+      VITE_FIREBASE_AUTH_DOMAIN: 'demo-mercado-inteligente.firebaseapp.com',
+      VITE_FIREBASE_PROJECT_ID: 'demo-mercado-inteligente',
+      VITE_FIREBASE_STORAGE_BUCKET: 'demo-mercado-inteligente.appspot.com',
+      VITE_FIREBASE_MESSAGING_SENDER_ID: '1234567890',
+      VITE_FIREBASE_APP_ID: '1:1234567890:web:local-test',
+    },
     timeout: 30000,
   },
 })

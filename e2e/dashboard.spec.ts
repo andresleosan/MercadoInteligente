@@ -23,7 +23,7 @@ test.describe('Dashboard', () => {
     await loginWithEmail(page, testEmail, TEST_PASSWORD)
 
     await expect(page.getByText('Mercado Inteligente')).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Presupuesto diario' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Presupuesto diario', exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Registrar compra' }).first()).toBeVisible()
     await expect(page.getByRole('button', { name: 'Compras de hoy' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Historial' })).toBeVisible()
@@ -76,7 +76,7 @@ test.describe('Dashboard', () => {
 
     await addManualPurchase(page, 'Carne', '1', '8000')
 
-    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
     await expect(page.getByText('Carne')).toBeVisible()
     await expect(page.getByText('$3,000', { exact: true }).first()).toBeVisible()
   })

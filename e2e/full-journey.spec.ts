@@ -25,7 +25,10 @@ test.describe('Full User Journey', () => {
 
     // Step 2: Set budget
     await setBudget(page, '100000')
-    await expect(page.getByText('Presupuesto guardado')).toBeVisible()
+    // Verify the saved amount survives a fresh page load.
+    await page.reload()
+    await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
+    await expect(page.getByText('$100,000', { exact: true }).first()).toBeVisible()
 
     // Step 3: Add purchases
     await addManualPurchase(page, 'Leche', '2', '1500')
@@ -33,7 +36,7 @@ test.describe('Full User Journey', () => {
     await addManualPurchase(page, 'Carne', '1', '8000')
 
     // Step 4: Verify dashboard shows correct totals
-    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
     await expect(page.getByText('$13,000').first()).toBeVisible()
     await expect(page.getByText('$87,000').first()).toBeVisible()
 
@@ -75,7 +78,7 @@ test.describe('Full User Journey', () => {
 
     await addManualPurchase(page, 'Electronics', '1', '15000')
 
-    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
     await expect(page.getByText('$15,000', { exact: true }).first()).toBeVisible()
     await expect(page.getByText('$5,000').first()).toBeVisible()
   })
@@ -96,7 +99,7 @@ test.describe('Full User Journey', () => {
     await loginWithEmail(page, email, TEST_PASSWORD)
 
     // Data should persist
-    await page.getByRole('button', { name: 'Presupuesto diario' }).click()
+    await page.getByRole('button', { name: 'Presupuesto diario', exact: true }).click()
     await expect(page.getByText('$2,500').first()).toBeVisible()
     await expect(page.getByText('$57,500').first()).toBeVisible()
   })

@@ -1,115 +1,24 @@
-import { spawn } from 'node:child_process'
-import net from 'node:net'
+import { spawnSync } from 'node:child_process'
+import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+const projectRoot = dirname(dirname(fileURLToPath(import.meta.url)))
+const firebaseCli = join(projectRoot, 'node_modules/firebase-tools/lib/bin/firebase.js')
 
-function start(command, args, options = {}) {
-  const child = spawn(command, args, {
-    stdio: ['ignore', 'pipe', 'pipe'],
-    shell: true,
-    ...options,
-  })
+// emulators:exec owns startup and cleanup, and refuses occupied emulator ports.
+// The demo project ensures no test can fall back to a deployed Firebase project.
+const result = spawnSync(process.execPath, [
+  firebaseCli,
+  'emulators:exec',
+  '--project', 'demo-mercado-inteligente',
+  '--only', 'auth,firestore',
+  'pnpm exec playwright test',
+], {
+  cwd: projectRoot,
+  env: process.env,
+  stdio: 'inherit',
+  windowsHide: true,
+})
 
-  child.stdout.on('data', (chunk) => process.stdout.write(chunk))
-  child.stderr.on('data', (chunk) => process.stderr.write(chunk))
-
-  return child
-}
-
-function isPortOpen(host, port) {
-  return new Promise((resolve) => {
-    const socket = net.connect(port, host)
-
-    socket.once('connect', () => {
-      socket.end()
-      resolve(true)
-    })
-
-    socket.once('error', () => {
-      socket.destroy()
-      resolve(false)
-    })
-  })
-}
-
-function waitForPort(host, port, timeoutMs = 120000) {
-  const deadline = Date.now() + timeoutMs
-
-  return new Promise((resolve, reject) => {
-    const attempt = () => {
-      const socket = net.connect(port, host)
-
-      socket.once('connect', () => {
-        socket.end()
-        resolve()
-      })
-
-      socket.once('error', () => {
-        socket.destroy()
-        if (Date.now() > deadline) {
-          reject(new Error(`Timeout waiting for ${host}:${port}`))
-          return
-        }
-        setTimeout(attempt, 1000)
-      })
-    }
-
-    attempt()
-  })
-}
-
-async function main() {
-  const startedProcesses = []
-
-    const emulatorReady = await isPortOpen('localhost', 9099)
-  if (!emulatorReady) {
-    const emulatorProcess = start(pnpmCommand, ['run', 'emulators', '--', '--only', 'auth,firestore'])
-    startedProcesses.push(emulatorProcess)
-  }
-
-    const devReady = await isPortOpen('localhost', 5173)
-  if (!devReady) {
-    const devProcess = start(pnpmCommand, ['run', 'dev', '--', '--port', '5173', '--strictPort'], {
-      env: { ...process.env, VITE_USE_FIREBASE_EMULATOR: 'true' },
-    })
-    startedProcesses.push(devProcess)
-  }
-
-  const cleanup = () => {
-    startedProcesses.forEach((child) => child.kill())
-  }
-
-  process.on('SIGINT', () => {
-    cleanup()
-    process.exit(130)
-  })
-
-  process.on('SIGTERM', () => {
-    cleanup()
-    process.exit(143)
-  })
-
-  try {
-    await Promise.all([
-        waitForPort('localhost', 9099),
-        waitForPort('localhost', 5173),
-    ])
-
-    const playwright = start(pnpmCommand, ['exec', 'playwright', 'test'], {
-      env: process.env,
-    })
-
-    const exitCode = await new Promise((resolve) => {
-      playwright.on('exit', (code) => resolve(code ?? 1))
-    })
-
-    cleanup()
-    process.exit(exitCode)
-  } catch (error) {
-    console.error(error instanceof Error ? error.message : error)
-    cleanup()
-    process.exit(1)
-  }
-}
-
-main()
+if (result.error) throw result.error
+process.exitCode = result.status ?? 1

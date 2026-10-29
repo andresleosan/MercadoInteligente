@@ -1,29 +1,24 @@
-# Graph Report - Dev  (2026-10-14)
+# Graph Report - Dev  (2026-10-28)
 
 ## Corpus Check
-- 350 files · ~201,243 words
+- 350 files · ~201,277 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 2304 nodes · 2915 edges · 250 communities (143 shown, 48 thin omitted)
-- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 13 edges (avg confidence: 0.85)
+- 2246 nodes · 2793 edges · 248 communities (200 shown, 48 thin omitted)
+- Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 10 edges (avg confidence: 0.71)
 - Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `3c6e0485`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - reports.ts
-- AddPurchase
+- useOCR.ts
 - OCRReview.tsx
 - compilerOptions
 - scripts
 - categoryMapping.test.ts
 - stores.ts
 - Spec — Fase 3: Dashboard con Gráficos
-- useAuth
+- StoreManager.tsx
 - categories.test.ts
 - Referencias Corregidas
 - Spec — Fase 4: Historial Multi-Mes
@@ -43,12 +38,12 @@
 - 2. Componentes (`src/components/`)
 - Diseño — Categorización Automática de Productos
 - Historial Task 6 - Report
-- date.ts
+- PurchaseHistory.tsx
 - purchases.ts
 - Auditoría de Seguridad — Mercado Inteligente
 - File Structure
 - Fase 3: Dashboard con Gráficos — Implementation Plan
-- families.ts
+- index.ts
 - Lecciones Aprendidas — Memoria de Agentes
 - Mejoras Priorizadas
 - 2. Evidencia de Problemas
@@ -58,12 +53,12 @@
 - Task 7 Report: CategoryBadge Component
 - helpers.ts
 - Fase 4: Historial Multi-Mes — Implementation Plan
-- index.ts
+- AddPurchase.tsx
 - Contexto del Proyecto — Mercado Inteligente
 - Historial Task 6 - Report
 - 4. Servicios (`src/services/`)
 - STACK — Mercado Inteligente
-- DailyBudgetCard.tsx
+- firebase.ts
 - File Structure
 - Task 11 Report: Refactorizar Login Page
 - task-12-13-report.md
@@ -83,7 +78,7 @@
 - BRIEF — Mercado Inteligente
 - v3 — Crecimiento
 - Budget Page Redesign — Dark Theme
-- analytics.ts
+- ChartsSection.tsx
 - Changes Made
 - Task 3 Report — Modificar `PurchaseHistory.tsx` (aceptar prop `month`)
 - Task 5 Report — Tests de integración del Dashboard multi-mes
@@ -121,7 +116,7 @@
 - Diseño — Categorías en compras e historial
 - Uso por Rol
 - MonthSelector.tsx
-- DailyBudgetCard
+- voice.test.ts
 - notifications.ts
 - Task 2 Report: voice service — Web Speech API wrapper
 - Changes made
@@ -208,45 +203,45 @@
 - skills/task-5-report.md
 
 ## God Nodes (most connected - your core abstractions)
-1. `AddPurchase()` - 26 edges
-2. `2. Componentes (`src/components/`)` - 25 edges
-3. `useAuth()` - 23 edges
-4. `File Structure` - 23 edges
-5. `getPurchases()` - 20 edges
-6. `compilerOptions` - 19 edges
-7. `File Structure` - 18 edges
-8. `getCurrentDate()` - 17 edges
-9. `getCurrentMonth()` - 15 edges
-10. `UI/UX V2 — Mercado Inteligente` - 15 edges
+1. `2. Componentes (`src/components/`)` - 25 edges
+2. `useAuth()` - 23 edges
+3. `File Structure` - 23 edges
+4. `getPurchases()` - 20 edges
+5. `compilerOptions` - 19 edges
+6. `File Structure` - 18 edges
+7. `getCurrentDate()` - 17 edges
+8. `getCurrentMonth()` - 15 edges
+9. `UI/UX V2 — Mercado Inteligente` - 15 edges
+10. `scripts` - 14 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `loadTodayData()` --calls--> `getTodayPurchases()`  [EXTRACTED]
-  src/components/DailyBudgetCard.tsx → src/services/purchases.ts
-- `Analytics()` --indirect_call--> `getCurrentMonth()`  [INFERRED]
-  src/pages/Analytics.tsx → src/utils/date.ts
+- `exportReportToPDF()` --references--> `jspdf`  [EXTRACTED]
+  src/services/export.ts → package.json
 - `Dashboard()` --indirect_call--> `getCurrentDate()`  [INFERRED]
   src/pages/Dashboard.tsx → src/utils/date.ts
-- `Dashboard()` --indirect_call--> `getCurrentMonth()`  [INFERRED]
-  src/pages/Dashboard.tsx → src/utils/date.ts
+- `mockHistory()` --indirect_call--> `getPurchases()`  [INFERRED]
+  src/pages/PurchaseHistory.test.tsx → src/services/purchases.ts
 - `Reports()` --indirect_call--> `getCurrentMonth()`  [INFERRED]
   src/pages/Reports.tsx → src/utils/date.ts
+- `Props` --references--> `BudgetAlert`  [EXTRACTED]
+  src/components/BudgetAlertBanner.tsx → src/services/notifications.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (250 total, 48 thin omitted)
+## Communities (248 total, 48 thin omitted)
 
 ### Community 0 - "reports.ts"
-Cohesion: 0.13
-Nodes (29): Reports, CategoryBreakdownTable(), Props, CategoryPieChart(), Props, ComparisonKpis(), Props, MonthlyTrendChart() (+21 more)
+Cohesion: 0.08
+Nodes (45): ChartsContent(), MONTH_LABELS, monthToLabel(), PIE_COLORS, Props, CategoryBreakdownTable(), Props, CategoryPieChart() (+37 more)
 
-### Community 1 - "AddPurchase"
-Cohesion: 0.07
-Nodes (29): OCRStatus, useOCR(), AddPurchase(), cancelAllCategorySuggestions(), cancelCategorySuggestion(), handleSaved(), handleSubmit(), persistPurchase() (+21 more)
+### Community 1 - "useOCR.ts"
+Cohesion: 0.18
+Nodes (13): OCRStatus, useOCR(), OCRResult, runOCR(), compressImage(), MockOffscreenCanvas, uploadReceiptImage(), supabase (+5 more)
 
 ### Community 2 - "OCRReview.tsx"
-Cohesion: 0.14
-Nodes (12): OCRReview(), handleSavePurchase(), Props, ProductEditor(), Props, DarkButton(), DarkButtonProps, Props (+4 more)
+Cohesion: 0.16
+Nodes (13): OCRReview(), Props, ProductEditor(), Props, DarkButton(), DarkButtonProps, EmptyState(), EmptyStateProps (+5 more)
 
 ### Community 3 - "compilerOptions"
 Cohesion: 0.07
@@ -254,27 +249,27 @@ Nodes (29): DOM, DOM.Iterable, ES2020, src, src/**/*.spec.ts, src/**/*.spec.tsx,
 
 ### Community 4 - "scripts"
 Cohesion: 0.05
-Nodes (37): firebase, lucide-react, dependencies, firebase, jspdf, lucide-react, react, react-dom (+29 more)
+Nodes (42): firebase, jspdf, lucide-react, dependencies, firebase, jspdf, lucide-react, react (+34 more)
 
 ### Community 5 - "categoryMapping.test.ts"
-Cohesion: 0.11
-Nodes (24): db, KEYWORD_MAP, normalizeProductName(), suggestCategory(), getCategoryForProduct(), getMappingsByCategory(), normalizeProductName(), saveCategoryMapping() (+16 more)
+Cohesion: 0.15
+Nodes (16): KEYWORD_MAP, normalizeProductName(), suggestCategory(), getCategoryForProduct(), getMappingsByCategory(), normalizeProductName(), saveCategoryMapping(), dbState (+8 more)
 
 ### Community 6 - "stores.ts"
-Cohesion: 0.18
-Nodes (23): StoreData, useStores(), StoreManager(), handleDelete(), handleSave(), resetForm(), createStore(), deleteStore() (+15 more)
+Cohesion: 0.24
+Nodes (19): StoreData, useStores(), createStore(), deleteStore(), deserializeEmbeddedStore(), getStores(), isNotFound(), isPermissionDenied() (+11 more)
 
 ### Community 7 - "Spec — Fase 3: Dashboard con Gráficos"
 Cohesion: 0.09
 Nodes (21): 1. Barras — Gastado vs Presupuesto (6 meses hasta el seleccionado), 2. Top 5 productos (mes seleccionado), 3. Línea — Tendencia de gastos (6 meses hasta el seleccionado), Archivos existentes que se modifican, Arquitectura, ChartsSection — colapsable y lazy-load, Contexto, Decisiones de diseño (aprobadas) (+13 more)
 
-### Community 8 - "useAuth"
-Cohesion: 0.13
-Nodes (17): Analytics, App(), Dashboard, Register, StoreManager, ProtectedRoute(), ProtectedRouteProps, AuthContext (+9 more)
+### Community 8 - "StoreManager.tsx"
+Cohesion: 0.15
+Nodes (13): StoreBadge(), StoreBadgeProps, StoreSelector(), StoreSelectorProps, DarkInput(), DarkInputProps, CATEGORIES, COLORS (+5 more)
 
 ### Community 9 - "categories.test.ts"
-Cohesion: 0.07
-Nodes (41): CATEGORY_COLORS, CategoryBadge(), CategoryBadgeProps, DEFAULT_COLORS, CategoryManager(), CategoryManagerProps, CategorySelector(), focusIconAt() (+33 more)
+Cohesion: 0.08
+Nodes (40): CATEGORY_COLORS, CategoryBadge(), CategoryBadgeProps, DEFAULT_COLORS, CategoryManager(), CategoryManagerProps, CategorySelector(), CategorySelectorProps (+32 more)
 
 ### Community 10 - "Referencias Corregidas"
 Cohesion: 0.04
@@ -348,13 +343,13 @@ Nodes (24): `AddPurchase.tsx`, Campo a agregar a `PurchaseItem`, Colecciones Fir
 Cohesion: 0.13
 Nodes (14): Archivos modificados, Commit, Fix aplicado, Fix aplicado, Historial Task 6 - Report, Issue 1 (Critical): onSaved no refrescaba el estado del Dashboard, Issue 2 (Important): Integration test faltante, Problema (+6 more)
 
-### Community 28 - "date.ts"
-Cohesion: 0.20
-Nodes (8): getAllBudgets(), getBudget(), setBudget(), Budget, getCurrentMonth(), getDaysInMonth(), getMonthRange(), isToday()
+### Community 28 - "PurchaseHistory.tsx"
+Cohesion: 0.15
+Nodes (16): Props, PurchaseHistory(), mockHistory(), ViewMode, downloadBlob(), escapeCsvField(), exportPurchasesToCSV(), generatePurchasesCSV() (+8 more)
 
 ### Community 29 - "purchases.ts"
-Cohesion: 0.14
-Nodes (22): Props, TodayPurchases(), handleDelete(), EmptyState(), EmptyStateProps, Props, PurchaseHistory(), handleDelete() (+14 more)
+Cohesion: 0.15
+Nodes (17): DailyBudgetCard(), Props, Props, TodayPurchases(), DarkCard(), DarkCardProps, ProgressBar(), ProgressBarProps (+9 more)
 
 ### Community 30 - "Auditoría de Seguridad — Mercado Inteligente"
 Cohesion: 0.09
@@ -368,9 +363,9 @@ Nodes (21): Categorización Automática — Implementation Plan, File Structure,
 Cohesion: 0.17
 Nodes (11): Fase 3: Dashboard con Gráficos — Implementation Plan, File Structure, Global Constraints, Self-Review Checklist, Task 1: `getPurchasesByDateRange` en `purchases.ts`, Task 2: `getBudgetsByMonthRange` en `budget.ts`, Task 3: `analytics.ts` — servicios de agregación, Task 4: Instalar Recharts + `ChartsContent.tsx` (+3 more)
 
-### Community 33 - "families.ts"
-Cohesion: 0.20
-Nodes (18): Family, FamilyPage(), handleCreate(), handleJoin(), handleLeave(), loadFamilyData(), mockUser, createFamily() (+10 more)
+### Community 33 - "index.ts"
+Cohesion: 0.27
+Nodes (14): FamilyPage(), mockUser, createFamily(), generateFamilyCode(), getFamily(), getFamilyByCode(), getUserFamily(), joinFamilyByCode() (+6 more)
 
 ### Community 34 - "Lecciones Aprendidas — Memoria de Agentes"
 Cohesion: 0.12
@@ -408,9 +403,9 @@ Nodes (7): addManualPurchase(), clearFirestore(), createEmulatorUser(), generate
 Cohesion: 0.18
 Nodes (10): Fase 4: Historial Multi-Mes — Implementation Plan, File Structure, Global Constraints, Self-Review Checklist, Task 1: `MonthNavigator.tsx` — componente de navegación de meses, Task 2: Modificar `Budget.tsx` — aceptar `month` y `onSaved` props, Task 3: Modificar `PurchaseHistory.tsx` — aceptar prop `month`, Task 4: Modificar `Dashboard.tsx` — integrar MonthNavigator, selectedMonth, resumen 3 números, botón definir presupuesto (+2 more)
 
-### Community 43 - "index.ts"
-Cohesion: 0.13
-Nodes (15): OCRCapture(), Props, StoreBadge(), StoreBadgeProps, StoreSelector(), closeMenu(), selectStore(), StoreSelectorProps (+7 more)
+### Community 43 - "AddPurchase.tsx"
+Cohesion: 0.14
+Nodes (12): OCRCapture(), Props, AddPurchase(), Props, mocks, routerMocks, mockProcessTicket, mockReset (+4 more)
 
 ### Community 44 - "Contexto del Proyecto — Mercado Inteligente"
 Cohesion: 0.14
@@ -428,9 +423,9 @@ Nodes (14): 4.10 ocr.ts — **SIN CAMBIO**, 4.11 ticketParser.ts — **SIN CAMBI
 Cohesion: 0.14
 Nodes (13): Backend, Base de datos, Convenciones de código, Entorno, Frontend, Gestión de secretos, Hosting / Despliegue, Integraciones externas (+5 more)
 
-### Community 48 - "DailyBudgetCard.tsx"
-Cohesion: 0.09
-Nodes (28): Login, Props, DarkCard(), DarkCardProps, DarkInput(), DarkInputProps, GoogleAuthButton(), GoogleAuthButtonProps (+20 more)
+### Community 48 - "firebase.ts"
+Cohesion: 0.06
+Nodes (35): Analytics, App(), Dashboard, Family, Login, Register, Reports, StoreManager (+27 more)
 
 ### Community 49 - "File Structure"
 Cohesion: 0.20
@@ -508,9 +503,9 @@ Nodes (10): Fase 1 — Categorización automática de productos, Fase 2 — Repo
 Cohesion: 0.18
 Nodes (10): Alcance, Budget Page Redesign — Dark Theme, Business Logic Unchanged, Commit, Component Usage Pattern, Current State, Edge Cases, Target State (+2 more)
 
-### Community 68 - "analytics.ts"
-Cohesion: 0.12
-Nodes (27): ChartsContent(), MONTH_LABELS, monthToLabel(), PIE_COLORS, Props, ChartsContent, ChartsSection(), Props (+19 more)
+### Community 68 - "ChartsSection.tsx"
+Cohesion: 0.50
+Nodes (3): ChartsContent, ChartsSection(), Props
 
 ### Community 69 - "Changes Made"
 Cohesion: 0.18
@@ -557,8 +552,8 @@ Cohesion: 0.20
 Nodes (9): Files changed, GREEN phase, Issues or concerns, RED phase, Self-review findings, Task 1 Report: voiceParser — parsear texto a productos, TDD Evidence, What was implemented (+1 more)
 
 ### Community 80 - "Dashboard.tsx"
-Cohesion: 0.11
-Nodes (11): ExpandableCard(), ExpandableCardProps, KpiCard(), KpiCardProps, BeforeInstallPromptEvent, usePWAInstall(), BudgetPage(), Props (+3 more)
+Cohesion: 0.14
+Nodes (13): StoreAnalytics(), ExpandableCard(), ExpandableCardProps, KpiCard(), KpiCardProps, useAuth(), BeforeInstallPromptEvent, usePWAInstall() (+5 more)
 
 ### Community 81 - "Task 2 Report: Create Default Categories Definition"
 Cohesion: 0.29
@@ -597,8 +592,8 @@ Cohesion: 0.22
 Nodes (8): Fase 1 — PWA Instalable, Fase 2 — OCR por Foto, Fase 3 — Dashboard con Gráficos, Fase 4 — Historial Multi-Mes, Fase 5 — Registro por Voz, Fase 6 — Cierre v2, Tareas — Mercado Inteligente v2, v2 — Diferenciadores
 
 ### Community 90 - "useVoice.ts"
-Cohesion: 0.09
-Nodes (24): mockStartListening, mockStopListening, useVoice(), VoiceStatus, ListeningOptions, SpeechRecognitionConstructor, SpeechRecognitionErrorEventLike, SpeechRecognitionGlobal (+16 more)
+Cohesion: 0.13
+Nodes (18): mockStartListening, mockStopListening, useVoice(), VoiceStatus, ListeningOptions, SpeechRecognitionConstructor, SpeechRecognitionErrorEventLike, SpeechRecognitionGlobal (+10 more)
 
 ### Community 91 - "Global Constraints"
 Cohesion: 0.22
@@ -660,13 +655,13 @@ Nodes (46): AI — Conocimiento de Agentes, Arquitectura, Backend, Estructura, F
 Cohesion: 0.43
 Nodes (5): formatLabel(), MONTH_NAMES, MonthSelector(), MonthSelectorProps, shiftMonth()
 
-### Community 106 - "DailyBudgetCard"
-Cohesion: 0.47
-Nodes (5): DailyBudgetCard(), closeEditor(), loadTodayData(), openEditor(), toggleEditor()
+### Community 106 - "voice.test.ts"
+Cohesion: 0.33
+Nodes (4): mockAbort, mockSpeechRecognition, mockStart, mockStop
 
 ### Community 107 - "notifications.ts"
-Cohesion: 0.16
-Nodes (27): BudgetAlertBanner(), handleEnablePush(), Props, useDailyBudget(), loadData(), getAllDailyBudgets(), getDailyBudget(), getDailyBudgetFromUserDoc() (+19 more)
+Cohesion: 0.13
+Nodes (30): BudgetAlertBanner(), Props, useDailyBudget(), getAllBudgets(), getBudget(), setBudget(), getAllDailyBudgets(), getDailyBudget() (+22 more)
 
 ### Community 108 - "Task 2 Report: voice service — Web Speech API wrapper"
 Cohesion: 0.29
@@ -777,8 +772,8 @@ Cohesion: 0.40
 Nodes (4): Budget Page Redesign Implementation Plan, Global Constraints, Task 1: Refactor BudgetPage to use dark theme components, Verification
 
 ### Community 164 - "run-e2e-full.mjs"
-Cohesion: 0.70
-Nodes (4): isPortOpen(), main(), start(), waitForPort()
+Cohesion: 0.50
+Nodes (3): firebaseCli, projectRoot, result
 
 ### Community 165 - "sdd/task-11-brief.md"
 Cohesion: 0.40
@@ -809,24 +804,24 @@ Cohesion: 0.50
 Nodes (3): Categorización Automática Progress Ledger, Resumen final, Tasks
 
 ## Knowledge Gaps
-- **1318 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `rm -rf *`, `git push --force*` (+1313 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 1538 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **1330 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `$schema`, `rm -rf *`, `git push --force*` (+1325 more)
+  These have ≤1 connection - possible missing edges or undocumented components.
 - **48 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useAuth()` connect `useAuth` to `reports.ts`, `AddPurchase`, `families.ts`, `stores.ts`, `DailyBudgetCard`, `index.ts`, `DailyBudgetCard.tsx`, `Dashboard.tsx`, `purchases.ts`?**
-  _High betweenness centrality (0.004) - this node is a cross-community bridge._
-- **Why does `CategorySelector()` connect `categories.test.ts` to `OCRReview.tsx`, `index.ts`, `purchases.ts`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
-- **Why does `FamilyPage()` connect `families.ts` to `useAuth`?**
-  _High betweenness centrality (0.003) - this node is a cross-community bridge._
+- **Why does `exportReportToPDF()` connect `reports.ts` to `PurchaseHistory.tsx`, `scripts`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `jspdf` connect `scripts` to `reports.ts`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `$schema` to the rest of the system?**
-  _1318 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _1330 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `reports.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1349527665317139 - nodes in this community are weakly interconnected._
-- **Should `AddPurchase` be split into smaller, more focused modules?**
-  _Cohesion score 0.06826241134751773 - nodes in this community are weakly interconnected._
-- **Should `OCRReview.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.14130434782608695 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08348457350272233 - nodes in this community are weakly interconnected._
+- **Should `compilerOptions` be split into smaller, more focused modules?**
+  _Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected._
+- **Should `scripts` be split into smaller, more focused modules?**
+  _Cohesion score 0.046511627906976744 - nodes in this community are weakly interconnected._
+- **Should `Spec — Fase 3: Dashboard con Gráficos` be split into smaller, more focused modules?**
+  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
